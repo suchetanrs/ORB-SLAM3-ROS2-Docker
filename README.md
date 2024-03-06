@@ -55,3 +55,5 @@ If you are inside the container, run the following:
 ORB-SLAM3 is launched from ```orb_slam3_docker_20_humble/orb_slam3_ros2_wrapper/launch/rgbd.launch.py``` which inturn is launched from ```orb_slam3_docker_20_humble/orb_slam3_ros2_wrapper/launch/unirobot.launch.py```
 
 Currently the ```rgbd.launch.py``` launch file defaults to ```orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml```. You can modify this with your own parameter file in case you wish to use your own camera.
+
+The very initial versions of this code were derived from [thien94/orb_slam3_ros_wrapper](https://github.com/thien94/orb_slam3_ros_wrapper) and [zang9/ORB_SLAM3_ROS2](https://github.com/zang09/ORB_SLAM3_ROS2)
