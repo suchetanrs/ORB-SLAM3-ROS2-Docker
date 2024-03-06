@@ -1,0 +1,25 @@
+version: "3"
+services:
+  orb_slam3_22_humble:
+    image: orb-slam3-humble:22.04
+    volumes:
+      #full dev
+      - /dev:/dev:rw
+      #full media
+      - /media:/media:rw
+      #Time
+      - /etc/timezone:/etc/timezone:rw
+      - /etc/localtime:/etc/localtime:rw
+      #ros-workspaces
+      - ./container_root/:/root/
+      - ./orb_slam3_ros2_wrapper/:/root/colcon_ws/src/orb_slam3_ros2_wrapper/
+      - ./slam_msgs/:/root/colcon_ws/src/slam_msgs/
+      # - ./ORB_SLAM3/:/home/orb/ORB_SLAM3/
+    privileged: true
+    network_mode: host
+    ipc: host
+    stdin_open: true
+    tty: true
+    environment:
+      - DISPLAY
+    entrypoint: /bin/bash
