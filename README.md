@@ -8,7 +8,9 @@ This repository contains a dockerized comprehensive wrapper for ORB-SLAM3 on ROS
 
 ## 1. Clone this repository
 
-```git clone https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker```
+1. ```git clone https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker```
+2. ```cd ORB-SLAM3-ROS2-Docker```
+3. ```git submodule update --init --recursive --remote```
 
 ## 2. Install Docker on your system
 
