@@ -4,6 +4,8 @@ This repository contains a dockerized comprehensive wrapper for ORB-SLAM3 on ROS
 
 # Demo GIF
 
+![ORBSLAM3-GIF](orbslam3.gif)
+
 # Steps to use this wrapper
 
 ## 1. Clone this repository
