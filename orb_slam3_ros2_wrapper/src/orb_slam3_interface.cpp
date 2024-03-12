@@ -11,6 +11,7 @@ namespace ORB_SLAM3_Wrapper
                                          const std::string &strSettingsFile,
                                          ORB_SLAM3::System::eSensor sensor,
                                          bool bUseViewer,
+                                         bool rosViz,
                                          double robotX,
                                          double robotY,
                                          std::string globalFrame,
@@ -19,6 +20,7 @@ namespace ORB_SLAM3_Wrapper
           strSettingsFile_(strSettingsFile),
           sensor_(sensor),
           bUseViewer_(bUseViewer),
+          rosViz_(rosViz),
           robotX_(robotX),
           robotY_(robotY),
           globalFrame_(globalFrame),
@@ -88,7 +90,7 @@ namespace ORB_SLAM3_Wrapper
         }
     }
 
-    void ORBSLAM3Interface::getCurrentMapPoints(sensor_msgs::msg::PointCloud2& mapPointCloud)
+    void ORBSLAM3Interface::getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud)
     {
         std::vector<Eigen::Vector3f> trackedMapPoints;
         for (auto KF : orbAtlas_->GetAllKeyFrames())

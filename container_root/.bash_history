@@ -1,101 +1,3 @@
-ls
-colcon build --symlink-install
-cat ../shell_scripts/multi_orb.sh 
-ros2 topic list
-bash
-colcon build --symlink-install
-source install/setup.bash
-cat ../shell_scripts/multi_orb.sh 
-. ../shell_scripts/multi_orb.sh 
-kill -9 %1
-kill -9 %
-bash
-nano shell_scripts/launch_orb.sh 
-vi shell_scripts/multi_orb.sh 
-source install/setup.bash
-htop
-apt-get install htop
-htop
-source colcon_ws2/install/setup.bash
-ros2 topic list
-./shell_scripts/multi_orb.sh 
-ros2 topic list
-./shell_scripts/multi_orb.sh 
-bash
-cd colcon_ws2/
-vsc
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-source install/setup.bash
-cd
-./shell_scripts/multi_orb.sh 
-source colcon_ws2/install/setup.bash
-./shell_scripts/multi_orb.sh 
-source colcon_ws2/install/setup.bash
-./shell_scripts/multi_orb.sh 
-bash
-ls
-cd colcon_ws2/
-ls
-rm -rf build/ install/ log/
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/p
-arams/scout_v2_rgbd.yaml"
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-vsc
-bash
-ros2 topic list
-ros2 service list | grep orb
-cd colcon_ws
-ls
-vsc
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-pwd
-bash
-ls
-cd colcon_ws
-ls
-rm -rf build/ install/ log/
-ls
-colcon build --symlink-install
-colcon build --symlink-install
-source install/setup.bash
-./build/orb_slam3_ros2_wrapper/rgbd "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt" "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/scout_v2_rgbd.yaml"
-bash
-tmux
-ls
-cd /home/orb/ORB_SLAM3/
-./build.sh 
-bash
-ls
-source colcon_ws2/install/setup.bash
-./shell_scripts/multi_orb.sh 
-cd colcon_ws2/
-vsc
-colcon build --symlink-install
-cd
-. /home/orb/ORB_SLAM3/build.sh 
-ls
-cd
-ls
-rm -rf build/
 cd /home/orb/ORB_SLAM3/
 ./build.sh 
 cd
@@ -513,3 +415,88 @@ ls
 colcon build --symlink-install
 cd
 ros2 launch orb_slam3_ros2_wrapper multirobot.launch.py 
+xeyes
+cd /root/colcon_ws/
+colcon build --symlink-install
+source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ls
+. ../shell_scripts/multi_orb.sh 
+ls
+cd colcon_ws/
+ls
+vsc
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/2
+cd colcon_ws/
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/
+. ../shell_scripts/multi_orb.sh 
+./shell_scripts/multi_orb.sh 
+kill -9 %1
+./shell_scripts/multi_orb.sh 
+kill -9 %1
+./shell_scripts/multi_orb.sh 
+kill -9 %1
+cd colcon_ws/
+ls
+vsc
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ls
+cd colcon_ws/
+ls
+colcon build --symlink-install
+ls
+vsc
+clear
+colcon build --symlink-install
+clear
+colcon build --symlink-install
+source install/setup.bash
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+. ../shell_scripts/multi_orb.sh 
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+. ../shell_scripts/multi_orb.sh 
+ls
+cd colcon_ws/
+ls
+vsc
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/l
+cd colcon_ws/
+cd colcon_ws/l
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/
+. ../shell_scripts/multi_orb.sh 
+cd colcon_ws/
+vsc
+cd
+cd shell_scripts/
+vsc
+./multi_orb.sh 
+kill -9 %1
+./multi_orb.sh 
+kill -9 %1
+./multi_orb.sh 
+kill -9 %1
+./multi_orb.sh 
+cd /home/orb/ORB_SLAM3/
+vsc
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ls
+cd src/
+ls
+grep -r "Creation of new map with last KF id:" .
+grep -r "Atlas::CreateNewMap()"
+grep -r "CreateNewMap()"
+clear
+grep -r "CreateNewMap()"
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+bash
+ls
+tmux

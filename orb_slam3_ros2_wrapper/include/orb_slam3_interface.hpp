@@ -44,6 +44,7 @@ namespace ORB_SLAM3_Wrapper
                           const std::string &strSettingsFile,
                           ORB_SLAM3::System::eSensor sensor,
                           bool bUseViewer,
+                          bool rosViz,
                           double robotX,
                           double robotY,
                           std::string globalFrame,
@@ -76,7 +77,7 @@ namespace ORB_SLAM3_Wrapper
 
         void getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapGraph);
 
-        void getCurrentMapPoints(sensor_msgs::msg::PointCloud2& mapPointCloud);
+        void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
 
@@ -92,6 +93,7 @@ namespace ORB_SLAM3_Wrapper
         std::string strSettingsFile_;
         ORB_SLAM3::System::eSensor sensor_;
         bool bUseViewer_;
+        bool rosViz_;
 
         queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
         std::mutex bufMutex_;

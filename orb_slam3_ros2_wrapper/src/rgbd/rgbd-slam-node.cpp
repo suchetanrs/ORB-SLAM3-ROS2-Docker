@@ -34,6 +34,9 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("visualization", rclcpp::ParameterValue(true));
         this->get_parameter("visualization", bUseViewer);
 
+        this->declare_parameter("ros_visualization", rclcpp::ParameterValue(true));
+        this->get_parameter("visualization", rosViz_);
+
         this->declare_parameter("robot_base_frame", "base_link");
         this->get_parameter("robot_base_frame", robot_base_frame_id_);
 
@@ -50,7 +53,7 @@ namespace ORB_SLAM3_Wrapper
         this->get_parameter("robot_y", robot_y_);
 
         interface = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                           sensor, bUseViewer, robot_x_,
+                                                                           sensor, bUseViewer, rosViz_, robot_x_,
                                                                            robot_y_, global_frame_, odom_frame_id_);
         RCLCPP_INFO(this->get_logger(), "CONSTRUCTOR END!");
     }
@@ -86,7 +89,10 @@ namespace ORB_SLAM3_Wrapper
             // publish the map data (current active keyframes etc)
             publishMapData();
             tf_broadcaster_->sendTransform(tfMapOdom);
-            publishMapPointCloud();
+            if (rosViz_)
+            {
+                publishMapPointCloud();
+            }
         }
     }
 

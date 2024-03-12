@@ -93,6 +93,7 @@ namespace ORB_SLAM3_Wrapper
         std::string odom_frame_id_;
         std::string global_frame_;
         double robot_x_, robot_y_;
+        bool rosViz_;
         ORB_SLAM3_Wrapper::WrapperTypeConversions conversions;
         std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface;
         geometry_msgs::msg::TransformStamped tfMapOdom;
