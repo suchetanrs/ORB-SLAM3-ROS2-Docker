@@ -35,7 +35,7 @@ namespace ORB_SLAM3_Wrapper
         this->get_parameter("visualization", bUseViewer);
 
         this->declare_parameter("ros_visualization", rclcpp::ParameterValue(true));
-        this->get_parameter("visualization", rosViz_);
+        this->get_parameter("ros_visualization", rosViz_);
 
         this->declare_parameter("robot_base_frame", "base_link");
         this->get_parameter("robot_base_frame", robot_base_frame_id_);

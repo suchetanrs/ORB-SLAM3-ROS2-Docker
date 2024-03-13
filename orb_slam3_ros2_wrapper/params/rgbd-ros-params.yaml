@@ -5,5 +5,5 @@ ORB_SLAM3_RGBD_ROS2:
     odom_frame: odom
     robot_x: 0.0
     robot_y: 0.0
-    visualization: false
+    visualization: true
     ros_visualization: false

@@ -1,7 +1,3 @@
-cd /home/orb/ORB_SLAM3/
-./build.sh 
-cd
-cd colcon_ws2/
 colcon build --symlink-install
 source install/setup.bash
 . ../shell_scripts/multi_orb.sh 
@@ -500,3 +496,5 @@ ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
 bash
 ls
 tmux
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
