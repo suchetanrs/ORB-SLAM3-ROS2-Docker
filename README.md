@@ -2,11 +2,11 @@
 
 This repository contains a dockerized comprehensive wrapper for ORB-SLAM3 on ROS 2 Humble for Ubuntu 22.04.
 
-# Demo GIF
+## Demo GIF
 
 ![ORBSLAM3-GIF](orbslam3.gif)
 
-# Steps to use this wrapper
+## Steps to use this wrapper
 
 ## 1. Clone this repository
 
@@ -38,6 +38,7 @@ sudo chmod +x container_root/shell_scripts/docker_install.sh
 ## 5. Building the ORB-SLAM3 Wrapper
 
 Launch the container using steps in (4).
+
 ```bash
 cd /root/colcon_ws/
 colcon build --symlink-install
@@ -50,7 +51,7 @@ Launch the container using steps in (4).
 If you are inside the container, run the following:
 
 1. ```ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py```
-3. You can adjust the initial co-ordinates of the robot along with its namespace in the ```unirobot.launch.py``` file.
+2. You can adjust the initial co-ordinates of the robot along with its namespace in the ```unirobot.launch.py``` file.
 
 ## Important notes
 
