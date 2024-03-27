@@ -221,6 +221,15 @@ namespace ORB_SLAM3_Wrapper
         bufMutex_.unlock();
     }
 
+    void ORBSLAM3Interface::handleLidarPCL(const sensor_msgs::msg::PointCloud2::SharedPtr msgLidar)
+    {
+        // pcl::PCLPointCloud2 pcl_pc2;
+        // pcl_conversions::toPCL(*msgLidar,pcl_pc2);
+        // pcl::PointCloud<pcl::PointXYZ>::Ptr pt_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        // pcl::fromPCLPointCloud2(pcl_pc2,*pt_cloud);
+        // mSLAM_->getTraversability()->pushToBuffer(typeConversions_->stampToSec(msgLidar->header.stamp),*pt_cloud);
+    }
+
     bool ORBSLAM3Interface::trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
     {
         orbAtlas_ = mSLAM_->GetAtlas();

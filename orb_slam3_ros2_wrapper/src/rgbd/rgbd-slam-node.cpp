@@ -21,6 +21,7 @@ namespace ORB_SLAM3_Wrapper
         syncApproximate->registerCallback(&RgbdSlamNode::RGBDCallback, this);
         imu_sub = this->create_subscription<sensor_msgs::msg::Imu>("imu", 1000, std::bind(&RgbdSlamNode::ImuCallback, this, std::placeholders::_1));
         odom_sub = this->create_subscription<nav_msgs::msg::Odometry>("odom", 1000, std::bind(&RgbdSlamNode::OdomCallback, this, std::placeholders::_1));
+        lidar_sub = this->create_subscription<sensor_msgs::msg::PointCloud2>("velodyne_points", 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
         // ROS Publishers
         map_data_pub = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         map_points_pub = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
@@ -94,6 +95,16 @@ namespace ORB_SLAM3_Wrapper
                 publishMapPointCloud();
             }
         }
+    }
+
+    void RgbdSlamNode::LidarCallback(const sensor_msgs::PointCloud2ConstPtr& msgLidar)
+    {
+        RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
+        // interface->handleLidarPCL(*msgLidar);
+        // pcl::PCLPointCloud2 pcl_pc2;
+        // pcl_conversions::toPCL(*msgLidar,pcl_pc2);
+        // pcl::PointCloud<pcl::PointXYZ> pcl_cloud;
+        // pcl::fromPCLPointCloud2(pcl_pc2, pcl_cloud);
     }
 
     void RgbdSlamNode::publishMapPointCloud()

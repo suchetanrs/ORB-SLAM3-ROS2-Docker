@@ -23,11 +23,6 @@
 
 #include <cv_bridge/cv_bridge.h>
 
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl_ros/impl/transforms.hpp>
-
 #include "sophus/se3.hpp"
 #include "System.h"
 #include "Frame.h"
@@ -80,6 +75,8 @@ namespace ORB_SLAM3_Wrapper
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
+
+        void handleLidarPCL(const sensor_msgs::msg::PointCloud2::SharedPtr msgLidar);
 
         bool trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
 

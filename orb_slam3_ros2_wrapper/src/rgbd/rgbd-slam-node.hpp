@@ -35,6 +35,12 @@
 #include "type_conversion.hpp"
 #include "orb_slam3_interface.hpp"
 
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/impl/transforms.hpp>
+
 namespace ORB_SLAM3_Wrapper
 {
     class RgbdSlamNode : public rclcpp::Node
@@ -53,6 +59,7 @@ namespace ORB_SLAM3_Wrapper
         void OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom);
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
                        const sensor_msgs::msg::Image::SharedPtr msgD);
+        void LidarCallback(const sensor_msgs::PointCloud2ConstPtr& msgLidar);
 
         /**
          * @brief Publishes map data. (Keyframes and all poses in the current active map.)
@@ -82,6 +89,7 @@ namespace ORB_SLAM3_Wrapper
         // ROS Publishers and Subscribers
         rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub;
         rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidar_sub;
         rclcpp::Publisher<slam_msgs::msg::MapData>::SharedPtr map_data_pub;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_pub;
         rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr get_map_data_service;

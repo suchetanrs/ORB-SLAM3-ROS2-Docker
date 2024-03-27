@@ -17,3 +17,8 @@ container_root/.cmake
 showgit.py
 !colcon_ws/.vscode
 orb_slam3_ros2_wrapper/config
+
+
+container_root/CalculatorA
+container_root/CalculatorB
+container_root/trav_ws

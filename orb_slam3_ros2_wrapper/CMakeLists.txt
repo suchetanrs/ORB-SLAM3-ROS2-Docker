@@ -39,6 +39,17 @@ include_directories(
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
 )
 
+# TODO: add check for pcl_found here and in orbslam3
+find_package(traversability_mapping)
+if(traversability_mapping_FOUND)
+   find_package(PCL)
+    include_directories(
+    ${traversability_mapping_INCLUDE_DIRS}
+    ${PCL_INCLUDE_DIRS}
+    )
+    ADD_DEFINITIONS("-DWITH_TRAVERSABILITY_MAP")
+endif(traversability_mapping_FOUND)
+
 link_directories(
   include
 )
@@ -59,6 +70,14 @@ ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_
 # ament_target_dependencies(test1 rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
 # test1
 target_link_libraries(rgbd ${PCL_LIBRARIES})
+if(traversability_mapping_FOUND)
+   target_link_libraries(rgbd
+   ${PCL_LIBRARIES}
+   type_conversion
+   traversabilitySystem
+   )
+endif(traversability_mapping_FOUND)
+
 install(TARGETS rgbd
   DESTINATION lib/${PROJECT_NAME})
 

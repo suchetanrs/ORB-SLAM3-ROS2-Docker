@@ -14,7 +14,7 @@ services:
       - ./container_root/:/root/
       - ./orb_slam3_ros2_wrapper/:/root/colcon_ws/src/orb_slam3_ros2_wrapper/
       - ./slam_msgs/:/root/colcon_ws/src/slam_msgs/
-      # - ./ORB_SLAM3/:/home/orb/ORB_SLAM3/
+      - ./ORB_SLAM3/:/home/orb/ORB_SLAM3/
     privileged: true
     network_mode: host
     ipc: host
