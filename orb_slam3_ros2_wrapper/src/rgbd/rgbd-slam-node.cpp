@@ -21,15 +21,21 @@ namespace ORB_SLAM3_Wrapper
         syncApproximate->registerCallback(&RgbdSlamNode::RGBDCallback, this);
         imu_sub = this->create_subscription<sensor_msgs::msg::Imu>("imu", 1000, std::bind(&RgbdSlamNode::ImuCallback, this, std::placeholders::_1));
         odom_sub = this->create_subscription<nav_msgs::msg::Odometry>("odom", 1000, std::bind(&RgbdSlamNode::OdomCallback, this, std::placeholders::_1));
-        lidar_sub = this->create_subscription<sensor_msgs::msg::PointCloud2>("velodyne_points", 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
         // ROS Publishers
         map_data_pub = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         map_points_pub = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
+        #ifdef WITH_TRAVERSABILITY_MAP
+        lidar_sub = this->create_subscription<sensor_msgs::msg::PointCloud2>("velodyne_points", 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
+        gridmap_pub = this->create_publisher<nav_msgs::msg::OccupancyGrid>("gridmap", 10);
+        traversability_pub = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
+        #endif
         // Services
         get_map_data_service = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                                 std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         // TF
         tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+        tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
         bool bUseViewer;
         this->declare_parameter("visualization", rclcpp::ParameterValue(true));
@@ -97,21 +103,24 @@ namespace ORB_SLAM3_Wrapper
         }
     }
 
-    void RgbdSlamNode::LidarCallback(const sensor_msgs::PointCloud2ConstPtr& msgLidar)
+#ifdef WITH_TRAVERSABILITY_MAP
+    void RgbdSlamNode::LidarCallback(sensor_msgs::msg::PointCloud2 msgLidar)
     {
-        RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
-        // interface->handleLidarPCL(*msgLidar);
-        // pcl::PCLPointCloud2 pcl_pc2;
-        // pcl_conversions::toPCL(*msgLidar,pcl_pc2);
-        // pcl::PointCloud<pcl::PointXYZ> pcl_cloud;
-        // pcl::fromPCLPointCloud2(pcl_pc2, pcl_cloud);
+        // RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
+        auto map = interface->handleLidarPCL(msgLidar.header.stamp, msgLidar);
+        // nav_msgs::msg::OccupancyGrid occupancyGrid_msg;
+        // grid_map::GridMapRosConverter::toOccupancyGrid(gridmap, "hazard", 0., 1., occupancyGrid_msg);
+        map.first.header.stamp = map.second.header.stamp;
+        gridmap_pub->publish(map.first);
+        traversability_pub->publish(map.second);
     }
+#endif
 
     void RgbdSlamNode::publishMapPointCloud()
     {
         sensor_msgs::msg::PointCloud2 mapPCL;
         interface->getCurrentMapPoints(mapPCL);
-        map_points_pub->publish(mapPCL);
+        // map_points_pub->publish(mapPCL);
     }
 
     void RgbdSlamNode::publishMapData()

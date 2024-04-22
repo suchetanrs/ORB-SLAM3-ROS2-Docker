@@ -15,6 +15,7 @@
 #include <tf2_eigen/tf2_eigen.hpp>
 
 #include "nav_msgs/msg/odometry.hpp"
+#include <nav_msgs/msg/occupancy_grid.hpp>
 #include "sensor_msgs/msg/imu.hpp"
 #include "sensor_msgs/msg/point_cloud2.hpp"
 
@@ -29,6 +30,13 @@
 #include "Map.h"
 #include "Atlas.h"
 #include "type_conversion.hpp"
+
+#ifdef WITH_TRAVERSABILITY_MAP
+#include <grid_map_core/GridMap.hpp>
+#include <grid_map_core/iterators/GridMapIterator.hpp>
+#include <grid_map_ros/grid_map_ros.hpp>
+#include <grid_map_cv/grid_map_cv.hpp>
+#endif
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -75,9 +83,9 @@ namespace ORB_SLAM3_Wrapper
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
-
-        void handleLidarPCL(const sensor_msgs::msg::PointCloud2::SharedPtr msgLidar);
-
+#ifdef WITH_TRAVERSABILITY_MAP
+        std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2& pcl2);
+#endif
         bool trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
 
         bool trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);

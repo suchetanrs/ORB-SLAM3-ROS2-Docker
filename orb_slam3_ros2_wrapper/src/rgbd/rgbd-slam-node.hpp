@@ -24,6 +24,9 @@
 
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2_ros/transform_listener.h"
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/convert.h>
 
 #include "message_filters/subscriber.h"
 #include "message_filters/synchronizer.h"
@@ -34,12 +37,6 @@
 
 #include "type_conversion.hpp"
 #include "orb_slam3_interface.hpp"
-
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/conversions.h>
-#include <pcl_ros/impl/transforms.hpp>
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -59,7 +56,9 @@ namespace ORB_SLAM3_Wrapper
         void OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom);
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
                        const sensor_msgs::msg::Image::SharedPtr msgD);
-        void LidarCallback(const sensor_msgs::PointCloud2ConstPtr& msgLidar);
+#ifdef WITH_TRAVERSABILITY_MAP
+        void LidarCallback(sensor_msgs::msg::PointCloud2 msgLidar);
+#endif
 
         /**
          * @brief Publishes map data. (Keyframes and all poses in the current active map.)
@@ -92,10 +91,15 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidar_sub;
         rclcpp::Publisher<slam_msgs::msg::MapData>::SharedPtr map_data_pub;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_pub;
+#ifdef WITH_TRAVERSABILITY_MAP
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr gridmap_pub;
+        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr traversability_pub;
+#endif
         rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr get_map_data_service;
         std::shared_ptr<message_filters::Synchronizer<approximate_sync_policy>> syncApproximate;
         std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-
+        std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+        std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
         // ROS Params
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;

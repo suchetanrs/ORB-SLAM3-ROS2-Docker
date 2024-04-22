@@ -54,6 +54,6 @@ RUN cd /root/ && sudo chmod +x * && ./vscode_install.sh && rm -rf vscode_install
 
 # Build ORB-SLAM3 with its dependencies.
 RUN apt-get update && apt-get install ros-humble-pcl-ros tmux -y
-RUN apt-get install ros-humble-nav2-common x11-apps nano -y
+RUN apt-get install ros-humble-nav2-common x11-apps nano ros-humble-grid-map -y
 COPY ORB_SLAM3 /home/orb/ORB_SLAM3
-RUN . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir build && ./build.sh
+RUN . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh

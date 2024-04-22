@@ -26,12 +26,9 @@ find_package(Sophus REQUIRED)
 find_package(ORB_SLAM3 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(slam_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(tf2_geometry_msgs REQUIRED)
-find_package(PCL REQUIRED)
-find_package(pcl_ros REQUIRED)
-find_package(pcl_conversions REQUIRED)
 
 include_directories(
   include
@@ -39,13 +36,11 @@ include_directories(
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
 )
 
-# TODO: add check for pcl_found here and in orbslam3
 find_package(traversability_mapping)
 if(traversability_mapping_FOUND)
-   find_package(PCL)
+   find_package(grid_map_ros REQUIRED)
     include_directories(
     ${traversability_mapping_INCLUDE_DIRS}
-    ${PCL_INCLUDE_DIRS}
     )
     ADD_DEFINITIONS("-DWITH_TRAVERSABILITY_MAP")
 endif(traversability_mapping_FOUND)
@@ -60,19 +55,13 @@ add_executable(rgbd
   src/rgbd/rgbd-slam-node.cpp
   src/rgbd/rgbd.cpp
 )
-ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
-
-# add_executable(test1
-#   src/ft.cpp
-#   src/test_frame.cpp
-# )
-ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
-# ament_target_dependencies(test1 rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
-# test1
-target_link_libraries(rgbd ${PCL_LIBRARIES})
+if(traversability_mapping_FOUND)
+  ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs nav_msgs grid_map_ros tf2_geometry_msgs)
+else()
+  ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs nav_msgs tf2_geometry_msgs)
+endif(traversability_mapping_FOUND)
 if(traversability_mapping_FOUND)
    target_link_libraries(rgbd
-   ${PCL_LIBRARIES}
    type_conversion
    traversabilitySystem
    )
