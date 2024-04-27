@@ -23,17 +23,13 @@
 
 #include <cv_bridge/cv_bridge.h>
 
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl_ros/impl/transforms.hpp>
 
 #include "sophus/se3.hpp"
 #include "System.h"
 #include "Frame.h"
 #include "Map.h"
 #include "Atlas.h"
-#include "type_conversion.hpp"
+#include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -100,6 +96,7 @@ namespace ORB_SLAM3_Wrapper
         std::mutex mapDataMutex_;
 
         std::map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
+        std::mutex mapReferencesMutex_;
         std::map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
         Eigen::Affine3d latestTrackedPose_;
         bool hasTracked_ = false;

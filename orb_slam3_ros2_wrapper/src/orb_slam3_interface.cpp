@@ -3,7 +3,7 @@
  * @brief Implementation of the ORBSLAM3Interface class.
  * @author Suchetan R S (rssuchetan@gmail.com)
  */
-#include "orb_slam3_interface.hpp"
+#include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -68,13 +68,17 @@ namespace ORB_SLAM3_Wrapper
             }
         };
 
+        mapReferencesMutex_.lock();
         mapReferencePoses_.clear();
         std::vector<ORB_SLAM3::Map *> mapsList = orbAtlas_->GetAllMaps();
+        // sort the map array in init kf id order.
         std::sort(mapsList.begin(), mapsList.end(), compareInitKFid());
         allKFs_ = makeKFIdPair(mapsList);
-        for (auto c = 0; c < mapsList.size(); c++)
+        // std::cout << "+++++++++++++++++++++++++++++++++" << std::endl;
+        for (size_t c = 0; c < mapsList.size(); c++)
         {
-            if (mapsList[c]->GetInitKFid() == 0)
+            // std::cout << "Map ID: " << mapsList[c]->GetId() << " origin kf ID: " << mapsList[c]->GetOriginKF()->mnId << " init kf id: " << mapsList[c]->GetInitKFid() << " max kf id: " << mapsList[c]->GetMaxKFid() << std::endl;
+            if (c == 0)
             {
                 auto poseWithoutOffset = typeConversions_->se3ToAffine(mapsList[c]->GetOriginKF()->GetPose());
                 auto poseOffset = Eigen::Affine3d(
@@ -84,10 +88,24 @@ namespace ORB_SLAM3_Wrapper
             }
             else
             {
-                auto parentMapPose = allKFs_[mapsList[c]->GetInitKFid() - 1]->GetPose();
-                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[mapsList[c]->GetInitKFid() - 1]->GetMap()], parentMapPose);
+                if (static_cast<int64_t>(mapsList[c]->GetInitKFid()) - 1 < 0)
+                {
+                    throw std::runtime_error("The init KF id - 1 is lesser than 0. This should not happen");
+                }
+                else if (allKFs_.count(mapsList[c]->GetInitKFid() - 1) == 0)
+                {
+                    throw std::runtime_error("The KF was not found in allKFs_. This should not happen");
+                }
+                else if (mapReferencePoses_.count(allKFs_[mapsList[c]->GetInitKFid() - 1]->GetMap()) == 0)
+                {
+                    throw std::runtime_error("The parent map pose for this map ID does not exist. This should not happen.");
+                }
+                auto parentMapORBPose = allKFs_[mapsList[c]->GetInitKFid() - 1]->GetPose();
+                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[mapsList[c]->GetInitKFid() - 1]->GetMap()], parentMapORBPose);
             }
         }
+        // std::cout << "+++++++++++++++++++++++++++++++++" << std::endl;
+        mapReferencesMutex_.unlock();
     }
 
     void ORBSLAM3Interface::getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud)
@@ -100,7 +118,9 @@ namespace ORB_SLAM3_Wrapper
                 if (!mapPoint->isBad())
                 {
                     auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
+                    mapReferencesMutex_.lock();
                     auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[KF->mnId]->GetMap()], worldPos);
+                    mapReferencesMutex_.unlock();
                     trackedMapPoints.push_back(mapPointWorld);
                 }
             }
@@ -110,7 +130,7 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints, std::vector<int> kFIDforMapPoints)
     {
-        mapDataMutex_.lock();
+        std::lock_guard<std::mutex> lock(mapDataMutex_);
         slam_msgs::msg::MapGraph poseGraph_;
         getOptimizedPoseGraph(poseGraph_, currentMapKFOnly);
         // publish the map data
@@ -129,7 +149,9 @@ namespace ORB_SLAM3_Wrapper
                         if (!mapPoint->isBad())
                         {
                             auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
+                            mapReferencesMutex_.lock();
                             auto mapPointWorld = typeConversions_->transformPointWithReference<geometry_msgs::msg::Point>(mapReferencePoses_[allKFs_[kFId]->GetMap()], worldPos);
+                            mapReferencesMutex_.unlock();
                             pushedKf.word_pts.push_back(mapPointWorld);
                         }
                     }
@@ -146,12 +168,17 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::correctTrackedPose(Sophus::SE3f &s)
     {
+        mapReferencesMutex_.lock();
         latestTrackedPose_ = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(
             mapReferencePoses_[orbAtlas_->GetCurrentMap()], s);
+        mapReferencesMutex_.unlock();
     }
 
     void ORBSLAM3Interface::getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf)
     {
+        // tf.header.stamp;
+        tf.header.frame_id = globalFrame_;
+        tf.child_frame_id = odomFrame_;
         if (hasTracked_)
         {
             // convert odom value to Eigen::Affine3d
@@ -187,7 +214,9 @@ namespace ORB_SLAM3_Wrapper
                 ORB_SLAM3::KeyFrame *kf = cKf.second;
                 Sophus::SE3f kfPose = kf->GetPose();
                 geometry_msgs::msg::PoseStamped kfPoseStamped;
+                mapReferencesMutex_.lock();
                 kfPoseStamped.pose = typeConversions_->transformPoseWithReference<geometry_msgs::msg::Pose>(mapReferencePoses_[kf->GetMap()], kfPose);
+                mapReferencesMutex_.unlock();
                 kfPoseStamped.header.frame_id = globalFrame_;
                 kfPoseStamped.header.stamp = typeConversions_->secToStamp(kf->mTimeStamp);
                 graph.poses.push_back(kfPoseStamped);
@@ -201,7 +230,9 @@ namespace ORB_SLAM3_Wrapper
             // iterate over current keyframes.
             for (auto pKFcurr : vKeyFrames)
             {
+                mapReferencesMutex_.lock();
                 auto currReferencePose_ = mapReferencePoses_[pKFcurr->GetMap()];
+                mapReferencesMutex_.unlock();
                 Sophus::SE3f kFPose = pKFcurr->GetPose();
                 geometry_msgs::msg::PoseStamped poseStamped;
                 poseStamped.pose = typeConversions_->transformPoseWithReference<geometry_msgs::msg::Pose>(currReferencePose_, kFPose);
