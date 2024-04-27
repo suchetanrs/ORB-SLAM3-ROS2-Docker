@@ -108,7 +108,6 @@ namespace ORB_SLAM3_Wrapper
 
         std::map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
         std::mutex mapReferencesMutex_;
-
         std::map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
         Eigen::Affine3d latestTrackedPose_;
         bool hasTracked_ = false;
