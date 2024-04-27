@@ -4,7 +4,7 @@
  * @author Suchetan R S (rssuchetan@gmail.com)
  */
 
-#include "type_conversion.hpp"
+#include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "sophus/se3.hpp"
 
 namespace ORB_SLAM3_Wrapper

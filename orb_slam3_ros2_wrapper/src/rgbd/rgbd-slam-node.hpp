@@ -12,31 +12,31 @@
 #include <fstream>
 #include <chrono>
 
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
-#include "sensor_msgs/msg/imu.hpp"
-#include "sensor_msgs/msg/point_cloud2.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 
-#include "geometry_msgs/msg/pose.hpp"
-#include "geometry_msgs/msg/pose_stamped.hpp"
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
-#include "geometry_msgs/msg/transform_stamped.hpp"
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
-#include "tf2_ros/transform_broadcaster.h"
-#include "tf2_ros/transform_listener.h"
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2/convert.h>
 
-#include "message_filters/subscriber.h"
-#include "message_filters/synchronizer.h"
-#include "message_filters/sync_policies/approximate_time.h"
+#include <message_filters/subscriber.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 #include <slam_msgs/msg/map_data.hpp>
 #include <slam_msgs/srv/get_map.hpp>
 
-#include "type_conversion.hpp"
-#include "orb_slam3_interface.hpp"
+#include "orb_slam3_ros2_wrapper/type_conversion.hpp"
+#include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -55,7 +55,7 @@ namespace ORB_SLAM3_Wrapper
         void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
         void OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom);
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
-                       const sensor_msgs::msg::Image::SharedPtr msgD);
+                          const sensor_msgs::msg::Image::SharedPtr msgD);
 #ifdef WITH_TRAVERSABILITY_MAP
         void LidarCallback(sensor_msgs::msg::PointCloud2 msgLidar);
 #endif
@@ -66,6 +66,8 @@ namespace ORB_SLAM3_Wrapper
          * @param last_init_kf_id ID of the last initialized keyframe.
          */
         void publishMapData();
+
+        void publishTraversabilityData();
 
         void publishMapPointCloud();
 
@@ -82,33 +84,41 @@ namespace ORB_SLAM3_Wrapper
         /**
          * Member variables
          */
-        // RGBD
-        std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> rgb_sub;
-        std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depth_sub;
+        // RGBD Sensor specifics
+        std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> rgbSub_;
+        std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depthSub_;
+        std::shared_ptr<message_filters::Synchronizer<approximate_sync_policy>> syncApproximate_;
+        rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imuSub_;
         // ROS Publishers and Subscribers
-        rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub;
-        rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub;
-        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidar_sub;
-        rclcpp::Publisher<slam_msgs::msg::MapData>::SharedPtr map_data_pub;
-        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_pub;
+        rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odomSub_;
+        rclcpp::Publisher<slam_msgs::msg::MapData>::SharedPtr mapDataPub_;
+        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr mapPointsPub_;
 #ifdef WITH_TRAVERSABILITY_MAP
-        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr gridmap_pub;
-        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr traversability_pub;
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidarSub_;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr gridmapPub_;
+        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr traversabilityPub_;
 #endif
-        rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr get_map_data_service;
-        std::shared_ptr<message_filters::Synchronizer<approximate_sync_policy>> syncApproximate;
-        std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-        std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
-        std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+        // TF
+        std::shared_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
+        std::shared_ptr<tf2_ros::TransformListener> tfListener_;
+        std::shared_ptr<tf2_ros::Buffer> tfBuffer_;
+        // ROS Services
+        rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr getMapDataService_;
+        // ROS Timers
+        rclcpp::TimerBase::SharedPtr mapDataTimer_;
+#ifdef WITH_TRAVERSABILITY_MAP
+        rclcpp::TimerBase::SharedPtr traversabilityTimer_;
+#endif
         // ROS Params
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;
         std::string global_frame_;
         double robot_x_, robot_y_;
         bool rosViz_;
-        ORB_SLAM3_Wrapper::WrapperTypeConversions conversions;
-        std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface;
-        geometry_msgs::msg::TransformStamped tfMapOdom;
+        bool isTracked_ = false;
+        ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
+        std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface_;
+        geometry_msgs::msg::TransformStamped tfMapOdom_;
     };
 }
 #endif

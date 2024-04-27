@@ -29,7 +29,7 @@
 #include "Frame.h"
 #include "Map.h"
 #include "Atlas.h"
-#include "type_conversion.hpp"
+#include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 
 #ifdef WITH_TRAVERSABILITY_MAP
 #include <grid_map_core/GridMap.hpp>
@@ -84,7 +84,9 @@ namespace ORB_SLAM3_Wrapper
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
 #ifdef WITH_TRAVERSABILITY_MAP
-        std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2& pcl2);
+        void handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2 &pcl2);
+
+        std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> getTraversabilityData();
 #endif
         bool trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
 
@@ -105,6 +107,8 @@ namespace ORB_SLAM3_Wrapper
         std::mutex mapDataMutex_;
 
         std::map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
+        std::mutex mapReferencesMutex_;
+
         std::map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
         Eigen::Affine3d latestTrackedPose_;
         bool hasTracked_ = false;
