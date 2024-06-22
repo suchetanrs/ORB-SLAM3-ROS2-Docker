@@ -89,6 +89,8 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom)
     {
+        std::lock_guard<std::mutex> lock(latestTimeMutex_);
+        latestTime_ = msgOdom->header.stamp;
         RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
         interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
     }
@@ -116,9 +118,13 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::publishTraversabilityData()
     {
+        std::lock_guard<std::mutex> lock(latestTimeMutex_);
         auto map = interface_->getTraversabilityData();
         // publish the gridmap and occupancy map.
-        map.first.header.stamp = map.second.header.stamp;
+        map.first.info.origin.position.x = map.first.info.origin.position.x + robot_x_;
+        map.first.info.origin.position.y = map.first.info.origin.position.y + robot_y_;
+        map.first.header.frame_id = global_frame_;
+        map.first.header.stamp = latestTime_;
         gridmapPub_->publish(map.first);
         traversabilityPub_->publish(map.second);
     }

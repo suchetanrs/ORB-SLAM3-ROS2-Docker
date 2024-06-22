@@ -119,6 +119,8 @@ namespace ORB_SLAM3_Wrapper
         ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
         std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface_;
         geometry_msgs::msg::TransformStamped tfMapOdom_;
+        std::mutex latestTimeMutex_;
+        rclcpp::Time latestTime_;
     };
 }
 #endif

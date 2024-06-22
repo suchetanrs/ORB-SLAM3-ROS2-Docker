@@ -285,8 +285,6 @@ namespace ORB_SLAM3_Wrapper
             if (traversabilitymap && gridmap)
             {
                 auto message = *grid_map::GridMapRosConverter::toMessage(*traversabilitymap);
-                gridmap->info.origin.position.x = gridmap->info.origin.position.x + robotX_;
-                gridmap->info.origin.position.y = gridmap->info.origin.position.y + robotY_;
                 return std::make_pair(*gridmap, message);
             }
             else

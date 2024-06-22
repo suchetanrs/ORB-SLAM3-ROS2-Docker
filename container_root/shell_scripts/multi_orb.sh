@@ -17,7 +17,7 @@ function cleanup_and_exit {
 trap cleanup_and_exit INT
 
 export ROBOT_NAMESPACE="scout_2"
-export ROBOT_X="1.0"
+export ROBOT_X="0.0"
 export ROBOT_Y="1.0"
 mkdir /home/$ROBOT_NAMESPACE
 ros2 launch orb_slam3_ros2_wrapper rgbd.launch.py &
