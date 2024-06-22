@@ -52,6 +52,16 @@ If you are inside the container, run the following:
 1. ```ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py```
 3. You can adjust the initial co-ordinates of the robot along with its namespace in the ```unirobot.launch.py``` file.
 
+## Running this with a Gazebo Classic simulation.
+
+1. Setup the ORB-SLAM3 ROS2 Docker using the steps above. Once you do (1) step in the ```Launching ORB-SLAM3``` section, you should see a window popup which is waiting for images. This is partially indicative of the setup correctly done.
+2. Setup the simulation by following the README [here](https://github.com/suchetanrs/scout-husky-gazebo-ros2)
+3. Once you are able to teleop the robot, you should be able to run ORB-SLAM3 with both the containers (simulation and wrapper) running parallely.
+
+### Potential issues you may face.
+The simulation and the wrapper both have their ```ROS_DOMAIN_ID``` set to 55 so they are meant to work out of the box. However, you may face issues if this environment variable is not set properly. Before you start the wrapper, run ```ros2 topic list``` and make sure the topics namespaced with ```scout_2``` are visible inside the ORB-SLAM3 container provided the simulation is running along the side.
+
+
 ## Important notes
 
 ORB-SLAM3 is launched from ```orb_slam3_docker_20_humble/orb_slam3_ros2_wrapper/launch/rgbd.launch.py``` which inturn is launched from ```orb_slam3_docker_20_humble/orb_slam3_ros2_wrapper/launch/unirobot.launch.py```
