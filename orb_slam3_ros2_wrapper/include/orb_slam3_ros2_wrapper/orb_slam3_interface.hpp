@@ -44,7 +44,8 @@ namespace ORB_SLAM3_Wrapper
                           double robotX,
                           double robotY,
                           std::string globalFrame,
-                          std::string odomFrame);
+                          std::string odomFrame,
+                          std::string robotFrame);
 
         ~ORBSLAM3Interface();
 
@@ -68,6 +69,8 @@ namespace ORB_SLAM3_Wrapper
         void mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints = false, std::vector<int> kFIDforMapPoints = std::vector<int>());
 
         void correctTrackedPose(Sophus::SE3f &s);
+
+        void getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf);
 
         void getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf);
 
@@ -103,6 +106,7 @@ namespace ORB_SLAM3_Wrapper
         double robotX_, robotY_;
         std::string globalFrame_;
         std::string odomFrame_;
+        std::string robotFrame_;
     };
 }
 

@@ -100,6 +100,7 @@ namespace ORB_SLAM3_Wrapper
         double robot_x_, robot_y_;
         bool rosViz_;
         bool isTracked_ = false;
+        bool no_odometry_mode_;
         ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
         std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface_;
         geometry_msgs::msg::TransformStamped tfMapOdom_;

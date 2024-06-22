@@ -56,9 +56,12 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("robot_y", rclcpp::ParameterValue(1.0));
         this->get_parameter("robot_y", robot_y_);
 
+        this->declare_parameter("no_odometry_mode", rclcpp::ParameterValue(false));
+        this->get_parameter("no_odometry_mode", no_odometry_mode_);
+
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
                                                                             sensor, bUseViewer, rosViz_, robot_x_,
-                                                                            robot_y_, global_frame_, odom_frame_id_);
+                                                                            robot_y_, global_frame_, odom_frame_id_, robot_base_frame_id_);
         RCLCPP_INFO(this->get_logger(), "CONSTRUCTOR END!");
     }
 
@@ -81,16 +84,21 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom)
     {
-        RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
-        interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
+        if(!no_odometry_mode_)
+        {
+            RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
+            interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
+        }
+        else RCLCPP_WARN(this->get_logger(), "Odometry msg recorded but no odometry mode is true, set to false to use this odometry");
     }
 
     void RgbdSlamNode::RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD)
     {
         Sophus::SE3f Tcw;
-        if (interface_->trackRGBDi(msgRGB, msgD, Tcw))
+        if (interface_->trackRGBD(msgRGB, msgD, Tcw))
         {
             isTracked_ = true;
+            if(no_odometry_mode_) interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
             tfBroadcaster_->sendTransform(tfMapOdom_);
             if (rosViz_)
             {

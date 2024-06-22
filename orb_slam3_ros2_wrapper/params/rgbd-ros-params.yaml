@@ -7,3 +7,4 @@ ORB_SLAM3_RGBD_ROS2:
     robot_y: 0.0
     visualization: true
     ros_visualization: false
+    no_odometry_mode: false
