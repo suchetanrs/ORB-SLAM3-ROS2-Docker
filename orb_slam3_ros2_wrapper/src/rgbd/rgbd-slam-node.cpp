@@ -111,7 +111,7 @@ namespace ORB_SLAM3_Wrapper
     {
         sensor_msgs::msg::PointCloud2 mapPCL;
         interface_->getCurrentMapPoints(mapPCL);
-        // map_points_pub->publish(mapPCL);
+        mapPointsPub_->publish(mapPCL);
     }
 
     void RgbdSlamNode::publishMapData()
