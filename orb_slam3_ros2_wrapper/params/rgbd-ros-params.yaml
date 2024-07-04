@@ -8,3 +8,5 @@ ORB_SLAM3_RGBD_ROS2:
     visualization: true
     ros_visualization: true
     no_odometry_mode: false
+    map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
+    landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)

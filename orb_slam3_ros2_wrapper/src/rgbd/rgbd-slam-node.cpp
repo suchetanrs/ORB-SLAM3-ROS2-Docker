@@ -27,14 +27,6 @@ namespace ORB_SLAM3_Wrapper
         // Services
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        // Timers
-        mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-        mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(200), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
-        if (rosViz_)
-        {
-            mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-            mapPointsTimer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&RgbdSlamNode::publishMapPointCloud, this), mapDataCallbackGroup_);
-        }
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         tfBuffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
@@ -64,6 +56,21 @@ namespace ORB_SLAM3_Wrapper
 
         this->declare_parameter("no_odometry_mode", rclcpp::ParameterValue(false));
         this->get_parameter("no_odometry_mode", no_odometry_mode_);
+
+        this->declare_parameter("map_data_publish_frequency", rclcpp::ParameterValue(1000));
+        this->get_parameter("map_data_publish_frequency", map_data_publish_frequency_);
+
+        this->declare_parameter("landmark_publish_frequency", rclcpp::ParameterValue(1000));
+        this->get_parameter("landmark_publish_frequency", landmark_publish_frequency_);
+
+        // Timers
+        mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
+        if (rosViz_)
+        {
+            mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+            mapPointsTimer_ = this->create_wall_timer(std::chrono::milliseconds(landmark_publish_frequency_), std::bind(&RgbdSlamNode::publishMapPointCloud, this), mapDataCallbackGroup_);
+        }
 
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
                                                                             sensor, bUseViewer, rosViz_, robot_x_,
