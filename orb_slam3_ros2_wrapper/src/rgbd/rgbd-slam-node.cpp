@@ -28,7 +28,13 @@ namespace ORB_SLAM3_Wrapper
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         // Timers
-        mapDataTimer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&RgbdSlamNode::publishMapData, this));
+        mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(200), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
+        if (rosViz_)
+        {
+            mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+            mapPointsTimer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&RgbdSlamNode::publishMapPointCloud, this), mapDataCallbackGroup_);
+        }
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         tfBuffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
@@ -62,6 +68,10 @@ namespace ORB_SLAM3_Wrapper
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
                                                                             sensor, bUseViewer, rosViz_, robot_x_,
                                                                             robot_y_, global_frame_, odom_frame_id_, robot_base_frame_id_);
+
+        frequency_tracker_count_ = 0;
+        frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
+
         RCLCPP_INFO(this->get_logger(), "CONSTRUCTOR END!");
     }
 
@@ -100,29 +110,64 @@ namespace ORB_SLAM3_Wrapper
             isTracked_ = true;
             if(no_odometry_mode_) interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
             tfBroadcaster_->sendTransform(tfMapOdom_);
-            if (rosViz_)
-            {
-                publishMapPointCloud();
-            }
+            ++frequency_tracker_count_;
+            // publishMapPointCloud();
+            // std::thread(&RgbdSlamNode::publishMapPointCloud, this).detach();
         }
     }
 
     void RgbdSlamNode::publishMapPointCloud()
     {
-        sensor_msgs::msg::PointCloud2 mapPCL;
-        interface_->getCurrentMapPoints(mapPCL);
-        mapPointsPub_->publish(mapPCL);
+        if (isTracked_)
+        {
+            // Using high resolution clock to measure time
+            auto start = std::chrono::high_resolution_clock::now();
+
+            sensor_msgs::msg::PointCloud2 mapPCL;
+
+            auto t1 = std::chrono::high_resolution_clock::now();
+            auto time_create_mapPCL = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Time to create mapPCL object: " << time_create_mapPCL << " seconds");
+
+            interface_->getCurrentMapPoints(mapPCL);
+
+            if(mapPCL.data.size() == 0)
+                return;
+
+            auto t2 = std::chrono::high_resolution_clock::now();
+            auto time_get_map_points = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Time to get current map points: " << time_get_map_points << " seconds");
+
+            mapPointsPub_->publish(mapPCL);
+            auto t3 = std::chrono::high_resolution_clock::now();
+            auto time_publish_map_points = std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Time to publish map points: " << time_publish_map_points << " seconds");
+            RCLCPP_INFO_STREAM(this->get_logger(), "=======================");
+
+
+            // Calculate the time taken for each line
+
+            // Print the time taken for each line
+        }
     }
 
     void RgbdSlamNode::publishMapData()
     {
         if (isTracked_)
         {
+            auto start = std::chrono::high_resolution_clock::now();
             RCLCPP_INFO_STREAM(this->get_logger(), "Publishing map data");
+            RCLCPP_WARN_STREAM(this->get_logger(), "Current ORB-SLAM3 tracking frequency: " << frequency_tracker_count_ / std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - frequency_tracker_clock_).count() << " frames / sec");
+            frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
+            frequency_tracker_count_ = 0;
             // publish the map data (current active keyframes etc)
             slam_msgs::msg::MapData mapDataMsg;
             interface_->mapDataToMsg(mapDataMsg, true, false);
             mapDataPub_->publish(mapDataMsg);
+            auto t1 = std::chrono::high_resolution_clock::now();
+            auto time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Time to create mapdata: " << time_publishMapData << " seconds");
+            RCLCPP_INFO_STREAM(this->get_logger(), "*************************");
         }
     }
 
