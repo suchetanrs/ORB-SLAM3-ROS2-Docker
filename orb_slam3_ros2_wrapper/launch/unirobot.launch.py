@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     # Set environment variables
-    robot_namespace = "scout_2"
+    robot_namespace = "robot_0"
     robot_x = "1.0"
     robot_y = "1.0"
 
@@ -21,16 +21,12 @@ def generate_launch_description():
 
     # Launch the rgbd.launch.py file
     orb_slam3_launch_description = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(orb_slam3_launch_file_path)
+            PythonLaunchDescriptionSource(orb_slam3_launch_file_path),
+            launch_arguments={"robot_namespace": robot_namespace,
+                            "robot_x": robot_x,
+                            "robot_y": robot_y}.items(),
     )
 
     return LaunchDescription([
-        SetEnvironmentVariable(name='ROBOT_NAMESPACE', value=robot_namespace),
-        SetEnvironmentVariable(name='ROBOT_X', value=robot_x),
-        SetEnvironmentVariable(name='ROBOT_Y', value=robot_y),
         orb_slam3_launch_description
     ])
-
-
-if __name__ == '__main__':
-    generate_launch_description()
