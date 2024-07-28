@@ -18,3 +18,4 @@ showgit.py
 !colcon_ws/.vscode
 orb_slam3_ros2_wrapper/config
 **rosbag**
+**hotspot**
