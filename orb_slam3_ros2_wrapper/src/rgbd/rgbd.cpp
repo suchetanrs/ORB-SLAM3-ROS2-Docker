@@ -19,7 +19,9 @@ int main(int argc, char **argv)
     auto node = std::make_shared<ORB_SLAM3_Wrapper::RgbdSlamNode>(argv[1], argv[2], ORB_SLAM3::System::RGBD);
     std::cout << "============================ " << std::endl;
 
-    rclcpp::spin(node);
+    auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    executor->add_node(node);
+    executor->spin();
     rclcpp::shutdown();
 
     return 0;

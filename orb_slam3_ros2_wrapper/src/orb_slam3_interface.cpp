@@ -15,7 +15,8 @@ namespace ORB_SLAM3_Wrapper
                                          double robotX,
                                          double robotY,
                                          std::string globalFrame,
-                                         std::string odomFrame)
+                                         std::string odomFrame,
+                                         std::string robotFrame)
         : strVocFile_(strVocFile),
           strSettingsFile_(strSettingsFile),
           sensor_(sensor),
@@ -24,7 +25,8 @@ namespace ORB_SLAM3_Wrapper
           robotX_(robotX),
           robotY_(robotY),
           globalFrame_(globalFrame),
-          odomFrame_(odomFrame)
+          odomFrame_(odomFrame),
+          robotFrame_(robotFrame)
     {
         std::cout << "Interface constructor started" << endl;
         mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_);
@@ -42,9 +44,9 @@ namespace ORB_SLAM3_Wrapper
         allKFs_.clear();
     }
 
-    std::map<long unsigned int, ORB_SLAM3::KeyFrame *> ORBSLAM3Interface::makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList)
+    std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> ORBSLAM3Interface::makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList)
     {
-        map<long unsigned int, ORB_SLAM3::KeyFrame *> mpIdKFs;
+        std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> mpIdKFs;
         for (ORB_SLAM3::Map *pMap_i : mapsList)
         {
             std::vector<ORB_SLAM3::KeyFrame *> vpKFs_Mi = pMap_i->GetAllKeyFrames();
@@ -110,15 +112,23 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud)
     {
+        std::lock_guard<std::mutex> lock(currentMapPointsMutex_);
+        // this flag serves to support
         std::vector<Eigen::Vector3f> trackedMapPoints;
-        for (auto KF : orbAtlas_->GetAllKeyFrames())
+        auto atlasAllKFs_ = orbAtlas_->GetAllKeyFrames();
+        for (auto& KF : atlasAllKFs_)
         {
-            for (auto mapPoint : KF->GetMapPoints())
+            for (auto& mapPoint : KF->GetMapPoints())
             {
                 if (!mapPoint->isBad())
                 {
                     auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
                     mapReferencesMutex_.lock();
+                    if(allKFs_.count(KF->mnId) == 0)
+                    {
+                        mapReferencesMutex_.unlock();
+                        continue;
+                    }
                     auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[KF->mnId]->GetMap()], worldPos);
                     mapReferencesMutex_.unlock();
                     trackedMapPoints.push_back(mapPointWorld);
@@ -171,6 +181,27 @@ namespace ORB_SLAM3_Wrapper
         latestTrackedPose_ = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(
             mapReferencePoses_[orbAtlas_->GetCurrentMap()], s);
         mapReferencesMutex_.unlock();
+    }
+
+    void ORBSLAM3Interface::getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
+    {
+        tf.header.frame_id = globalFrame_;
+        tf.child_frame_id = robotFrame_;
+        if (hasTracked_)
+        {
+            // get transform between map and odom and send the transform.
+            auto tfMapOdom = latestTrackedPose_;
+            geometry_msgs::msg::Pose poseMapOdom = tf2::toMsg(tfMapOdom);
+            rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
+            rclcpp::Time odomTimestamp = headerToUse.stamp;
+            tf.header.stamp = odomTimestamp + transformTimeout_;
+            tf.header.frame_id = globalFrame_;
+            tf.child_frame_id = robotFrame_;
+            tf.transform.translation.x = poseMapOdom.position.x;
+            tf.transform.translation.y = poseMapOdom.position.y;
+            tf.transform.translation.z = poseMapOdom.position.z;
+            tf.transform.rotation = poseMapOdom.orientation;
+        }
     }
 
     void ORBSLAM3Interface::getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf)
@@ -384,6 +415,7 @@ namespace ORB_SLAM3_Wrapper
 
     bool ORBSLAM3Interface::trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
     {
+        orbAtlas_ = mSLAM_->GetAtlas();
         cv_bridge::CvImageConstPtr cvRGB;
         cv_bridge::CvImageConstPtr cvD;
         // Copy the ros rgb image message to cv::Mat.
@@ -421,6 +453,7 @@ namespace ORB_SLAM3_Wrapper
         {
             calculateReferencePoses();
             correctTrackedPose(Tcw);
+            hasTracked_ = true;
             return true;
         }
         else

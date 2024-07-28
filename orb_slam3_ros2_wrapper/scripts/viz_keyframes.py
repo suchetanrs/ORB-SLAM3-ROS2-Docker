@@ -7,7 +7,7 @@ class MapServiceClient(Node):
 
     def __init__(self):
         super().__init__('map_service_client')
-        self.client = self.create_client(GetMap, '/scout_2/orb_slam3_get_map_data')
+        self.client = self.create_client(GetMap, '/robot_0/orb_slam3_get_map_data')
         self.publisher_ = self.create_publisher(PoseArray, '/pose_array_topic', 10)
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')

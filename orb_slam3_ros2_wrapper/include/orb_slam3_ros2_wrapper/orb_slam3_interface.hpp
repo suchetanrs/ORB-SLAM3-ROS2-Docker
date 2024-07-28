@@ -51,7 +51,8 @@ namespace ORB_SLAM3_Wrapper
                           double robotX,
                           double robotY,
                           std::string globalFrame,
-                          std::string odomFrame);
+                          std::string odomFrame,
+                          std::string robotFrame);
 
         ~ORBSLAM3Interface();
 
@@ -60,7 +61,7 @@ namespace ORB_SLAM3_Wrapper
          * @param mapsList List of Map pointers.
          * @return Map of KeyFrame IDs and their pointers.
          */
-        std::map<long unsigned int, ORB_SLAM3::KeyFrame *> makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList);
+        std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList);
 
         /**
          * @brief Calculates reference poses for each map.
@@ -75,6 +76,8 @@ namespace ORB_SLAM3_Wrapper
         void mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints = false, std::vector<int> kFIDforMapPoints = std::vector<int>());
 
         void correctTrackedPose(Sophus::SE3f &s);
+
+        void getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf);
 
         void getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf);
 
@@ -105,15 +108,17 @@ namespace ORB_SLAM3_Wrapper
         queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
         std::mutex bufMutex_;
         std::mutex mapDataMutex_;
+        std::mutex currentMapPointsMutex_;
 
-        std::map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
+        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
         std::mutex mapReferencesMutex_;
-        std::map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
+        std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
         Eigen::Affine3d latestTrackedPose_;
         bool hasTracked_ = false;
         double robotX_, robotY_;
         std::string globalFrame_;
         std::string odomFrame_;
+        std::string robotFrame_;
     };
 }
 
