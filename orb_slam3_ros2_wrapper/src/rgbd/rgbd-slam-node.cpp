@@ -64,6 +64,9 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("no_odometry_mode", rclcpp::ParameterValue(false));
         this->get_parameter("no_odometry_mode", no_odometry_mode_);
 
+        this->declare_parameter("publish_tf", rclcpp::ParameterValue(true));
+        this->get_parameter("publish_tf", publish_tf_);
+
         this->declare_parameter("map_data_publish_frequency", rclcpp::ParameterValue(1000));
         this->get_parameter("map_data_publish_frequency", map_data_publish_frequency_);
 
@@ -108,12 +111,13 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom)
     {
-        if(!no_odometry_mode_)
+        if (!no_odometry_mode_ && publish_tf_)
         {
             RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
             interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
         }
-        else RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 4000, "Odometry msg recorded but no odometry mode is true, set to false to use this odometry");
+        else
+            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 4000, "Odometry msg recorded but no odometry mode is true, set to false to use this odometry");
     }
 
     void RgbdSlamNode::RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD)
@@ -122,8 +126,12 @@ namespace ORB_SLAM3_Wrapper
         if (interface_->trackRGBD(msgRGB, msgD, Tcw))
         {
             isTracked_ = true;
-            if(no_odometry_mode_) interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
-            tfBroadcaster_->sendTransform(tfMapOdom_);
+            if (publish_tf_)
+            {
+                if (no_odometry_mode_)
+                    interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
+                tfBroadcaster_->sendTransform(tfMapOdom_);
+            }
             ++frequency_tracker_count_;
             // publishMapPointCloud();
             // std::thread(&RgbdSlamNode::publishMapPointCloud, this).detach();
@@ -145,7 +153,7 @@ namespace ORB_SLAM3_Wrapper
 
             interface_->getCurrentMapPoints(mapPCL);
 
-            if(mapPCL.data.size() == 0)
+            if (mapPCL.data.size() == 0)
                 return;
 
             auto t2 = std::chrono::high_resolution_clock::now();
@@ -157,7 +165,6 @@ namespace ORB_SLAM3_Wrapper
             auto time_publish_map_points = std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2).count();
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to publish map points: " << time_publish_map_points << " seconds");
             RCLCPP_DEBUG_STREAM(this->get_logger(), "=======================");
-
 
             // Calculate the time taken for each line
 

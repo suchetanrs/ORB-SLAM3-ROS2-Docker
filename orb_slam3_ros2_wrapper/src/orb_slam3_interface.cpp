@@ -76,6 +76,19 @@ namespace ORB_SLAM3_Wrapper
         // sort the map array in init kf id order.
         std::sort(mapsList.begin(), mapsList.end(), compareInitKFid());
         allKFs_ = makeKFIdPair(mapsList);
+        std::vector<ORB_SLAM3::Map *> mapsList2 = orbAtlas_->GetAllMaps();
+        // std::cout << "Current map id: " << orbAtlas_->GetCurrentMap()->GetId() << std::endl;
+        // for (auto mp : mapsList2)
+        // {
+        //     if (mp != nullptr && mp->GetOriginKF() != nullptr)
+        //     {
+        //         std::cout << "Map id: " << mp->GetId() << std::endl;
+        //         std::cout << "Map init id: " << mp->GetInitKFid() << std::endl;
+        //         std::cout << "Map origin kf id: " << mp->GetOriginKF()->mnId << std::endl;
+        //         std::cout << "Map max kf id: " << mp->GetMaxKFid() << std::endl;
+        //         std::cout << "================" << std::endl;
+        //     }
+        // }
         // std::cout << "+++++++++++++++++++++++++++++++++" << std::endl;
         for (size_t c = 0; c < mapsList.size(); c++)
         {
@@ -90,20 +103,27 @@ namespace ORB_SLAM3_Wrapper
             }
             else
             {
-                if (static_cast<int64_t>(mapsList[c]->GetInitKFid()) - 1 < 0)
+                bool parentMapFound = false;
+                int parentMapID = mapsList[c]->GetInitKFid() - 1;
+                while (!parentMapFound)
                 {
-                    throw std::runtime_error("The init KF id - 1 is lesser than 0. This should not happen");
+                    if (parentMapID < 0)
+                    {
+                        throw std::runtime_error("The init KF id - 1 is lesser than 0. This should not happen");
+                    }
+                    if (allKFs_.count(parentMapID) > 0)
+                    {
+                        parentMapFound = true;
+                        break;
+                    }
+                    parentMapID -= 1;
                 }
-                else if (allKFs_.count(mapsList[c]->GetInitKFid() - 1) == 0)
-                {
-                    throw std::runtime_error("The KF was not found in allKFs_. This should not happen");
-                }
-                else if (mapReferencePoses_.count(allKFs_[mapsList[c]->GetInitKFid() - 1]->GetMap()) == 0)
+                if (mapReferencePoses_.count(allKFs_[parentMapID]->GetMap()) == 0)
                 {
                     throw std::runtime_error("The parent map pose for this map ID does not exist. This should not happen.");
                 }
-                auto parentMapORBPose = allKFs_[mapsList[c]->GetInitKFid() - 1]->GetPose();
-                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[mapsList[c]->GetInitKFid() - 1]->GetMap()], parentMapORBPose);
+                auto parentMapORBPose = allKFs_[parentMapID]->GetPose();
+                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
             }
         }
         // std::cout << "+++++++++++++++++++++++++++++++++" << std::endl;
@@ -116,15 +136,15 @@ namespace ORB_SLAM3_Wrapper
         // this flag serves to support
         std::vector<Eigen::Vector3f> trackedMapPoints;
         auto atlasAllKFs_ = orbAtlas_->GetAllKeyFrames();
-        for (auto& KF : atlasAllKFs_)
+        for (auto &KF : atlasAllKFs_)
         {
-            for (auto& mapPoint : KF->GetMapPoints())
+            for (auto &mapPoint : KF->GetMapPoints())
             {
                 if (!mapPoint->isBad())
                 {
                     auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
                     mapReferencesMutex_.lock();
-                    if(allKFs_.count(KF->mnId) == 0)
+                    if (allKFs_.count(KF->mnId) == 0)
                     {
                         mapReferencesMutex_.unlock();
                         continue;
