@@ -102,6 +102,7 @@ alias ranger='ranger --choosedir=/root/.rangerdir; LASTDIR=`cat /root/.rangerdir
 alias cdros='cd /root/colcon_ws/'
 alias sws='source /root/colcon_ws/install/setup.bash'
 alias sros='source /opt/ros/humble/setup.bash'
+alias strav='source /root/trav_ws/install/setup.bash'
 alias vsc='code --no-sandbox --disable-gpu-sandbox --user-data-dir=/tmp/vscode .'
 alias sep='echo "================================================================="'
 source /opt/ros/humble/setup.bash
@@ -111,3 +112,4 @@ export RCUTILS_COLORIZED_OUTPUT=1
 cd
 sros
 sws
+strav
