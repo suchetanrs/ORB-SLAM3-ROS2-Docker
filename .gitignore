@@ -24,3 +24,7 @@ container_root/CalculatorB
 container_root/trav_ws
 **rosbag**
 **hotspot**
+container_root/Normal.bag
+container_root/Simple.bag
+container_root/Normal_ROS2_bag/**
+container_root/Simple_ROS2_bag/**
