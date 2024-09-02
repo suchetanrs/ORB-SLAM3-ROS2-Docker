@@ -10,7 +10,7 @@ This repository contains a dockerized comprehensive wrapper for ORB-SLAM3 on ROS
 
 ## 1. Clone this repository
 
-1. ```git clone https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker```
+1. ```git clone -b traversability_integration https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker```
 2. ```cd ORB-SLAM3-ROS2-Docker```
 3. ```git submodule update --init --recursive --remote```
 
@@ -40,6 +40,10 @@ sudo chmod +x container_root/shell_scripts/docker_install.sh
 Launch the container using steps in (4).
 ```bash
 cd /root/colcon_ws/
+colcon build --symlink-install
+source install/setup.bash
+cd /home/traversability/traversability_mapping && ./build.sh
+cd /root/trav_ws/
 colcon build --symlink-install
 source install/setup.bash
 ```
