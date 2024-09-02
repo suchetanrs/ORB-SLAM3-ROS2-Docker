@@ -19,6 +19,7 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("depth_image_topic_name", rclcpp::ParameterValue("depth/image_raw"));
         this->declare_parameter("imu_topic_name", rclcpp::ParameterValue("imu"));
         this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
+        this->declare_parameter("lidar_topic_name", rclcpp::ParameterValue("lidar/points"));
 
         // ROS Subscribers
         rgbSub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(this, this->get_parameter("rgb_image_topic_name").as_string());
@@ -32,7 +33,7 @@ namespace ORB_SLAM3_Wrapper
         mapDataPub_ = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
 #ifdef WITH_TRAVERSABILITY_MAP
-        lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>("lidar/points", 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
+        lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
         gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("traversability_grid", 10);
         traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
 #endif

@@ -11,6 +11,7 @@ ORB_SLAM3_RGBD_ROS2:
     depth_image_topic_name: depth_camera
     imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
     odom_topic_name: odom #Not used if no_odometry_mode parameter is set to true.
+    lidar_topic_name: lidar/points
     robot_x: 0.0
     robot_y: 0.0
     visualization: true
