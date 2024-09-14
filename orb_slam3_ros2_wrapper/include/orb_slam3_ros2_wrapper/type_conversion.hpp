@@ -69,6 +69,8 @@ namespace ORB_SLAM3_Wrapper
          */
         Eigen::Affine3f se3ORBToROS(const Sophus::SE3f &s);
 
+        Sophus::SE3f se3ROSToORB(const Eigen::Affine3f &affineMatrix);
+
         /**
          * @brief This function converts a vector in the world frame of ORB coordinates 
          * to a vector in the world frame of ROS coordinates.
@@ -84,6 +86,8 @@ namespace ORB_SLAM3_Wrapper
          */
         Eigen::Affine3d se3ToAffine(const Sophus::SE3f &s);
 
+        Eigen::Affine3f poseToAffine(const geometry_msgs::msg::Pose &pose);
+
         /**
          * @brief Converts a Sophus SE3f transform to a geometry_msgs Pose message.
          * @param s The Sophus SE3f transform.
@@ -92,6 +96,8 @@ namespace ORB_SLAM3_Wrapper
         geometry_msgs::msg::Pose se3ToPoseMsg(const Sophus::SE3f &s);
 
         sensor_msgs::msg::PointCloud2 MapPointsToPCL(std::vector<Eigen::Vector3f>& mapPoints);
+
+        sensor_msgs::msg::PointCloud2 MapPointsToPCL(std::vector<ORB_SLAM3::MapPoint*>& mapPoints);
 
         // **************************************TRANSFORMATIONS*************************************
         /**

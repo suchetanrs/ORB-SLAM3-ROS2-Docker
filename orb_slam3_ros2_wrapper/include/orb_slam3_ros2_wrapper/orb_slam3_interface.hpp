@@ -85,6 +85,10 @@ namespace ORB_SLAM3_Wrapper
 
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
+        void mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
+
+        void mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
+
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
 #ifdef WITH_TRAVERSABILITY_MAP
         void handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2 &pcl2);
@@ -94,6 +98,11 @@ namespace ORB_SLAM3_Wrapper
         bool trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
 
         bool trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
+
+        std::shared_ptr<WrapperTypeConversions> getTypeConversionPtr()
+        {
+            return typeConversions_;
+        };
 
     private:
         std::shared_ptr<ORB_SLAM3::System> mSLAM_;
