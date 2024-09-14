@@ -71,6 +71,34 @@ namespace ORB_SLAM3_Wrapper
         return affineMatrix;
     }
 
+    Sophus::SE3f WrapperTypeConversions::se3ROSToORB(const Eigen::Affine3f &affineMatrix)
+    {
+        // Extract rotation and translation from the affine matrix
+        Eigen::Matrix3f tfCameraRotation = affineMatrix.rotation();
+        Eigen::Vector3f tfCameraTranslation = affineMatrix.translation();
+
+        // Define the transformation matrix from ROS to ORB coordinate system
+        Eigen::Matrix3f tfROSToORB;
+        tfROSToORB << 0, -1, 0,
+                    0,  0, -1,
+                    1,  0,  0;
+
+        // Transform from ROS coordinate system to ORB coordinate system on map coordinates
+        Eigen::Matrix3f tfCameraRotationTemp = tfROSToORB * tfCameraRotation;
+        Eigen::Vector3f tfCameraTranslationTemp = tfROSToORB * tfCameraTranslation;
+
+        // Inverse matrix (Twc -> Tcw, converts to camera frame of ORB coordinates)
+        Eigen::Matrix3f tfCameraRotationInv = tfCameraRotationTemp.transpose();
+        Eigen::Vector3f tfCameraTranslationInv = -(tfCameraRotationInv * tfCameraTranslationTemp);
+
+        // Transform from ROS coordinate system to ORB coordinate system on camera coordinates
+        tfCameraRotation = tfROSToORB * tfCameraRotationInv;
+        tfCameraTranslation = tfROSToORB * tfCameraTranslationInv;
+
+        // Create and return the Sophus::SE3f object
+        return Sophus::SE3f(tfCameraRotation, tfCameraTranslation);
+    }
+
     Eigen::Vector3f WrapperTypeConversions::vector3fORBToROS(const Eigen::Vector3f &s)
     {
         Eigen::Matrix3f tfCameraRotation = Eigen::Matrix3f::Identity();
@@ -96,6 +124,20 @@ namespace ORB_SLAM3_Wrapper
     {
         Eigen::Affine3d affineTf = se3ORBToROS(s).cast<double>();
         return affineTf;
+    }
+
+    Eigen::Affine3f WrapperTypeConversions::poseToAffine(const geometry_msgs::msg::Pose &pose)
+    {
+        auto translation = Eigen::Translation3f(
+            static_cast<float>(pose.position.x),
+            static_cast<float>(pose.position.y),
+            static_cast<float>(pose.position.z));
+        auto quaternion = Eigen::Quaternion<float>(
+            static_cast<float>(pose.orientation.w), // w
+            static_cast<float>(pose.orientation.x),   // x
+            static_cast<float>(pose.orientation.y), // y
+            static_cast<float>(pose.orientation.z));  // z
+        return translation * quaternion;
     }
 
     geometry_msgs::msg::Pose WrapperTypeConversions::se3ToPoseMsg(const Sophus::SE3f &s)
@@ -143,6 +185,55 @@ namespace ORB_SLAM3_Wrapper
         for (unsigned int i = 0; i < cloud.width; i++)
         {
             Eigen::Vector3f point_translation = mapPoints[i];
+
+            float data_array[numChannels] = {
+                point_translation.x(), point_translation.y(), point_translation.z()};
+
+            memcpy(cloud_data_ptr + (i * cloud.point_step), data_array,
+                    numChannels * sizeof(float));
+        }
+        return cloud;
+    }
+
+
+    sensor_msgs::msg::PointCloud2 WrapperTypeConversions::MapPointsToPCL(std::vector<ORB_SLAM3::MapPoint*>& mapPoints)
+    {
+        const int numChannels = 3; // x y z
+
+        if (mapPoints.size() == 0)
+        {
+            std::cout << "Map point vector is empty!" << std::endl;
+        }
+
+        sensor_msgs::msg::PointCloud2 cloud;
+
+        // cloud.header.stamp = current_frame_time;
+        cloud.header.frame_id = "map";
+        cloud.height = 1;
+        cloud.width = mapPoints.size();
+        cloud.is_bigendian = false;
+        cloud.is_dense = true;
+        cloud.point_step = numChannels * sizeof(float);
+        cloud.row_step = cloud.point_step * cloud.width;
+        cloud.fields.resize(numChannels);
+
+        std::string channel_id[] = {"x", "y", "z"};
+
+        for (int i = 0; i < numChannels; i++)
+        {
+            cloud.fields[i].name = channel_id[i];
+            cloud.fields[i].offset = i * sizeof(float);
+            cloud.fields[i].count = 1;
+            cloud.fields[i].datatype = sensor_msgs::msg::PointField::FLOAT32;
+        }
+
+        cloud.data.resize(cloud.row_step * cloud.height);
+
+        unsigned char *cloud_data_ptr = &(cloud.data[0]);
+
+        for (unsigned int i = 0; i < cloud.width; i++)
+        {
+            Eigen::Vector3f point_translation = vector3fORBToROS(mapPoints[i]->GetWorldPos());
 
             float data_array[numChannels] = {
                 point_translation.x(), point_translation.y(), point_translation.z()};
