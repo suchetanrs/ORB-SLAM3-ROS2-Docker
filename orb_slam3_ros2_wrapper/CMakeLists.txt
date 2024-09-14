@@ -66,5 +66,15 @@ install(DIRECTORY launch params
 DESTINATION share/${PROJECT_NAME}
 )
 
-ament_package()
+if(BUILD_TESTING)
+  find_package(gtest)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_find_gtest()
+  include_directories(${GTEST_INCLUDE_DIRS})
+  link_directories(${GTEST_LIBRARY_DIRS})
+  
+  ament_add_gtest(typeconversionTests tests/typeConversionsTests.cpp src/type_conversion.cpp)
+  ament_target_dependencies(typeconversionTests rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
+endif()
 
+ament_package()

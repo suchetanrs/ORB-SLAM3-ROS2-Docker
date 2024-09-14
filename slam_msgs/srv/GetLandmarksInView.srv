@@ -1,0 +1,5 @@
+#request
+geometry_msgs/Pose pose
+---
+#response
+MapPoint[] map_points

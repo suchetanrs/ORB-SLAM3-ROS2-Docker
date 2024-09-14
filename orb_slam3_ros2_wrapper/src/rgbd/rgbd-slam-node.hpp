@@ -31,6 +31,7 @@
 
 #include <slam_msgs/msg/map_data.hpp>
 #include <slam_msgs/srv/get_map.hpp>
+#include <slam_msgs/srv/get_landmarks_in_view.hpp>
 
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
@@ -73,6 +74,9 @@ namespace ORB_SLAM3_Wrapper
                           std::shared_ptr<slam_msgs::srv::GetMap::Request> request,
                           std::shared_ptr<slam_msgs::srv::GetMap::Response> response);
 
+        void getMapPointsInViewServer(std::shared_ptr<rmw_request_id_t> request_header,
+                          std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
+                          std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response);
         /**
          * Member variables
          */
@@ -85,12 +89,15 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odomSub_;
         rclcpp::Publisher<slam_msgs::msg::MapData>::SharedPtr mapDataPub_;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr mapPointsPub_;
+        rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr visibleLandmarksPub_;
+        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr visibleLandmarksPose_;
         // TF
         std::shared_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
         std::shared_ptr<tf2_ros::TransformListener> tfListener_;
         std::shared_ptr<tf2_ros::Buffer> tfBuffer_;
         // ROS Services
         rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr getMapDataService_;
+        rclcpp::Service<slam_msgs::srv::GetLandmarksInView>::SharedPtr getMapPointsService_;
         // ROS Timers
         rclcpp::TimerBase::SharedPtr mapDataTimer_;
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;

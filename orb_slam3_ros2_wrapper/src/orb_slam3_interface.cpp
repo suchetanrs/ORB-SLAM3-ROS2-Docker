@@ -32,6 +32,7 @@ namespace ORB_SLAM3_Wrapper
         mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_);
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
         std::cout << "Interface constructor complete" << endl;
+        std::cout << "Robot X: " << robotX_ << " Robot Y: " << robotY_ << std::endl;
     }
 
     ORBSLAM3Interface::~ORBSLAM3Interface()
@@ -156,6 +157,110 @@ namespace ORB_SLAM3_Wrapper
             }
         }
         mapPointCloud = typeConversions_->MapPointsToPCL(trackedMapPoints);
+    }
+
+    void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
+    {
+        auto camPose = typeConversions_->se3ROSToORB(typeConversions_->poseToAffine(cameraPose));
+        mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle);
+    }
+
+    void ORBSLAM3Interface::mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
+    {
+        auto Tcw = cameraPose;
+        auto Twc = Tcw.inverse();
+
+        auto mRwc = Twc.rotationMatrix();
+        auto mOw = Twc.translation();
+
+        auto mRcw = Tcw.rotationMatrix();
+        auto mtcw = Tcw.translation();
+        if(orbAtlas_->GetAllCameras().size() > 1)
+        {
+            throw std::runtime_error("The number of cameras is greater than 1. This will be catered later. You cannot check if a map point is visible within a keyframe in this version. Check if there have been version updates.");
+        }
+        auto pCameraModel = orbAtlas_->GetAllCameras()[0];
+
+        float mnMinX = 0.0f;
+        float mnMaxX = 640.0f;
+        float mnMinY = 0.0f;
+        float mnMaxY = 480.0f;
+        int numVisibleMapPoints = 0;
+        int numKFsChecked = 0;
+
+        auto mapKFs_ = orbAtlas_->GetCurrentMap()->GetAllKeyFrames();
+
+        std::unordered_set<ORB_SLAM3::MapPoint*> processedMapPoints;
+        for(auto pKFMp : mapKFs_)
+        {
+            auto tempKFPose = typeConversions_->se3ORBToROS(pKFMp->GetPoseInverse());
+            // std::cout << "Distance between mOw and pKFMp->GetPoseInverse().translation(): " 
+            //           << (mOw - pKFMp->GetPoseInverse().translation()).norm() << std::endl;
+            float distBwKfs = (mOw - pKFMp->GetPoseInverse().translation()).norm();
+            if(distBwKfs > maxDistance)
+                continue;
+            auto eulerAngles = (mRwc * pKFMp->GetPoseInverse().rotationMatrix().transpose()).eulerAngles(2, 1, 0);
+            // std::cout << "Euler angles: " << eulerAngles << std::endl;
+            if(eulerAngles(0) > maxAngle || eulerAngles(1) > maxAngle || eulerAngles(2) > maxAngle)
+                continue;
+            numKFsChecked++;
+            if(numVisibleMapPoints > maxLandmarks)
+                break;
+            auto currentKFMp = pKFMp->GetMapPoints();
+            for (auto pMP : currentKFMp)
+            {
+                if (processedMapPoints.find(pMP) != processedMapPoints.end())
+                    continue;
+                processedMapPoints.insert(pMP);
+                // 3D in absolute coordinates
+                Eigen::Matrix<float,3,1> P = pMP->GetWorldPos();
+
+                // 3D in camera coordinates
+                const Eigen::Matrix<float,3,1> Pc = mRcw * P + mtcw;
+
+                // Check positive depth
+                const float &PcZ = Pc(2);
+                const float invz = 1.0f/PcZ;
+                if(PcZ<0.0f)
+                    continue;
+
+                const Eigen::Vector2f uv = pCameraModel->project(Pc);
+
+                if(uv(0)<mnMinX || uv(0)>mnMaxX)
+                    continue;
+                if(uv(1)<mnMinY || uv(1)>mnMaxY)
+                    continue;
+
+                // Check distance is in the scale invariance region of the MapPoint
+                const float maxDistance = pMP->GetMaxDistanceInvariance();
+                const float minDistance = pMP->GetMinDistanceInvariance();
+                const Eigen::Vector3f PO = P - mOw;
+                const float dist = PO.norm();
+
+                if(dist<minDistance || dist>maxDistance)
+                    continue;
+
+                // Check viewing angle
+                Eigen::Vector3f Pn = pMP->GetNormal();
+
+                const float viewCos = PO.dot(Pn)/dist;
+
+                float viewingCosLimit = 0.5;
+                if(viewCos<viewingCosLimit)
+                    continue;
+                points.push_back(pMP);
+                numVisibleMapPoints++;
+            }
+        }
+        /**
+        Added the stuff below just to see prints if the num kfs become 0. */
+        std::cout << "******" << std::endl;
+        std::cout << "Number of visible map points: " << numVisibleMapPoints << std::endl;
+        std::cout << "Number of keyframes checked: " << numKFsChecked << std::endl;
+        
+        // Print the input camera pose translation and rotation
+        std::cout << "Input camera pose translation: " << mOw.transpose() << std::endl;
+        std::cout << "Input camera pose rotation:\n" << mRwc << std::endl;
     }
 
     void ORBSLAM3Interface::mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints, std::vector<int> kFIDforMapPoints)
@@ -425,6 +530,9 @@ namespace ORB_SLAM3_Wrapper
         {
             calculateReferencePoses();
             correctTrackedPose(Tcw);
+            std::vector<ORB_SLAM3::MapPoint *> tempMapPoints;
+            auto tempTwc = Tcw.inverse();
+            // mapPointsVisibleFromPose(tempTwc, tempMapPoints, 1000, 5.0, 2.0);
             hasTracked_ = true;
             return true;
         }
