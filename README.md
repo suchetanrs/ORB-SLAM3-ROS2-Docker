@@ -2,6 +2,9 @@
 
 This repository contains a dockerized comprehensive wrapper for ORB-SLAM3 on ROS 2 Humble for Ubuntu 22.04.
 
+## Build status
+![Humble Docker Build](https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker/actions/workflows/build-humble-image.yml/badge.svg)
+
 # Demo GIF
 
 ![ORBSLAM3-GIF](orbslam3.gif)
