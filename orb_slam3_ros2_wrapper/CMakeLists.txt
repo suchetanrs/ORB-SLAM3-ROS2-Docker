@@ -82,7 +82,11 @@ if(BUILD_TESTING)
   link_directories(${GTEST_LIBRARY_DIRS})
   
   ament_add_gtest(typeconversionTests tests/typeConversionsTests.cpp src/type_conversion.cpp)
-  ament_target_dependencies(typeconversionTests rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
+  ament_target_dependencies(typeconversionTests rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs grid_map_ros nav_msgs tf2_geometry_msgs)
+  target_link_libraries(typeconversionTests
+  type_conversion
+  traversabilitySystem
+  )
 endif()
 
 ament_package()

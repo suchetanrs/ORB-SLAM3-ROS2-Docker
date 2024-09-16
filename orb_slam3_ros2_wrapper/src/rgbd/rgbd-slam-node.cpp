@@ -34,7 +34,7 @@ namespace ORB_SLAM3_Wrapper
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
 #ifdef WITH_TRAVERSABILITY_MAP
         lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
-        gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("traversability_grid", 10);
+        gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_traversability_map", 10);
         traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
         traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&RgbdSlamNode::publishTraversabilityData, this));
 #endif
