@@ -1,5 +1,18 @@
 #request
 geometry_msgs/Pose pose
+
+# this is the max angle between the given pose 
+# and the previous keyframe pose from which 
+# the landmark was observed. (in rad)
+# max(Δyaw, Δroll, Δpitch) is considered as the angle of interest.
+# setting it to > pi will disregard the angle of observation.
+float32 max_angle_pose_observation 
+
+# this is the max distance between the given pose
+# and the previous keyframe pose from which
+# the landmark was observed. (in m)
+# if you wish to get landmarks until atleast x m from the pose, this value must be x.
+float32 max_dist_pose_observation 6.0
 ---
 #response
 MapPoint[] map_points

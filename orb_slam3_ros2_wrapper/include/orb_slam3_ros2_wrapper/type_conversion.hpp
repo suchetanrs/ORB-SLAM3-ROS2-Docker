@@ -88,6 +88,11 @@ namespace ORB_SLAM3_Wrapper
 
         Eigen::Affine3f poseToAffine(const geometry_msgs::msg::Pose &pose);
 
+        /** 
+        * @brief Given a rotation matrix in Twc ORB Coordinates, outputs the euler angles [Roll, Pitch, Yaw] in ROS Coordinates. Range of euler angles [0, 2*PI)
+         */
+        Eigen::Vector3f rotationORBToEulerROS(const Eigen::Matrix3f& rotation);
+        
         /**
          * @brief Converts a Sophus SE3f transform to a geometry_msgs Pose message.
          * @param s The Sophus SE3f transform.
