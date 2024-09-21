@@ -170,6 +170,14 @@ namespace ORB_SLAM3_Wrapper
         auto Tcw = cameraPose;
         auto Twc = Tcw.inverse();
 
+        std::cout << "Input camera pose: " << std::endl; 
+        auto eulerAngles = typeConversions_->rotationORBToEulerROS(Twc.rotationMatrix());
+        std::cout << "Translation:" << Twc.translation().transpose() << std::endl;
+        std::cout << "Roll ROS coord: " << eulerAngles(0) << std::endl;
+        std::cout << "Pitch ROS coord: " << eulerAngles(1) << std::endl;
+        std::cout << "Yaw ROS coord: " << eulerAngles(2) << std::endl;
+        std::cout << "===" << std::endl;
+
         auto mRwc = Twc.rotationMatrix();
         auto mOw = Twc.translation();
 
@@ -193,16 +201,42 @@ namespace ORB_SLAM3_Wrapper
         std::unordered_set<ORB_SLAM3::MapPoint*> processedMapPoints;
         for(auto pKFMp : mapKFs_)
         {
-            auto tempKFPose = typeConversions_->se3ORBToROS(pKFMp->GetPoseInverse());
-            // std::cout << "Distance between mOw and pKFMp->GetPoseInverse().translation(): " 
-            //           << (mOw - pKFMp->GetPoseInverse().translation()).norm() << std::endl;
-            float distBwKfs = (mOw - pKFMp->GetPoseInverse().translation()).norm();
+            auto rel_T_CamToKF = Tcw * pKFMp->GetPoseInverse();
+            auto relEulerAngles = typeConversions_->rotationORBToEulerROS(rel_T_CamToKF.rotationMatrix());
+            float distBwKfs = rel_T_CamToKF.translation().norm();
+
+            // checks ......
+            // continue if the distance is too large
+            if(distBwKfs >= maxDistance * 2.0)
+            {
+                continue;
+            }
             if(distBwKfs > maxDistance)
-                continue;
-            auto eulerAngles = (mRwc * pKFMp->GetPoseInverse().rotationMatrix().transpose()).eulerAngles(2, 1, 0);
-            // std::cout << "Euler angles: " << eulerAngles << std::endl;
-            if(eulerAngles(0) > maxAngle || eulerAngles(1) > maxAngle || eulerAngles(2) > maxAngle)
-                continue;
+            {
+                // if distance is large but in range, check if behind. If behind, continue.
+                if(rel_T_CamToKF.translation()[2] < 0.0)
+                {
+                    continue;
+                }
+                else if(rel_T_CamToKF.translation()[2] > 0.0)
+                {
+                    if((relEulerAngles(2) >= 0 && relEulerAngles(2) < M_PI / 2.0) || (relEulerAngles(2) > 3.0 * M_PI / 2.0 && relEulerAngles(2) < 2 * M_PI))
+                    {
+                        continue;
+                    }
+                }
+            }
+            if(distBwKfs <= maxDistance)
+            {
+                // if distance is small but in range, check if behind. If behind, check angles.
+                if(rel_T_CamToKF.translation()[2] < 0.0)
+                {
+                    if((relEulerAngles(2) >= 2.0944 && relEulerAngles(2) < 4.18879))
+                    {
+                        continue;
+                    }
+                }
+            }
             numKFsChecked++;
             if(numVisibleMapPoints > maxLandmarks)
                 break;
@@ -220,7 +254,6 @@ namespace ORB_SLAM3_Wrapper
 
                 // Check positive depth
                 const float &PcZ = Pc(2);
-                const float invz = 1.0f/PcZ;
                 if(PcZ<0.0f)
                     continue;
 
@@ -239,15 +272,6 @@ namespace ORB_SLAM3_Wrapper
 
                 if(dist<minDistance || dist>maxDistance)
                     continue;
-
-                // Check viewing angle
-                Eigen::Vector3f Pn = pMP->GetNormal();
-
-                const float viewCos = PO.dot(Pn)/dist;
-
-                float viewingCosLimit = 0.5;
-                if(viewCos<viewingCosLimit)
-                    continue;
                 points.push_back(pMP);
                 numVisibleMapPoints++;
             }
@@ -259,8 +283,8 @@ namespace ORB_SLAM3_Wrapper
         std::cout << "Number of keyframes checked: " << numKFsChecked << std::endl;
         
         // Print the input camera pose translation and rotation
-        std::cout << "Input camera pose translation: " << mOw.transpose() << std::endl;
-        std::cout << "Input camera pose rotation:\n" << mRwc << std::endl;
+        // std::cout << "Input camera pose translation: " << mOw.transpose() << std::endl;
+        // std::cout << "Input camera pose rotation:\n" << mRwc << std::endl;
     }
 
     void ORBSLAM3Interface::mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints, std::vector<int> kFIDforMapPoints)

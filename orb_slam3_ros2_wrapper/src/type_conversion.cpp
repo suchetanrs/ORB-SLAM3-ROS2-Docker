@@ -140,6 +140,18 @@ namespace ORB_SLAM3_Wrapper
         return translation * quaternion;
     }
 
+    Eigen::Vector3f WrapperTypeConversions::rotationORBToEulerROS(const Eigen::Matrix3f& rotation)
+    {
+        auto eulerAngles = rotation.eulerAngles(2, 0, 1);
+        eulerAngles[1] = -eulerAngles[1];
+        eulerAngles[2] = -eulerAngles[2];
+
+        eulerAngles[0] = eulerAngles[0] < 0 ? (2 * M_PI) + eulerAngles[0] : eulerAngles[0]; 
+        eulerAngles[1] = eulerAngles[1] < 0 ? (2 * M_PI) + eulerAngles[1] : eulerAngles[1]; 
+        eulerAngles[2] = eulerAngles[2] < 0 ? (2 * M_PI) + eulerAngles[2] : eulerAngles[2]; 
+        return eulerAngles;
+    }
+
     geometry_msgs::msg::Pose WrapperTypeConversions::se3ToPoseMsg(const Sophus::SE3f &s)
     {
         Eigen::Affine3d poseTransform = se3ORBToROS(s).cast<double>();
