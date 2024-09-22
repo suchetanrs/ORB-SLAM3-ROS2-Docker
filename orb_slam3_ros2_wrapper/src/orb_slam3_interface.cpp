@@ -445,22 +445,12 @@ namespace ORB_SLAM3_Wrapper
         auto localMap = mSLAM_->getTraversability()->getLocalMap();
         if (localMap != nullptr)
         {
-            auto keyFramesMap_ = mSLAM_->getTraversability()->getLocalMap()->getKeyFramesMap();
-            for (auto &pair : keyFramesMap_)
+            auto trav_done = localMap->getGridMap();
+            auto gridmap_done = localMap->getOccupancyMap();
+            if (trav_done)
             {
-                auto keyFramePtr = pair.second;
-
-                // Check if the pointer is valid before calling recomputeCache
-                if (keyFramePtr)
-                {
-                    auto trav_done = mSLAM_->getTraversability()->getLocalMap()->getGridMap();
-                    auto gridmap_done = mSLAM_->getTraversability()->getLocalMap()->getOccupancyMap();
-                    if (trav_done)
-                    {
-                        traversabilitymap = trav_done;
-                        gridmap = gridmap_done;
-                    }
-                }
+                traversabilitymap = trav_done;
+                gridmap = gridmap_done;
             }
             if (traversabilitymap && gridmap)
             {

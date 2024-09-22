@@ -33,13 +33,16 @@ namespace ORB_SLAM3_Wrapper
         mapDataPub_ = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
 #ifdef WITH_TRAVERSABILITY_MAP
-        lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1));
+        lidarCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        rclcpp::SubscriptionOptions lidarSubOptions;
+        lidarSubOptions.callback_group = lidarCallbackGroup_;
+        lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1), lidarSubOptions);
+        
         gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_traversability_map", 10);
         traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
-        traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&RgbdSlamNode::publishTraversabilityData, this));
+        publishOccupancyCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&RgbdSlamNode::publishTraversabilityData, this), publishOccupancyCallbackGroup_);
 #endif
-        // Timers
-        mapDataTimer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&RgbdSlamNode::publishMapData, this));
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
 // Services 

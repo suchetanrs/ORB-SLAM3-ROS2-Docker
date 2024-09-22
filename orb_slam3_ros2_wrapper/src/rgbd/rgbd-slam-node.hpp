@@ -67,9 +67,9 @@ namespace ORB_SLAM3_Wrapper
          * @param last_init_kf_id ID of the last initialized keyframe.
          */
         void publishMapData();
-
+#ifdef WITH_TRAVERSABILITY_MAP
         void publishTraversabilityData();
-
+#endif
         void publishMapPointCloud();
 
         /**
@@ -99,6 +99,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr mapPointsPub_;
 #ifdef WITH_TRAVERSABILITY_MAP
         rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidarSub_;
+        rclcpp::CallbackGroup::SharedPtr lidarCallbackGroup_;
         rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr gridmapPub_;
         rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr traversabilityPub_;
 #endif
@@ -114,6 +115,7 @@ namespace ORB_SLAM3_Wrapper
         // ROS Timers
         rclcpp::TimerBase::SharedPtr mapDataTimer_;
 #ifdef WITH_TRAVERSABILITY_MAP
+        rclcpp::CallbackGroup::SharedPtr publishOccupancyCallbackGroup_;
         rclcpp::TimerBase::SharedPtr traversabilityTimer_;
 #endif
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;
