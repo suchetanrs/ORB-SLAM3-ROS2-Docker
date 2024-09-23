@@ -95,7 +95,7 @@ namespace ORB_SLAM3_Wrapper
         if (rosViz_)
         {
             mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
-            mapPointsTimer_ = this->create_wall_timer(std::chrono::milliseconds(landmark_publish_frequency_), std::bind(&RgbdSlamNode::publishMapPointCloud, this), mapDataCallbackGroup_);
+            mapPointsTimer_ = this->create_wall_timer(std::chrono::milliseconds(landmark_publish_frequency_), std::bind(&RgbdSlamNode::publishMapPointCloud, this), mapPointsCallbackGroup_);
         }
 
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
