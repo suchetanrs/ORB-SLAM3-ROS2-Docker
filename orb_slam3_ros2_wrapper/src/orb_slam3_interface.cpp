@@ -270,8 +270,8 @@ namespace ORB_SLAM3_Wrapper
                 const Eigen::Vector3f PO = P - mOw;
                 const float dist = PO.norm();
 
-                if(dist<minDistance || dist>maxDistance)
-                    continue;
+                // if(dist<minDistance || dist>maxDistance)
+                //     continue;
                 points.push_back(pMP);
                 numVisibleMapPoints++;
             }

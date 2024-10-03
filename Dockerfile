@@ -63,3 +63,4 @@ RUN . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./
 COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper
 COPY slam_msgs /root/colcon_ws/src/slam_msgs
 RUN . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install
+RUN apt-get install -y gdb
