@@ -121,6 +121,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;
         rclcpp::TimerBase::SharedPtr mapPointsTimer_;
         rclcpp::CallbackGroup::SharedPtr mapPointsCallbackGroup_;
+        rclcpp::CallbackGroup::SharedPtr pointsInViewCallbackGroup_;
         // ROS Params
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;

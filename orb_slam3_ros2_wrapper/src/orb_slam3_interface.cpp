@@ -161,6 +161,11 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
     {
+        mSLAM_->getTracking()->needExternalKF();
+        while(!mSLAM_->getTracking()->externalKFAdded())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        }
         auto camPose = typeConversions_->se3ROSToORB(typeConversions_->poseToAffine(cameraPose));
         mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle);
     }

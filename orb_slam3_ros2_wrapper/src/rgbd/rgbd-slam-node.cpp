@@ -48,8 +48,9 @@ namespace ORB_SLAM3_Wrapper
 // Services 
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        pointsInViewCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         getMapPointsService_ = this->create_service<slam_msgs::srv::GetLandmarksInView>("orb_slam3_get_landmarks_in_view", std::bind(&RgbdSlamNode::getMapPointsInViewServer, this,
-                                                                                                              std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+                                                                                                              std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, pointsInViewCallbackGroup_);
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         tfBuffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
