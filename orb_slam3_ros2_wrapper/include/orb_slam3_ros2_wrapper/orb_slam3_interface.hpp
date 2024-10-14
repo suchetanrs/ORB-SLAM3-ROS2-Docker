@@ -85,9 +85,9 @@ namespace ORB_SLAM3_Wrapper
 
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
-        void mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
+        void mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle, bool exhaustive_search);
 
-        void mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
+        void mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle, bool exhaustive_search);
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
 #ifdef WITH_TRAVERSABILITY_MAP
