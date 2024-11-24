@@ -1,14 +1,25 @@
 cmake_minimum_required(VERSION 3.5)
 project(orb_slam3_ros2_wrapper)
 
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Release)
+ENDIF()
+
+MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
+
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall   -O3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
+# set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+
 # You should set the PYTHONPATH to your own python site-packages path
 set(ENV{PYTHONPATH} "/opt/ros/humble/lib/python3.10/site-packages/")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
-# Default to C++14
+# Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
