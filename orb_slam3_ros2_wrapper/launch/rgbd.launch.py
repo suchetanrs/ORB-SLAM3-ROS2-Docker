@@ -69,6 +69,7 @@ def generate_launch_description():
             executable='rgbd',
             output='screen',
             # prefix=['gdb -ex run --args'],
+            # prefix=["gdbserver localhost:3000"],
             namespace=robot_namespace.perform(context),
             arguments=[vocabulary_file_path, config_file_path],
             parameters=[configured_params])
