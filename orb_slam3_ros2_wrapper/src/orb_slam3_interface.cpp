@@ -432,7 +432,7 @@ namespace ORB_SLAM3_Wrapper
     }
 
 #ifdef WITH_TRAVERSABILITY_MAP
-    void ORBSLAM3Interface::handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2 &pcl2)
+    void ORBSLAM3Interface::handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2::SharedPtr pcl2)
     {
         (void)stamp;
         mSLAM_->getTraversability()->pushToBuffer(pcl2);

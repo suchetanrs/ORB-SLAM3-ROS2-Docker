@@ -157,10 +157,10 @@ namespace ORB_SLAM3_Wrapper
     }
 
 #ifdef WITH_TRAVERSABILITY_MAP
-    void RgbdSlamNode::LidarCallback(sensor_msgs::msg::PointCloud2 msgLidar)
+    void RgbdSlamNode::LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar)
     {
         // RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
-        interface_->handleLidarPCL(msgLidar.header.stamp, msgLidar);
+        interface_->handleLidarPCL(msgLidar->header.stamp, msgLidar);
     }
 
     void RgbdSlamNode::publishTraversabilityData()
