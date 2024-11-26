@@ -58,7 +58,7 @@ namespace ORB_SLAM3_Wrapper
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
                           const sensor_msgs::msg::Image::SharedPtr msgD);
 #ifdef WITH_TRAVERSABILITY_MAP
-        void LidarCallback(sensor_msgs::msg::PointCloud2 msgLidar);
+        void LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar);
 #endif
 
         /**

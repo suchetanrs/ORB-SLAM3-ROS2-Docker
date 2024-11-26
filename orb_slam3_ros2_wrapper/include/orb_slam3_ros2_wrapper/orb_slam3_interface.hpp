@@ -91,7 +91,7 @@ namespace ORB_SLAM3_Wrapper
 
         void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
 #ifdef WITH_TRAVERSABILITY_MAP
-        void handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2 &pcl2);
+        void handleLidarPCL(builtin_interfaces::msg::Time stamp, sensor_msgs::msg::PointCloud2::SharedPtr pcl2);
 
         std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> getTraversabilityData();
 #endif

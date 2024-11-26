@@ -54,6 +54,7 @@ if(traversability_mapping_FOUND)
     ${traversability_mapping_INCLUDE_DIRS}
     )
     ADD_DEFINITIONS("-DWITH_TRAVERSABILITY_MAP")
+    ADD_DEFINITIONS("-DWITH_ROS2_SENSOR_MSGS")
 endif(traversability_mapping_FOUND)
 
 link_directories(
