@@ -1,5 +1,6 @@
 # Image taken from https://github.com/turlucode/ros-docker-gui
 FROM osrf/ros:humble-desktop-full-jammy
+ARG USE_CI
 
 RUN apt-get update
 
@@ -56,13 +57,19 @@ RUN cd /root/ && sudo chmod +x * && ./vscode_install.sh && rm -rf vscode_install
 RUN apt-get update && apt-get update --fix-missing
 RUN apt-get update && apt-get install ros-humble-pcl-ros tmux -y
 RUN apt-get install ros-humble-nav2-common x11-apps nano ros-humble-grid-map -y
-COPY traversability_mapping /home/traversability/traversability_mapping
-RUN . /opt/ros/humble/setup.sh && cd /home/traversability/traversability_mapping/ && ./build.sh
-COPY ORB_SLAM3 /home/orb/ORB_SLAM3
-RUN . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh
-COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper
-COPY slam_msgs /root/colcon_ws/src/slam_msgs
-RUN . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install
-COPY ./traversability_mapping/traversability_ros_interface /root/trav_ws/src/traversability_ros_interface
-RUN . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install
-RUN apt-get install -y gdb
+RUN apt-get install -y gdb gdbserver
+
+RUN if [ "$USE_CI" = "true" ]; then \
+    COPY traversability_mapping /home/traversability/traversability_mapping && \
+    COPY ORB_SLAM3 /home/orb/ORB_SLAM3 && \
+    COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper && \
+    COPY slam_msgs /root/colcon_ws/src/slam_msgs && \
+    COPY ./traversability_mapping/traversability_ros_interface /root/trav_ws/src/traversability_ros_interface; \
+    fi
+
+RUN if [ "$USE_CI" = "true" ]; then \
+    . /opt/ros/humble/setup.sh && cd /home/traversability/traversability_mapping/ && ./build.sh && \
+    . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh && \
+    . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install && \
+    . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install; \
+    fi
