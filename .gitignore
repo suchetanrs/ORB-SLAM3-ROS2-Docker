@@ -33,3 +33,4 @@ container_root/.debug
 container_root/profilers/**
 **perf**
 **.osa**
+container_root/.bash_history
