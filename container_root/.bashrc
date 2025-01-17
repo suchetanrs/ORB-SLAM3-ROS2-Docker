@@ -112,3 +112,4 @@ export ROS_LOCALHOST_ONLY=1
 cd
 sros
 sws
+export ROS_DOMAIN_ID=0

@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from slam_msgs/srv/GetMap.srv
+// generated code does not contain a copyright notice
+
+#include "slam_msgs/msg/MapData.idl"
+
+module slam_msgs {
+  module srv {
+    @verbatim (language="comment", text=
+      "request")
+    struct GetMap_Request {
+      boolean tracked_points;
+
+      sequence<int32> kf_id_for_landmarks;
+    };
+    @verbatim (language="comment", text=
+      "response")
+    struct GetMap_Response {
+      slam_msgs::msg::MapData data;
+    };
+  };
+};

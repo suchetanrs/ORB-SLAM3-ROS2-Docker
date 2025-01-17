@@ -19,10 +19,14 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("depth_image_topic_name", rclcpp::ParameterValue("depth/image_raw"));
         this->declare_parameter("imu_topic_name", rclcpp::ParameterValue("imu"));
         this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
+        
+       
+
 
         // ROS Subscribers
         rgbSub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(this, this->get_parameter("rgb_image_topic_name").as_string());
         depthSub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(this, this->get_parameter("depth_image_topic_name").as_string());
+        
         syncApproximate_ = std::make_shared<message_filters::Synchronizer<approximate_sync_policy>>(approximate_sync_policy(10), *rgbSub_, *depthSub_);
         syncApproximate_->registerCallback(&RgbdSlamNode::RGBDCallback, this);
 
@@ -31,8 +35,13 @@ namespace ORB_SLAM3_Wrapper
         // ROS Publishers
         mapDataPub_ = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
+        //mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("rgbd_camera/points", 10);
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
+        
+        cameraPosePub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("camera_pose", 10);
+        cameraTrajectoryPub_ = this->create_publisher<nav_msgs::msg::Path>("camera_trajectory", 10);
+
 // Services 
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -136,6 +145,20 @@ namespace ORB_SLAM3_Wrapper
                     interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
                 tfBroadcaster_->sendTransform(tfMapOdom_);
             }
+            
+            // Publish the current pose
+            geometry_msgs::msg::PoseStamped currentPose;
+            currentPose.header.stamp = msgRGB->header.stamp; // Timestamp from the RGB image
+            currentPose.header.frame_id = global_frame_; // Map frame
+            currentPose.pose = typeConversion_.se3ToPoseMsg(Tcw); // Convert Sophus::SE3f to geometry_msgs::Pose
+            cameraPosePub_->publish(currentPose);
+
+            // Update and publish the trajectory
+            cameraTrajectory_.header.frame_id = global_frame_;
+            cameraTrajectory_.header.stamp = msgRGB->header.stamp;
+            cameraTrajectory_.poses.push_back(currentPose);
+            cameraTrajectoryPub_->publish(cameraTrajectory_);
+            
             ++frequency_tracker_count_;
             // publishMapPointCloud();
             // std::thread(&RgbdSlamNode::publishMapPointCloud, this).detach();
@@ -159,6 +182,9 @@ namespace ORB_SLAM3_Wrapper
 
             if (mapPCL.data.size() == 0)
                 return;
+                
+            // Add timestamp to the header
+            mapPCL.header.stamp = this->now(); // Current node time
 
             auto t2 = std::chrono::high_resolution_clock::now();
             auto time_get_map_points = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1).count();

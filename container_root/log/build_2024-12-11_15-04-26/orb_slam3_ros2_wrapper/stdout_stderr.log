@@ -1,0 +1,27 @@
+[0mBuild type: Release[0m
+-- Found ament_cmake_auto: 1.3.10 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclcpp: 16.0.10 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[31mCMake Error at /opt/ros/humble/share/rmw_implementation_cmake/cmake/get_default_rmw_implementation.cmake:60 (message):
+  Could not find ROS middleware implementation 'rmw_cyclonedds_cpp'.  Choose
+  one of the following: rmw_fastrtps_cpp
+Call Stack (most recent call first):
+  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementation-extras.cmake:19 (get_default_rmw_implementation)
+  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementationConfig.cmake:41 (include)
+  /opt/ros/humble/share/rcl/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/rcl/cmake/rclConfig.cmake:41 (include)
+  /opt/ros/humble/share/libstatistics_collector/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/libstatistics_collector/cmake/libstatistics_collectorConfig.cmake:41 (include)
+  /opt/ros/humble/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+  CMakeLists.txt:31 (find_package)
+
+[0m
+-- Configuring incomplete, errors occurred!
+See also "/root/build/orb_slam3_ros2_wrapper/CMakeFiles/CMakeOutput.log".

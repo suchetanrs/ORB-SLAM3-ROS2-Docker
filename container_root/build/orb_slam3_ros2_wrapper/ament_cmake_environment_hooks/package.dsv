@@ -1,0 +1,4 @@
+source;share/orb_slam3_ros2_wrapper/local_setup.bash
+source;share/orb_slam3_ros2_wrapper/local_setup.dsv
+source;share/orb_slam3_ros2_wrapper/local_setup.sh
+source;share/orb_slam3_ros2_wrapper/local_setup.zsh

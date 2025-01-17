@@ -1,0 +1,23 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from slam_msgs/msg/MapData.msg
+// generated code does not contain a copyright notice
+
+#include "slam_msgs/msg/KeyFrame.idl"
+#include "slam_msgs/msg/MapGraph.idl"
+#include "std_msgs/msg/Header.idl"
+
+module slam_msgs {
+  module msg {
+    struct MapData {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        "optimized graph")
+      slam_msgs::msg::MapGraph graph;
+
+      @verbatim (language="comment", text=
+        "graph data")
+      sequence<slam_msgs::msg::KeyFrame> nodes;
+    };
+  };
+};

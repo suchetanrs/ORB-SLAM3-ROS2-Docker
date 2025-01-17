@@ -1,0 +1,2 @@
+Invoking command in '/root/build/orb_slam3_ros2_wrapper': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/orb_slam3_ros2_wrapper -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/install/orb_slam3_ros2_wrapper
+Invoked command in '/root/build/orb_slam3_ros2_wrapper' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/orb_slam3_ros2_wrapper -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/root/install/orb_slam3_ros2_wrapper

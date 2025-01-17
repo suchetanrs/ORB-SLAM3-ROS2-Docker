@@ -1,0 +1,11 @@
+{
+  "package_name": "slam_msgs",
+  "non_idl_tuples": [
+    "/root/colcon_ws/src/slam_msgs:msg/MapGraph.msg",
+    "/root/colcon_ws/src/slam_msgs:msg/MapData.msg",
+    "/root/colcon_ws/src/slam_msgs:msg/KeyFrame.msg",
+    "/root/colcon_ws/src/slam_msgs:msg/MapPoint.msg",
+    "/root/colcon_ws/src/slam_msgs:srv/GetMap.srv",
+    "/root/colcon_ws/src/slam_msgs:srv/GetLandmarksInView.srv"
+  ]
+}

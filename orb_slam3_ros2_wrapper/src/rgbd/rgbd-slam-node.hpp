@@ -35,6 +35,8 @@
 
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
+#include <nav_msgs/msg/path.hpp>
+
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -91,6 +93,13 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr mapPointsPub_;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr visibleLandmarksPub_;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr visibleLandmarksPose_;
+        
+        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr cameraPosePub_;
+        rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr cameraTrajectoryPub_;
+ 
+        // Trajectory data
+        nav_msgs::msg::Path cameraTrajectory_;
+        
         // TF
         std::shared_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
         std::shared_ptr<tf2_ros::TransformListener> tfListener_;

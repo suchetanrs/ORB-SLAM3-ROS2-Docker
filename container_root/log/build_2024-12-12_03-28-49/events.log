@@ -1,0 +1,39 @@
+[0.000000] (-) TimerEvent: {}
+[0.000116] (orb_slam3_ros2_wrapper) JobQueued: {'identifier': 'orb_slam3_ros2_wrapper', 'dependencies': OrderedDict()}
+[0.000572] (orb_slam3_ros2_wrapper) JobStarted: {'identifier': 'orb_slam3_ros2_wrapper'}
+[0.008587] (orb_slam3_ros2_wrapper) JobProgress: {'identifier': 'orb_slam3_ros2_wrapper', 'progress': 'cmake'}
+[0.009144] (orb_slam3_ros2_wrapper) JobProgress: {'identifier': 'orb_slam3_ros2_wrapper', 'progress': 'build'}
+[0.009614] (orb_slam3_ros2_wrapper) Command: {'cmd': ['/usr/bin/cmake', '--build', '/root/build/orb_slam3_ros2_wrapper', '--', '-j18', '-l18'], 'cwd': '/root/build/orb_slam3_ros2_wrapper', 'env': OrderedDict([('HOSTNAME', 'grh'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/root/colcon_ws/install/slam_msgs/lib:/root/install/slam_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/root'), ('OLDPWD', '/'), ('ROS_PYTHON_VERSION', '3'), ('COLCON_PREFIX_PATH', '/root/colcon_ws/install:/root/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('SCOUT_NAMESPACE', 'scout_2'), ('TERM', 'xterm'), ('ROS_LOCALHOST_ONLY', '1'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('XDG_RUNTIME_DIR', '/tmp/runtime-root'), ('DISPLAY', ':1'), ('LANG', 'C.UTF-8'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('ROS_DOMAIN_ID', '0'), ('AMENT_PREFIX_PATH', '/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/root/install/orb_slam3_ros2_wrapper:/root/install/slam_msgs:/opt/ros/humble'), ('PWD', '/root/build/orb_slam3_ros2_wrapper'), ('LC_ALL', 'C.UTF-8'), ('RCUTILS_COLORIZED_OUTPUT', '1'), ('PYTHONPATH', '/root/colcon_ws/install/slam_msgs/local/lib/python3.10/dist-packages:/root/install/slam_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/root/install/orb_slam3_ros2_wrapper:/root/install/slam_msgs:/opt/ros/humble')]), 'shell': False}
+[0.029822] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'\x1b[0mBuild type: Release\x1b[0m\n'}
+[0.030044] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found ament_cmake_auto: 1.3.10 (/opt/ros/humble/share/ament_cmake_auto/cmake)\n'}
+[0.099901] (-) TimerEvent: {}
+[0.111685] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[0.117034] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found rclcpp: 16.0.10 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.135402] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.136723] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.140399] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.146101] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.153430] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.173064] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.173975] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'\x1b[31mCMake Error at /opt/ros/humble/share/rmw_implementation_cmake/cmake/get_default_rmw_implementation.cmake:60 (message):\n'}
+[0.174043] (orb_slam3_ros2_wrapper) StderrLine: {'line': b"  Could not find ROS middleware implementation 'rmw_cyclonedds_cpp'.  Choose\n"}
+[0.174090] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  one of the following: rmw_fastrtps_cpp\n'}
+[0.174133] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[0.174176] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementation-extras.cmake:19 (get_default_rmw_implementation)\n'}
+[0.174222] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementationConfig.cmake:41 (include)\n'}
+[0.174264] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rcl/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.174304] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rcl/cmake/rclConfig.cmake:41 (include)\n'}
+[0.174345] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/libstatistics_collector/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.174388] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/libstatistics_collector/cmake/libstatistics_collectorConfig.cmake:41 (include)\n'}
+[0.174428] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)\n'}
+[0.174469] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  /opt/ros/humble/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)\n'}
+[0.174511] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'  CMakeLists.txt:31 (find_package)\n'}
+[0.174552] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'\n'}
+[0.174593] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'\x1b[0m\n'}
+[0.174668] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.174714] (orb_slam3_ros2_wrapper) StdoutLine: {'line': b'See also "/root/build/orb_slam3_ros2_wrapper/CMakeFiles/CMakeOutput.log".\n'}
+[0.177278] (orb_slam3_ros2_wrapper) StderrLine: {'line': b'gmake: *** [Makefile:420: cmake_check_build_system] Error 1\n'}
+[0.179215] (orb_slam3_ros2_wrapper) CommandEnded: {'returncode': 2}
+[0.199991] (-) TimerEvent: {}
+[0.219174] (orb_slam3_ros2_wrapper) JobEnded: {'identifier': 'orb_slam3_ros2_wrapper', 'rc': 2}
+[0.229483] (-) EventReactorShutdown: {}

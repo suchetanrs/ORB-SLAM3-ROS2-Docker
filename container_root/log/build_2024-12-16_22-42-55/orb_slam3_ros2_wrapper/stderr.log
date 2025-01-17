@@ -1,0 +1,17 @@
+[0mBuild type: Release[0m
+[31mCMake Error at /opt/ros/humble/share/rmw_implementation_cmake/cmake/get_default_rmw_implementation.cmake:60 (message):
+  Could not find ROS middleware implementation 'rmw_cyclonedds_cpp'.  Choose
+  one of the following: rmw_fastrtps_cpp
+Call Stack (most recent call first):
+  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementation-extras.cmake:19 (get_default_rmw_implementation)
+  /opt/ros/humble/share/rmw_implementation/cmake/rmw_implementationConfig.cmake:41 (include)
+  /opt/ros/humble/share/rcl/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/rcl/cmake/rclConfig.cmake:41 (include)
+  /opt/ros/humble/share/libstatistics_collector/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/libstatistics_collector/cmake/libstatistics_collectorConfig.cmake:41 (include)
+  /opt/ros/humble/share/rclcpp/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+  /opt/ros/humble/share/rclcpp/cmake/rclcppConfig.cmake:41 (include)
+  CMakeLists.txt:31 (find_package)
+
+[0m
+gmake: *** [Makefile:420: cmake_check_build_system] Error 1

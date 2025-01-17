@@ -1,0 +1,21 @@
+# Add a "/" at the start of the topics to avoid namespacing
+# The frame_ids are automatically namespaced in the rgbd.launch.py file.
+# If the robot namespace is "robot_0" then the frame_ids become "robot_0/base_footprint"
+
+ORB_SLAM3_RGBD_ROS2:
+  ros__parameters:
+    robot_base_frame: base_footprint
+    global_frame: map
+    odom_frame: odom
+    rgb_image_topic_name: rgb_camera
+    depth_image_topic_name: depth_camera
+    imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
+    odom_topic_name: odom #Not used if no_odometry_mode parameter is set to true.
+    robot_x: 0.0
+    robot_y: 0.0
+    visualization: true
+    ros_visualization: false
+    publish_tf: true
+    no_odometry_mode: true
+    map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
+    landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)
