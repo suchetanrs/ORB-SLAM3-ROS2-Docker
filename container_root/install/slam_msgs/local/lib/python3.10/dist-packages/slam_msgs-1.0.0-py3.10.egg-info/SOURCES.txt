@@ -1,0 +1,6 @@
+setup.py
+slam_msgs/__init__.py
+slam_msgs.egg-info/PKG-INFO
+slam_msgs.egg-info/SOURCES.txt
+slam_msgs.egg-info/dependency_links.txt
+slam_msgs.egg-info/top_level.txt

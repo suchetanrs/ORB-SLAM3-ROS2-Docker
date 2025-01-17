@@ -1,6 +1,7 @@
 version: "3"
 services:
   orb_slam3_22_humble:
+    #build: .
     image: orb-slam3-humble:22.04
     volumes:
       #full dev
@@ -22,4 +23,5 @@ services:
     tty: true
     environment:
       - DISPLAY
+      #- RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
     entrypoint: /bin/bash

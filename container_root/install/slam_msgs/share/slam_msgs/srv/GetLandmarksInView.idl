@@ -1,0 +1,37 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from slam_msgs/srv/GetLandmarksInView.srv
+// generated code does not contain a copyright notice
+
+#include "geometry_msgs/msg/Pose.idl"
+#include "slam_msgs/msg/MapPoint.idl"
+
+module slam_msgs {
+  module srv {
+    @verbatim (language="comment", text=
+      "request")
+    struct GetLandmarksInView_Request {
+      geometry_msgs::msg::Pose pose;
+
+      @verbatim (language="comment", text=
+        "this is the max angle between the given pose" "\n"
+        "and the previous keyframe pose from which" "\n"
+        "the landmark was observed. (in rad)" "\n"
+        "max(Δyaw, Δroll, Δpitch) is considered as the angle of interest." "\n"
+        "setting it to > pi will disregard the angle of observation.")
+      float max_angle_pose_observation;
+
+      @verbatim (language="comment", text=
+        "this is the max distance between the given pose" "\n"
+        "and the previous keyframe pose from which" "\n"
+        "the landmark was observed. (in m)" "\n"
+        "if you wish to get landmarks until atleast x m from the pose, this value must be x.")
+      @default (value=6.0)
+      float max_dist_pose_observation;
+    };
+    @verbatim (language="comment", text=
+      "response")
+    struct GetLandmarksInView_Response {
+      sequence<slam_msgs::msg::MapPoint> map_points;
+    };
+  };
+};

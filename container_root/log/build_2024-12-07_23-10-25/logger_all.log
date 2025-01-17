@@ -1,0 +1,251 @@
+[0.060s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.060s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=18, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x719aab2042b0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x719aab1d74c0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x719aab1d74c0>>, mixin_verb=('build',))
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.133s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.133s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/root'
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.133s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.139s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'ignore_ament_install'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['colcon_pkg']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'colcon_pkg'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['colcon_meta']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'colcon_meta'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['ros']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'ros'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['cmake', 'python']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'cmake'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'python'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extensions ['python_setup_py']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws) by extension 'python_setup_py'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/build) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/build) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/build) ignored
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/install) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/install) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/install) ignored
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/log) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/log) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/log) ignored
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'ignore_ament_install'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['colcon_pkg']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'colcon_pkg'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['colcon_meta']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'colcon_meta'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['ros']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'ros'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['cmake', 'python']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'cmake'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'python'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extensions ['python_setup_py']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src) by extension 'python_setup_py'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extensions ['ignore', 'ignore_ament_install']
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extension 'ignore'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extension 'ignore_ament_install'
+[0.140s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extensions ['colcon_pkg']
+[0.141s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extension 'colcon_pkg'
+[0.141s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extensions ['colcon_meta']
+[0.141s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extension 'colcon_meta'
+[0.141s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extensions ['ros']
+[0.141s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/orb_slam3_ros2_wrapper) by extension 'ros'
+[0.142s] DEBUG:colcon.colcon_core.package_identification:Package 'colcon_ws/src/orb_slam3_ros2_wrapper' with type 'ros.ament_cmake' and name 'orb_slam3_ros2_wrapper'
+[0.142s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extensions ['ignore', 'ignore_ament_install']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extension 'ignore'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extension 'ignore_ament_install'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extensions ['colcon_pkg']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extension 'colcon_pkg'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extensions ['colcon_meta']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extension 'colcon_meta'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extensions ['ros']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(colcon_ws/src/slam_msgs) by extension 'ros'
+[0.143s] DEBUG:colcon.colcon_core.package_identification:Package 'colcon_ws/src/slam_msgs' with type 'ros.ament_cmake' and name 'slam_msgs'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['ignore', 'ignore_ament_install']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'ignore'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'ignore_ament_install'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['colcon_pkg']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'colcon_pkg'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['colcon_meta']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'colcon_meta'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['ros']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'ros'
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['cmake', 'python']
+[0.143s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'cmake'
+[0.144s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'python'
+[0.144s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extensions ['python_setup_py']
+[0.144s] Level 1:colcon.colcon_core.package_identification:_identify(shell_scripts) by extension 'python_setup_py'
+[0.144s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.144s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.144s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.144s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.144s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_target' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_clean_cache' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_clean_first' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'cmake_force_configure' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'ament_cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'catkin_cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'slam_msgs' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.155s] DEBUG:colcon.colcon_core.verb:Building package 'slam_msgs' with the following arguments: {'ament_cmake_args': None, 'build_base': '/root/build/slam_msgs', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/root/install/slam_msgs', 'merge_install': False, 'path': '/root/colcon_ws/src/slam_msgs', 'symlink_install': False, 'test_result_base': None}
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_target' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_clean_cache' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_clean_first' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'cmake_force_configure' from command line to 'False'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'ament_cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'catkin_cmake_args' from command line to 'None'
+[0.155s] Level 5:colcon.colcon_core.verb:set package 'orb_slam3_ros2_wrapper' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.155s] DEBUG:colcon.colcon_core.verb:Building package 'orb_slam3_ros2_wrapper' with the following arguments: {'ament_cmake_args': None, 'build_base': '/root/build/orb_slam3_ros2_wrapper', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/root/install/orb_slam3_ros2_wrapper', 'merge_install': False, 'path': '/root/colcon_ws/src/orb_slam3_ros2_wrapper', 'symlink_install': False, 'test_result_base': None}
+[0.155s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.156s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.156s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/root/colcon_ws/src/slam_msgs' with build type 'ament_cmake'
+[0.156s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/root/colcon_ws/src/slam_msgs'
+[0.158s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.158s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.158s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.175s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/slam_msgs -DCMAKE_INSTALL_PREFIX=/root/install/slam_msgs
+[1.689s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/slam_msgs -DCMAKE_INSTALL_PREFIX=/root/install/slam_msgs
+[1.691s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/slam_msgs -- -j18 -l18
+[4.136s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/slam_msgs -- -j18 -l18
+[4.258s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /root/build/slam_msgs
+[4.314s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(slam_msgs)
+[4.315s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /root/build/slam_msgs
+[4.317s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs' for CMake module files
+[4.317s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs' for CMake config files
+[4.318s] Level 1:colcon.colcon_core.shell:create_environment_hook('slam_msgs', 'cmake_prefix_path')
+[4.318s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.ps1'
+[4.318s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.dsv'
+[4.319s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.sh'
+[4.319s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib'
+[4.319s] Level 1:colcon.colcon_core.shell:create_environment_hook('slam_msgs', 'ld_library_path_lib')
+[4.319s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.ps1'
+[4.319s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.dsv'
+[4.319s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.sh'
+[4.320s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/bin'
+[4.320s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib/pkgconfig/slam_msgs.pc'
+[4.321s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib/python3.10/site-packages'
+[4.321s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/bin'
+[4.321s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.ps1'
+[4.321s] INFO:colcon.colcon_core.shell:Creating package descriptor '/root/install/slam_msgs/share/slam_msgs/package.dsv'
+[4.322s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.sh'
+[4.322s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.bash'
+[4.322s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.zsh'
+[4.323s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/root/install/slam_msgs/share/colcon-core/packages/slam_msgs)
+[4.425s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(slam_msgs)
+[4.426s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs' for CMake module files
+[4.426s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs' for CMake config files
+[4.427s] Level 1:colcon.colcon_core.shell:create_environment_hook('slam_msgs', 'cmake_prefix_path')
+[4.427s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.ps1'
+[4.427s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.dsv'
+[4.428s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/cmake_prefix_path.sh'
+[4.428s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib'
+[4.428s] Level 1:colcon.colcon_core.shell:create_environment_hook('slam_msgs', 'ld_library_path_lib')
+[4.428s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.ps1'
+[4.428s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.dsv'
+[4.428s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/slam_msgs/share/slam_msgs/hook/ld_library_path_lib.sh'
+[4.428s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/bin'
+[4.429s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib/pkgconfig/slam_msgs.pc'
+[4.429s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/lib/python3.10/site-packages'
+[4.429s] Level 1:colcon.colcon_core.environment:checking '/root/install/slam_msgs/bin'
+[4.429s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.ps1'
+[4.429s] INFO:colcon.colcon_core.shell:Creating package descriptor '/root/install/slam_msgs/share/slam_msgs/package.dsv'
+[4.429s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.sh'
+[4.430s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.bash'
+[4.430s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/slam_msgs/share/slam_msgs/package.zsh'
+[4.430s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/root/install/slam_msgs/share/colcon-core/packages/slam_msgs)
+[4.430s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/root/colcon_ws/src/orb_slam3_ros2_wrapper' with build type 'ament_cmake'
+[4.430s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/root/colcon_ws/src/orb_slam3_ros2_wrapper'
+[4.430s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.430s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.437s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/orb_slam3_ros2_wrapper': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /root/colcon_ws/src/orb_slam3_ros2_wrapper -DCMAKE_INSTALL_PREFIX=/root/install/orb_slam3_ros2_wrapper
+[6.697s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/orb_slam3_ros2_wrapper' returned '0': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /root/colcon_ws/src/orb_slam3_ros2_wrapper -DCMAKE_INSTALL_PREFIX=/root/install/orb_slam3_ros2_wrapper
+[6.698s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/orb_slam3_ros2_wrapper': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /root/build/orb_slam3_ros2_wrapper -- -j18 -l18
+[34.641s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/orb_slam3_ros2_wrapper' returned '0': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /root/build/orb_slam3_ros2_wrapper -- -j18 -l18
+[34.670s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/root/build/orb_slam3_ros2_wrapper': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /root/build/orb_slam3_ros2_wrapper
+[34.681s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(orb_slam3_ros2_wrapper)
+[34.681s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/root/build/orb_slam3_ros2_wrapper' returned '0': AMENT_PREFIX_PATH=/root/install/slam_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/root/install/slam_msgs:/root/colcon_ws/install/orb_slam3_ros2_wrapper:/root/colcon_ws/install/slam_msgs:/opt/ros/humble LD_LIBRARY_PATH=/root/install/slam_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/root/install/slam_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --install /root/build/orb_slam3_ros2_wrapper
+[34.681s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper' for CMake module files
+[34.682s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper' for CMake config files
+[34.682s] Level 1:colcon.colcon_core.shell:create_environment_hook('orb_slam3_ros2_wrapper', 'cmake_prefix_path')
+[34.682s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.ps1'
+[34.683s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.dsv'
+[34.683s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.sh'
+[34.683s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib'
+[34.683s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/bin'
+[34.683s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib/pkgconfig/orb_slam3_ros2_wrapper.pc'
+[34.683s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib/python3.10/site-packages'
+[34.684s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/bin'
+[34.684s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.ps1'
+[34.684s] INFO:colcon.colcon_core.shell:Creating package descriptor '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.dsv'
+[34.684s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.sh'
+[34.684s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.bash'
+[34.684s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.zsh'
+[34.685s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/root/install/orb_slam3_ros2_wrapper/share/colcon-core/packages/orb_slam3_ros2_wrapper)
+[34.710s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(orb_slam3_ros2_wrapper)
+[34.710s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper' for CMake module files
+[34.711s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper' for CMake config files
+[34.711s] Level 1:colcon.colcon_core.shell:create_environment_hook('orb_slam3_ros2_wrapper', 'cmake_prefix_path')
+[34.711s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.ps1'
+[34.711s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.dsv'
+[34.711s] INFO:colcon.colcon_core.shell:Creating environment hook '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.sh'
+[34.711s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib'
+[34.711s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/bin'
+[34.711s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib/pkgconfig/orb_slam3_ros2_wrapper.pc'
+[34.712s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/lib/python3.10/site-packages'
+[34.712s] Level 1:colcon.colcon_core.environment:checking '/root/install/orb_slam3_ros2_wrapper/bin'
+[34.712s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.ps1'
+[34.712s] INFO:colcon.colcon_core.shell:Creating package descriptor '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.dsv'
+[34.712s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.sh'
+[34.713s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.bash'
+[34.713s] INFO:colcon.colcon_core.shell:Creating package script '/root/install/orb_slam3_ros2_wrapper/share/orb_slam3_ros2_wrapper/package.zsh'
+[34.713s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/root/install/orb_slam3_ros2_wrapper/share/colcon-core/packages/orb_slam3_ros2_wrapper)
+[34.713s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[34.713s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[34.713s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[34.713s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[34.723s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[34.723s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[34.723s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[34.723s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[34.726s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.Spawn.ExecFailed: /usr/bin/dbus-launch terminated abnormally without any error message
+[34.726s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[34.726s] INFO:colcon.colcon_core.shell:Creating prefix script '/root/install/local_setup.ps1'
+[34.727s] INFO:colcon.colcon_core.shell:Creating prefix util module '/root/install/_local_setup_util_ps1.py'
+[34.727s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/root/install/setup.ps1'
+[34.728s] INFO:colcon.colcon_core.shell:Creating prefix script '/root/install/local_setup.sh'
+[34.728s] INFO:colcon.colcon_core.shell:Creating prefix util module '/root/install/_local_setup_util_sh.py'
+[34.728s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/root/install/setup.sh'
+[34.729s] INFO:colcon.colcon_core.shell:Creating prefix script '/root/install/local_setup.bash'
+[34.729s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/root/install/setup.bash'
+[34.730s] INFO:colcon.colcon_core.shell:Creating prefix script '/root/install/local_setup.zsh'
+[34.730s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/root/install/setup.zsh'

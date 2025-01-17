@@ -1,0 +1,2 @@
+Invoking command in '/root/build/orb_slam3_ros2_wrapper': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/orb_slam3_ros2_wrapper -- -j18 -l18
+Invoked command in '/root/build/orb_slam3_ros2_wrapper' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/orb_slam3_ros2_wrapper -- -j18 -l18

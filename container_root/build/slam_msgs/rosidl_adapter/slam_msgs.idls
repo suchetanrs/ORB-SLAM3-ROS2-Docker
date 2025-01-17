@@ -1,0 +1,6 @@
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:msg/MapGraph.idl
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:msg/MapData.idl
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:msg/KeyFrame.idl
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:msg/MapPoint.idl
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:srv/GetMap.idl
+/root/build/slam_msgs/rosidl_adapter/slam_msgs:srv/GetLandmarksInView.idl

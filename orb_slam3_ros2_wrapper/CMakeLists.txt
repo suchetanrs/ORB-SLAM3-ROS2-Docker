@@ -73,9 +73,16 @@ target_link_libraries(rgbd ${PCL_LIBRARIES})
 install(TARGETS rgbd
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY launch params
+install(DIRECTORY launch params scripts
 DESTINATION share/${PROJECT_NAME}
 )
+
+install(
+  PROGRAMS scripts/data_extractor.py
+  scripts/data_extract_rosbag.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 
 if(BUILD_TESTING)
   find_package(gtest)

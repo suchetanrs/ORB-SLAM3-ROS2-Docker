@@ -1,0 +1,6 @@
+Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/slam_msgs -DCMAKE_INSTALL_PREFIX=/root/install/slam_msgs
+Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake /root/colcon_ws/src/slam_msgs -DCMAKE_INSTALL_PREFIX=/root/install/slam_msgs
+Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/slam_msgs -- -j18 -l18
+Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /root/build/slam_msgs -- -j18 -l18
+Invoking command in '/root/build/slam_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /root/build/slam_msgs
+Invoked command in '/root/build/slam_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /root/build/slam_msgs

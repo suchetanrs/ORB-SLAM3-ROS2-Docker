@@ -1,0 +1,8 @@
+source;share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.ps1
+source;share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.dsv
+source;share/orb_slam3_ros2_wrapper/hook/cmake_prefix_path.sh
+source;share/orb_slam3_ros2_wrapper/local_setup.bash
+source;share/orb_slam3_ros2_wrapper/local_setup.dsv
+source;share/orb_slam3_ros2_wrapper/local_setup.ps1
+source;share/orb_slam3_ros2_wrapper/local_setup.sh
+source;share/orb_slam3_ros2_wrapper/local_setup.zsh
