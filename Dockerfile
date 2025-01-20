@@ -1,5 +1,5 @@
 # Image taken from https://github.com/turlucode/ros-docker-gui
-FROM osrf/ros:humble-desktop-full-jammy
+FROM ros:humble-ros-base-jammy
 ARG USE_CI
 
 RUN apt-get update
