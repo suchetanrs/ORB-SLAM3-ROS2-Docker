@@ -50,9 +50,15 @@ def generate_launch_description():
             default_value=os.path.join(orb_wrapper_pkg, 'params', 'rgbd-ros-params.yaml'),
             description='Full path to the ROS2 parameters file to use for all launched nodes')
 
+        base_frame = ""
+        if(robot_namespace.perform(context) == ""):
+            base_frame = ""
+        else:
+            base_frame = robot_namespace.perform(context) + "/"
+
         param_substitutions = {
-            'robot_base_frame': robot_namespace.perform(context) + '/base_footprint',
-            'odom_frame': robot_namespace.perform(context) + '/odom',
+            'robot_base_frame': base_frame + 'base_footprint',
+            'odom_frame': base_frame + 'odom',
             'robot_x': robot_x.perform(context),
             'robot_y': robot_y.perform(context)
             }

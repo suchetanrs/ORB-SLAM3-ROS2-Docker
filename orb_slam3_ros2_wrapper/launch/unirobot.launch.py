@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     # Set environment variables
-    robot_namespace = "robot_0"
+    robot_namespace = ""
     robot_x = "0.0"
     robot_y = "0.0"
 
