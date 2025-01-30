@@ -50,6 +50,7 @@ include_directories(
 find_package(traversability_mapping)
 if(traversability_mapping_FOUND)
    find_package(grid_map_ros REQUIRED)
+   find_package(traversability_msgs REQUIRED)
     include_directories(
     ${traversability_mapping_INCLUDE_DIRS}
     )
@@ -68,7 +69,7 @@ add_executable(rgbd
   src/rgbd/rgbd.cpp
 )
 if(traversability_mapping_FOUND)
-  ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs nav_msgs grid_map_ros tf2_geometry_msgs)
+  ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs nav_msgs grid_map_ros tf2_geometry_msgs traversability_msgs)
 else()
   ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs nav_msgs tf2_geometry_msgs)
 endif(traversability_mapping_FOUND)

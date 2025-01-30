@@ -39,6 +39,9 @@
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
 
+#include <traversability_msgs/msg/key_frame_additions.hpp>
+#include <traversability_msgs/msg/key_frame_updates.hpp>
+
 namespace ORB_SLAM3_Wrapper
 {
     class RgbdSlamNode : public rclcpp::Node
@@ -135,6 +138,7 @@ namespace ORB_SLAM3_Wrapper
         double frequency_tracker_count_ = 0;
         int map_data_publish_frequency_;
         int landmark_publish_frequency_;
+        bool publish_traversability_data_;
         std::chrono::_V2::system_clock::time_point frequency_tracker_clock_;
 
         ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
@@ -142,6 +146,9 @@ namespace ORB_SLAM3_Wrapper
         geometry_msgs::msg::TransformStamped tfMapOdom_;
         std::mutex latestTimeMutex_;
         rclcpp::Time latestTime_;
+        rclcpp::Publisher<traversability_msgs::msg::KeyFrameAdditions>::SharedPtr additions_pub_;
+        rclcpp::Publisher<traversability_msgs::msg::KeyFrameUpdates>::SharedPtr updates_pub_;
+        std::unordered_map<int32_t, geometry_msgs::msg::Pose> previous_poses_;
     };
 }
 #endif

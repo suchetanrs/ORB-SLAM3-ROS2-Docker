@@ -37,7 +37,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::SubscriptionOptions lidarSubOptions;
         lidarSubOptions.callback_group = lidarCallbackGroup_;
         lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::LidarCallback, this, std::placeholders::_1), lidarSubOptions);
-        
+
         gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_traversability_map", 10);
         traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
         publishOccupancyCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -46,6 +46,8 @@ namespace ORB_SLAM3_Wrapper
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
         robotPoseMapFrame_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("robot_pose_slam", 10);
+        additions_pub_ = create_publisher<traversability_msgs::msg::KeyFrameAdditions>("traversability_keyframe_additions", 10);
+        updates_pub_ = create_publisher<traversability_msgs::msg::KeyFrameUpdates>("traversability_keyframe_updates", 10);
         // Services
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -89,6 +91,9 @@ namespace ORB_SLAM3_Wrapper
 
         this->declare_parameter("landmark_publish_frequency", rclcpp::ParameterValue(1000));
         this->get_parameter("landmark_publish_frequency", landmark_publish_frequency_);
+
+        this->declare_parameter("publish_traversability_data", rclcpp::ParameterValue(false));
+        this->get_parameter("publish_traversability_data", publish_traversability_data_);
 
         // Timers
         mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -173,6 +178,8 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::publishTraversabilityData()
     {
+        if(!publish_traversability_data_)
+            return;
         std::lock_guard<std::mutex> lock(latestTimeMutex_);
         auto map = interface_->getTraversabilityData();
         // publish the gridmap and occupancy map.
@@ -219,6 +226,18 @@ namespace ORB_SLAM3_Wrapper
         }
     }
 
+    bool poseChanged(const geometry_msgs::msg::Pose &a,
+                     const geometry_msgs::msg::Pose &b)
+    {
+        return a.position.x != b.position.x ||
+               a.position.y != b.position.y ||
+               a.position.z != b.position.z ||
+               a.orientation.x != b.orientation.x ||
+               a.orientation.y != b.orientation.y ||
+               a.orientation.z != b.orientation.z ||
+               a.orientation.w != b.orientation.w;
+    }
+
     void RgbdSlamNode::publishMapData()
     {
         if (isTracked_)
@@ -236,6 +255,72 @@ namespace ORB_SLAM3_Wrapper
             auto time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to create mapdata: " << time_publishMapData << " seconds");
             RCLCPP_INFO_STREAM(this->get_logger(), "*************************");
+
+            traversability_msgs::msg::KeyFrameAdditions additions;
+            traversability_msgs::msg::KeyFrameUpdates updates;
+
+            // Validate array sizes
+            if (mapDataMsg.graph.poses_id.size() != mapDataMsg.graph.poses.size())
+            {
+                RCLCPP_ERROR(get_logger(),
+                             "Mismatched poses_id (%zu) and poses (%zu) sizes!",
+                             mapDataMsg.graph.poses_id.size(), mapDataMsg.graph.poses.size());
+                return;
+            }
+
+            // Process all poses
+            for (size_t i = 0; i < mapDataMsg.graph.poses_id.size(); ++i)
+            {
+                const int32_t id = mapDataMsg.graph.poses_id[i];
+                const auto &pose_stamped = mapDataMsg.graph.poses[i];
+
+                // Convert timestamp to nanoseconds
+                double sec = pose_stamped.header.stamp.sec + (pose_stamped.header.stamp.nanosec * pow(10, -9));
+                const uint64_t timestamp_ns = sec * 1e9;
+
+                // Check if we've seen this pose before
+                auto it = previous_poses_.find(id);
+                if (it == previous_poses_.end())
+                {
+                    // New pose - add to additions
+                    traversability_msgs::msg::KeyFrame kf;
+                    kf.kf_timestamp_in_nanosec = timestamp_ns;
+                    kf.kf_id = id;
+                    kf.kf_pose = pose_stamped.pose;
+                    kf.kf_pointcloud = sensor_msgs::msg::PointCloud2(); // Empty cloud
+                    kf.map_id = 0;
+                    additions.keyframes.push_back(kf);
+                    previous_poses_[id] = pose_stamped.pose;
+                }
+                else
+                {
+                    // Existing pose - check for changes
+                    if (poseChanged(it->second, pose_stamped.pose))
+                    {
+                        traversability_msgs::msg::KeyFrame kf;
+                        kf.kf_timestamp_in_nanosec = timestamp_ns;
+                        kf.kf_id = id;
+                        kf.kf_pose = pose_stamped.pose;
+                        kf.kf_pointcloud = sensor_msgs::msg::PointCloud2();
+                        kf.map_id = 0;
+                        updates.keyframes.push_back(kf);
+                        it->second = pose_stamped.pose; // Update stored pose
+                    }
+                }
+            }
+
+            // Publish results
+            if (!additions.keyframes.empty())
+            {
+                additions_pub_->publish(additions);
+            }
+            if (!updates.keyframes.empty())
+            {
+                updates_pub_->publish(updates);
+            }
+            t1 = std::chrono::high_resolution_clock::now();
+            time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
+            RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to create traversability data: " << time_publishMapData << " seconds");
         }
     }
 
@@ -260,7 +345,8 @@ namespace ORB_SLAM3_Wrapper
         auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
         auto affinePosToMap = affineMapToPos.inverse().cast<double>();
         // Populate the pose of the points vector into the ros message
-        for (const auto& point : points) {
+        for (auto &point : points)
+        {
             slam_msgs::msg::MapPoint landmark;
             Eigen::Vector3f landmark_position = point->GetWorldPos();
             auto position = interface_->getTypeConversionPtr()->vector3fORBToROS(landmark_position);
