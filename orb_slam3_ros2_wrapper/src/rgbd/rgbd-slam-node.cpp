@@ -45,11 +45,12 @@ namespace ORB_SLAM3_Wrapper
 #endif
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
-// Services 
+        robotPoseMapFrame_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("robot_pose_slam", 10);
+        // Services
         getMapDataService_ = this->create_service<slam_msgs::srv::GetMap>("orb_slam3_get_map_data", std::bind(&RgbdSlamNode::getMapServer, this,
                                                                                                               std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        getMapPointsService_ = this->create_service<slam_msgs::srv::GetLandmarksInView>("orb_slam3_get_landmarks_in_view", std::bind(&RgbdSlamNode::getMapPointsInViewServer, this,
-                                                                                                              std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        pointsInViewCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        getMapPointsService_ = this->create_service<slam_msgs::srv::GetLandmarksInView>("orb_slam3_get_landmarks_in_view", std::bind(&RgbdSlamNode::getMapPointsInViewServer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, pointsInViewCallbackGroup_);
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
         tfBuffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
@@ -129,8 +130,8 @@ namespace ORB_SLAM3_Wrapper
     {
         std::lock_guard<std::mutex> lock(latestTimeMutex_);
         latestTime_ = msgOdom->header.stamp;
-        if (!no_odometry_mode_ && publish_tf_)
-        {
+        if (!no_odometry_mode_)
+        {   // populate map to odom tf if odometry is being used
             RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
             interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
         }
@@ -146,10 +147,17 @@ namespace ORB_SLAM3_Wrapper
             isTracked_ = true;
             if (publish_tf_)
             {
+                // populate map to base_footprint tf if odometry is not being used
                 if (no_odometry_mode_)
                     interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
+                // publish the tf if publish_tf_ is true
                 tfBroadcaster_->sendTransform(tfMapOdom_);
             }
+            geometry_msgs::msg::PoseStamped pose;
+            interface_->getRobotPose(pose);
+            pose.header.stamp = msgRGB->header.stamp;
+            robotPoseMapFrame_->publish(pose);
+
             ++frequency_tracker_count_;
             // publishMapPointCloud();
             // std::thread(&RgbdSlamNode::publishMapPointCloud, this).detach();
@@ -242,18 +250,22 @@ namespace ORB_SLAM3_Wrapper
     }
 
     void RgbdSlamNode::getMapPointsInViewServer(std::shared_ptr<rmw_request_id_t> request_header,
-                        std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
-                        std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response)
+                                                std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
+                                                std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response)
     {
         RCLCPP_INFO(this->get_logger(), "GetMapPointsInView service called.");
         std::vector<slam_msgs::msg::MapPoint> landmarks;
         std::vector<ORB_SLAM3::MapPoint*> points;
         interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation);
+        auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
+        auto affinePosToMap = affineMapToPos.inverse().cast<double>();
         // Populate the pose of the points vector into the ros message
         for (const auto& point : points) {
             slam_msgs::msg::MapPoint landmark;
             Eigen::Vector3f landmark_position = point->GetWorldPos();
             auto position = interface_->getTypeConversionPtr()->vector3fORBToROS(landmark_position);
+            position = interface_->getTypeConversionPtr()->transformPointWithReference<Eigen::Vector3f>(affinePosToMap, position);
+            // RCLCPP_INFO_STREAM(this->get_logger(), "x: " << position.x() << " y: " << position.y() << " z: " << position.z());
             landmark.position.x = position.x();
             landmark.position.y = position.y();
             landmark.position.z = position.z();
@@ -262,13 +274,13 @@ namespace ORB_SLAM3_Wrapper
         response->map_points = landmarks;
         auto cloud = interface_->getTypeConversionPtr()->MapPointsToPCL(points);
         visibleLandmarksPub_->publish(cloud);
-        
+
         // Convert the pose in request to PoseStamped and publish
         geometry_msgs::msg::PoseStamped pose_stamped;
         pose_stamped.header.stamp = this->now();
         pose_stamped.header.frame_id = "map"; // Assuming the frame is "map", adjust if needed
         pose_stamped.pose = request->pose;
-        
+
         // Publish the PoseStamped
         visibleLandmarksPose_->publish(pose_stamped);
     }

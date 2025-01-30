@@ -89,3 +89,6 @@ The very initial versions of this code were derived from [thien94/orb_slam3_ros_
 | `visualization`         | `true`        | A boolean flag to enable or disable visualization. When set to `true`, the ORB-SLAM3 viewer will show up with the tracked points and the keyframe trajectories.|
 | `ros_visualization`     | `false`       | A boolean flag to control ROS-based visualization. If set to `true`, it enables ROS tools like RViz to visualize the robot's data. (3D position of the tracked points etc.)  **This feature is unstable and not tested as of now**|
 | `no_odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `true`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```|
+| `publish_tf`               | `true`         | Publishes the map->odom tf in case no_odometry_mode is set to `false` and map->base_link in case no_odometry_mode is set to true.|
+| `map_data_publish_frequency`| `1000`         | Time interval at which map_data should be published (ms).|
+| `landmark_publish_frequency`| `1000`         | Time interval at which landmarks should be published (ms).|

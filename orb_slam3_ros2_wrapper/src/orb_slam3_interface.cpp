@@ -167,6 +167,11 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
     {
+        while(mSLAM_->GetLoopClosing()->loopDetected())
+        {
+            std::cout << "Waiting for loop closure to finish" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        }
         auto Tcw = cameraPose;
         auto Twc = Tcw.inverse();
 
@@ -382,6 +387,12 @@ namespace ORB_SLAM3_Wrapper
             tf.transform.translation.z = poseMapOdom.position.z;
             tf.transform.rotation = poseMapOdom.orientation;
         }
+    }
+
+    void ORBSLAM3Interface::getRobotPose(geometry_msgs::msg::PoseStamped& pose)
+    {
+        pose.header.frame_id = globalFrame_;
+        pose.pose = tf2::toMsg(latestTrackedPose_);
     }
 
     void ORBSLAM3Interface::getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapKFOnly)
