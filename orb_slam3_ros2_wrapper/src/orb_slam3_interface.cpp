@@ -159,13 +159,19 @@ namespace ORB_SLAM3_Wrapper
         mapPointCloud = typeConversions_->MapPointsToPCL(trackedMapPoints);
     }
 
-    void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
+    void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle, bool exhaustive_search)
     {
+        mSLAM_->getTracking()->needExternalKF();
+        while(!mSLAM_->getTracking()->externalKFAdded())
+        {
+            std::cout << "Waiting for external KF to get added" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        }
         auto camPose = typeConversions_->se3ROSToORB(typeConversions_->poseToAffine(cameraPose));
-        mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle);
+        mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle, exhaustive_search);
     }
 
-    void ORBSLAM3Interface::mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
+    void ORBSLAM3Interface::mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle, bool exhaustive_search)
     {
         while(mSLAM_->GetLoopClosing()->loopDetected())
         {
@@ -182,6 +188,7 @@ namespace ORB_SLAM3_Wrapper
         std::cout << "Pitch ROS coord: " << eulerAngles(1) << std::endl;
         std::cout << "Yaw ROS coord: " << eulerAngles(2) << std::endl;
         std::cout << "===" << std::endl;
+        std::cout << "{{{{{{{{{{{{{{{{{{{{{{{{EXHAUSTIVE SEARCH:" << exhaustive_search << "}}}}}}}}}}}}}}}}}}}}}}}}" << std::endl;
 
         auto mRwc = Twc.rotationMatrix();
         auto mOw = Twc.translation();
@@ -210,35 +217,38 @@ namespace ORB_SLAM3_Wrapper
             auto relEulerAngles = typeConversions_->rotationORBToEulerROS(rel_T_CamToKF.rotationMatrix());
             float distBwKfs = rel_T_CamToKF.translation().norm();
 
-            // checks ......
-            // continue if the distance is too large
-            if(distBwKfs >= maxDistance * 2.0)
+            if(!exhaustive_search)
             {
-                continue;
-            }
-            if(distBwKfs > maxDistance)
-            {
-                // if distance is large but in range, check if behind. If behind, continue.
-                if(rel_T_CamToKF.translation()[2] < 0.0)
+                // checks ......
+                // continue if the distance is too large
+                if(distBwKfs >= maxDistance * 2.0)
                 {
                     continue;
                 }
-                else if(rel_T_CamToKF.translation()[2] > 0.0)
+                if(distBwKfs > maxDistance)
                 {
-                    if((relEulerAngles(2) >= 0 && relEulerAngles(2) < M_PI / 2.0) || (relEulerAngles(2) > 3.0 * M_PI / 2.0 && relEulerAngles(2) < 2 * M_PI))
+                    // if distance is large but in range, check if behind. If behind, continue.
+                    if(rel_T_CamToKF.translation()[2] < 0.0)
                     {
                         continue;
                     }
-                }
-            }
-            if(distBwKfs <= maxDistance)
-            {
-                // if distance is small but in range, check if behind. If behind, check angles.
-                if(rel_T_CamToKF.translation()[2] < 0.0)
-                {
-                    if((relEulerAngles(2) >= 2.0944 && relEulerAngles(2) < 4.18879))
+                    else if(rel_T_CamToKF.translation()[2] > 0.0)
                     {
-                        continue;
+                        if((relEulerAngles(2) >= 0 && relEulerAngles(2) < M_PI / 2.0) || (relEulerAngles(2) > 3.0 * M_PI / 2.0 && relEulerAngles(2) < 2 * M_PI))
+                        {
+                            continue;
+                        }
+                    }
+                }
+                if(distBwKfs <= maxDistance)
+                {
+                    // if distance is small but in range, check if behind. If behind, check angles.
+                    if(rel_T_CamToKF.translation()[2] < 0.0)
+                    {
+                        if((relEulerAngles(2) >= 2.0944 && relEulerAngles(2) < 4.18879))
+                        {
+                            continue;
+                        }
                     }
                 }
             }

@@ -341,7 +341,7 @@ namespace ORB_SLAM3_Wrapper
         RCLCPP_INFO(this->get_logger(), "GetMapPointsInView service called.");
         std::vector<slam_msgs::msg::MapPoint> landmarks;
         std::vector<ORB_SLAM3::MapPoint*> points;
-        interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation);
+        interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation, request->exhaustive_search);
         auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
         auto affinePosToMap = affineMapToPos.inverse().cast<double>();
         // Populate the pose of the points vector into the ros message

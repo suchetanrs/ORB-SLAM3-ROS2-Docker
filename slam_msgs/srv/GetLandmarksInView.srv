@@ -13,6 +13,7 @@ float32 max_angle_pose_observation
 # the landmark was observed. (in m)
 # if you wish to get landmarks until atleast x m from the pose, this value must be x.
 float32 max_dist_pose_observation 6.0
+bool exhaustive_search False
 ---
 #response
 MapPoint[] map_points
