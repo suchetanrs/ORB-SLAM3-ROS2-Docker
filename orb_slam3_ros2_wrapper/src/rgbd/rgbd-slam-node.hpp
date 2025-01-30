@@ -91,6 +91,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr mapPointsPub_;
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr visibleLandmarksPub_;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr visibleLandmarksPose_;
+        rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr robotPoseMapFrame_;
         // TF
         std::shared_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
         std::shared_ptr<tf2_ros::TransformListener> tfListener_;
@@ -103,6 +104,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;
         rclcpp::TimerBase::SharedPtr mapPointsTimer_;
         rclcpp::CallbackGroup::SharedPtr mapPointsCallbackGroup_;
+        rclcpp::CallbackGroup::SharedPtr pointsInViewCallbackGroup_;
         // ROS Params
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;

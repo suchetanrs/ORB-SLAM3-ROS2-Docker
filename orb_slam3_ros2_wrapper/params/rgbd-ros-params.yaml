@@ -10,12 +10,12 @@ ORB_SLAM3_RGBD_ROS2:
     rgb_image_topic_name: rgb_camera
     depth_image_topic_name: depth_camera
     imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
-    odom_topic_name: odom #Not used if no_odometry_mode parameter is set to true.
+    odom_topic_name: ground_truth_pose #Not used if no_odometry_mode parameter is set to true. (Set to ground_truth_pose for pose from simulation example. You can choose the topic you want)
     robot_x: 0.0
     robot_y: 0.0
     visualization: true
     ros_visualization: false
+    no_odometry_mode: false
     publish_tf: true
-    no_odometry_mode: true
-    map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
+    map_data_publish_frequency: 100 # publish every 1000.0 milliseconds
     landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)

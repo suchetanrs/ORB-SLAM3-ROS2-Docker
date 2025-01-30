@@ -74,6 +74,8 @@ namespace ORB_SLAM3_Wrapper
 
         void getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf);
 
+        void getRobotPose(geometry_msgs::msg::PoseStamped& pose);
+
         void getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapGraph);
 
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
