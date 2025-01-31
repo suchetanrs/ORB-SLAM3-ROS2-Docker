@@ -71,6 +71,9 @@ namespace ORB_SLAM3_Wrapper
          * @param last_init_kf_id ID of the last initialized keyframe.
          */
         void publishMapData();
+#ifdef WITH_TRAVERSABILITY_MAP
+        void publishTraversabilityData();
+#endif
 
         void publishMapPointCloud(std::shared_ptr<rmw_request_id_t> request_header,
                                   std::shared_ptr<slam_msgs::srv::GetAllLandmarksInMap::Request> request,
