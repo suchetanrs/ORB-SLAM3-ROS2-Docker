@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/MapPoint.msg"
 "srv/GetMap.srv"
 "srv/GetLandmarksInView.srv"
+"srv/GetAllLandmarksInMap.srv"
 DEPENDENCIES builtin_interfaces geometry_msgs sensor_msgs std_msgs
 )
 

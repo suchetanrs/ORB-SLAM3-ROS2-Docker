@@ -40,7 +40,6 @@ namespace ORB_SLAM3_Wrapper
                           const std::string &strSettingsFile,
                           ORB_SLAM3::System::eSensor sensor,
                           bool bUseViewer,
-                          bool rosViz,
                           double robotX,
                           double robotY,
                           std::string globalFrame,
@@ -103,7 +102,6 @@ namespace ORB_SLAM3_Wrapper
         std::string strSettingsFile_;
         ORB_SLAM3::System::eSensor sensor_;
         bool bUseViewer_;
-        bool rosViz_;
 
         queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
         std::mutex bufMutex_;
