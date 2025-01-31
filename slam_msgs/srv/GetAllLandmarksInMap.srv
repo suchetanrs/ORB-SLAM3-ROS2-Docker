@@ -1,0 +1,5 @@
+# get all the landmarks of the current active map
+
+bool request true
+---
+sensor_msgs/PointCloud2 landmarks

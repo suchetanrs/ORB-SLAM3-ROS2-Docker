@@ -35,6 +35,7 @@
 #include <slam_msgs/msg/map_data.hpp>
 #include <slam_msgs/srv/get_map.hpp>
 #include <slam_msgs/srv/get_landmarks_in_view.hpp>
+#include <slam_msgs/srv/get_all_landmarks_in_map.hpp>
 
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
@@ -70,10 +71,10 @@ namespace ORB_SLAM3_Wrapper
          * @param last_init_kf_id ID of the last initialized keyframe.
          */
         void publishMapData();
-#ifdef WITH_TRAVERSABILITY_MAP
-        void publishTraversabilityData();
-#endif
-        void publishMapPointCloud();
+
+        void publishMapPointCloud(std::shared_ptr<rmw_request_id_t> request_header,
+                                  std::shared_ptr<slam_msgs::srv::GetAllLandmarksInMap::Request> request,
+                                  std::shared_ptr<slam_msgs::srv::GetAllLandmarksInMap::Response> response);
 
         /**
          * @brief Callback function for GetMap service.
@@ -86,8 +87,8 @@ namespace ORB_SLAM3_Wrapper
                           std::shared_ptr<slam_msgs::srv::GetMap::Response> response);
 
         void getMapPointsInViewServer(std::shared_ptr<rmw_request_id_t> request_header,
-                          std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
-                          std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response);
+                                      std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
+                                      std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response);
         /**
          * Member variables
          */
@@ -116,6 +117,7 @@ namespace ORB_SLAM3_Wrapper
         // ROS Services
         rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr getMapDataService_;
         rclcpp::Service<slam_msgs::srv::GetLandmarksInView>::SharedPtr getMapPointsService_;
+        rclcpp::Service<slam_msgs::srv::GetAllLandmarksInMap>::SharedPtr mapPointsService_;
         // ROS Timers
         rclcpp::TimerBase::SharedPtr mapDataTimer_;
 #ifdef WITH_TRAVERSABILITY_MAP
@@ -123,7 +125,6 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::TimerBase::SharedPtr traversabilityTimer_;
 #endif
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;
-        rclcpp::TimerBase::SharedPtr mapPointsTimer_;
         rclcpp::CallbackGroup::SharedPtr mapPointsCallbackGroup_;
         rclcpp::CallbackGroup::SharedPtr pointsInViewCallbackGroup_;
         // ROS Params
@@ -131,7 +132,6 @@ namespace ORB_SLAM3_Wrapper
         std::string odom_frame_id_;
         std::string global_frame_;
         double robot_x_, robot_y_;
-        bool rosViz_;
         bool isTracked_ = false;
         bool no_odometry_mode_;
         bool publish_tf_;

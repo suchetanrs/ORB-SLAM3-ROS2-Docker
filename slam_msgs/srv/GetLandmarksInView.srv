@@ -1,3 +1,5 @@
+# get the landmarks that are visible from an arbitrary input pose
+
 #request
 geometry_msgs/Pose pose
 
