@@ -15,6 +15,7 @@ services:
       - ./ORB_SLAM3/:/home/orb/ORB_SLAM3/
       - ./traversability_mapping/:/home/traversability/traversability_mapping/
       - ./orb_slam3_ros2_wrapper/:/root/colcon_ws/src/orb_slam3_ros2_wrapper/
+      - ./orb_slam3_map_generator/:/root/colcon_ws/src/orb_slam3_map_generator/
       - ./slam_msgs/:/root/colcon_ws/src/slam_msgs/
       - ./traversability_mapping/traversability_ros_interface:/root/trav_ws/src/traversability_ros_interface
     privileged: true

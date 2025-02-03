@@ -19,7 +19,7 @@ class PoseSubscriberNode(Node):
         )
         
         # Create a service client for GetLandmarksInView
-        self.client = self.create_client(GetLandmarksInView, 'orb_slam3_get_landmarks_in_view')
+        self.client = self.create_client(GetLandmarksInView, 'orb_slam3/get_landmarks_in_view')
 
         # Ensure that the service is available
         while not self.client.wait_for_service(timeout_sec=1.0):
