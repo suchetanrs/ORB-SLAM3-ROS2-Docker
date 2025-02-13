@@ -345,9 +345,9 @@ namespace ORB_SLAM3_Wrapper
         mapReferencesMutex_.unlock();
     }
 
-    void ORBSLAM3Interface::getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
+    void ORBSLAM3Interface::getDirectOdomToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
     {
-        tf.header.frame_id = globalFrame_;
+        tf.header.frame_id = odomFrame_;
         tf.child_frame_id = robotFrame_;
         if (hasTracked_)
         {

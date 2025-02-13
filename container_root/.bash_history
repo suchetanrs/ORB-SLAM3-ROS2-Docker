@@ -1018,3 +1018,14 @@ make install
 nasj
 bash
 >>>>>>> Stashed changes
+clear
+ls
+cd /home/traversability/traversability_mapping && ./build.sh
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/colcon_ws/ && colcon build --symlink-install && source install/setup.bash
+cd /root/trav_ws/ && colcon build --symlink-install && source install/setup.bash
+cd /home/traversability/traversability_mapping && ./build.sh
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/trav_ws/ && colcon build --symlink-install && source install/setup.bash
+cd /root/colcon_ws/ && colcon build --symlink-install && source install/setup.bash
+clear

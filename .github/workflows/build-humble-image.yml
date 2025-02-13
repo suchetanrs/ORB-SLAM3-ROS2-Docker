@@ -17,4 +17,4 @@ jobs:
     - name: Update submodules
       run: git submodule update --init --recursive --remote && git submodule update
     - name: Build the Docker image
-      run: sudo docker build -t orb-slam3-humble:22.04 .
+      run: sudo docker build --build-arg USE_CI=true -t orb-slam3-humble:22.04 .

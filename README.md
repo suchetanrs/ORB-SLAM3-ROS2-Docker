@@ -28,7 +28,7 @@ sudo chmod +x container_root/shell_scripts/docker_install.sh
 
 ## 3. Build the image with ORB_SLAM3
 
-1. Build the image: ```sudo docker build -t orb-slam3-humble:22.04 .```
+1. Build the image: ```sudo docker build --build-arg USE_CI=false -t orb-slam3-humble:22.04 .```
 2. Add ```xhost +``` to your ```.bashrc``` to support correct x11-forwarding using ```echo "xhost +" >> ~/.bashrc```
 3. ```source ~/.bashrc```
 4. You can see the built images on your machine by running ```sudo docker images```.
@@ -44,12 +44,9 @@ sudo chmod +x container_root/shell_scripts/docker_install.sh
 Launch the container using steps in (4).
 ```bash
 cd /home/traversability/traversability_mapping && ./build.sh
-cd /root/colcon_ws/
-colcon build --symlink-install
-source install/setup.bash
-cd /root/trav_ws/
-colcon build --symlink-install
-source install/setup.bash
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/trav_ws/ && colcon build --symlink-install && source install/setup.bash
+cd /root/colcon_ws/ && colcon build --symlink-install && source install/setup.bash
 ```
 
 ## Launching ORB-SLAM3
@@ -88,7 +85,7 @@ The very initial versions of this code were derived from [thien94/orb_slam3_ros_
 | `robot_y`               | `0.0`         | The robot's initial y-coordinate in the global frame. Specifies the starting position along the y-axis. The SLAM Wrapper will assume this to be the initial y position|
 | `visualization`         | `true`        | A boolean flag to enable or disable visualization. When set to `true`, the ORB-SLAM3 viewer will show up with the tracked points and the keyframe trajectories.|
 | `ros_visualization`     | `false`       | A boolean flag to control ROS-based visualization. If set to `true`, it enables ROS tools like RViz to visualize the robot's data. (3D position of the tracked points etc.)  **This feature is unstable and not tested as of now**|
-| `no_odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `true`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```|
-| `publish_tf`               | `true`         | Publishes the map->odom tf in case no_odometry_mode is set to `false` and map->base_link in case no_odometry_mode is set to true.|
+| `odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `false`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```|
+| `publish_tf`               | `true`         | Publishes the map->odom tf in case odometry_mode is set to `true` and map->odom->base_link in case odometry_mode is set to `false`.|
 | `map_data_publish_frequency`| `1000`         | Time interval at which map_data should be published (ms).|
 | `landmark_publish_frequency`| `1000`         | Time interval at which landmarks should be published (ms).|

@@ -85,8 +85,8 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("robot_y", rclcpp::ParameterValue(1.0));
         this->get_parameter("robot_y", robot_y_);
 
-        this->declare_parameter("no_odometry_mode", rclcpp::ParameterValue(false));
-        this->get_parameter("no_odometry_mode", no_odometry_mode_);
+        this->declare_parameter("odometry_mode", rclcpp::ParameterValue(false));
+        this->get_parameter("odometry_mode", odometry_mode_);
 
         this->declare_parameter("publish_tf", rclcpp::ParameterValue(true));
         this->get_parameter("publish_tf", publish_tf_);
@@ -135,7 +135,7 @@ namespace ORB_SLAM3_Wrapper
     {
         std::lock_guard<std::mutex> lock(latestTimeMutex_);
         latestTime_ = msgOdom->header.stamp;
-        if (!no_odometry_mode_)
+        if (odometry_mode_)
         {   // populate map to odom tf if odometry is being used
             RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
             interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
@@ -153,8 +153,15 @@ namespace ORB_SLAM3_Wrapper
             if (publish_tf_)
             {
                 // populate map to base_footprint tf if odometry is not being used
-                if (no_odometry_mode_)
-                    interface_->getDirectMapToRobotTF(msgRGB->header, tfMapOdom_);
+                if (!odometry_mode_)
+                {
+                    tfMapOdom_ = geometry_msgs::msg::TransformStamped();
+                    tfMapOdom_.header.stamp = msgRGB->header.stamp;
+                    tfMapOdom_.header.frame_id = global_frame_;
+                    tfMapOdom_.child_frame_id = odom_frame_id_;
+                    tfBroadcaster_->sendTransform(tfMapOdom_);
+                    interface_->getDirectOdomToRobotTF(msgRGB->header, tfMapOdom_);
+                }
                 // publish the tf if publish_tf_ is true
                 tfBroadcaster_->sendTransform(tfMapOdom_);
             }
