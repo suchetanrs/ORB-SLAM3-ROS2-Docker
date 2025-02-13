@@ -1,5 +1,6 @@
 # Image taken from https://github.com/turlucode/ros-docker-gui
 FROM osrf/ros:humble-desktop-full-jammy
+ARG USE_CI
 
 RUN apt-get update
 
@@ -52,11 +53,18 @@ RUN cd /tmp && git clone https://github.com/stevenlovegrove/Pangolin && \
 COPY ./container_root/shell_scripts/vscode_install.sh /root/
 RUN cd /root/ && sudo chmod +x * && ./vscode_install.sh && rm -rf vscode_install.sh
 
-# Build ORB-SLAM3 with its dependencies.
 RUN apt-get update && apt-get install ros-humble-pcl-ros tmux -y
 RUN apt-get install ros-humble-nav2-common x11-apps nano -y
+
 COPY ORB_SLAM3 /home/orb/ORB_SLAM3
-RUN . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh
 COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper
+COPY orb_slam3_map_generator /root/colcon_ws/src/orb_slam3_map_generator
 COPY slam_msgs /root/colcon_ws/src/slam_msgs
-RUN . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install
+
+# Build ORB-SLAM3 with its dependencies.
+RUN if [ "$USE_CI" = "true" ]; then \
+    . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh && \
+    . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install; \
+    fi
+
+RUN rm -rf /home/orb/ORB_SLAM3 /root/colcon_ws
