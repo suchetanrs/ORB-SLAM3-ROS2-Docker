@@ -11,6 +11,7 @@ namespace ORB_SLAM3_Wrapper
                                          const std::string &strSettingsFile,
                                          ORB_SLAM3::System::eSensor sensor,
                                          bool bUseViewer,
+                                         bool loopClosing,
                                          double robotX,
                                          double robotY,
                                          std::string globalFrame,
@@ -20,6 +21,7 @@ namespace ORB_SLAM3_Wrapper
           strSettingsFile_(strSettingsFile),
           sensor_(sensor),
           bUseViewer_(bUseViewer),
+          loopClosing_(loopClosing),
           robotX_(robotX),
           robotY_(robotY),
           globalFrame_(globalFrame),
@@ -27,7 +29,7 @@ namespace ORB_SLAM3_Wrapper
           robotFrame_(robotFrame)
     {
         std::cout << "Interface constructor started" << endl;
-        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_);
+        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing);
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
         std::cout << "Interface constructor complete" << endl;
         std::cout << "Robot X: " << robotX_ << " Robot Y: " << robotY_ << std::endl;
@@ -75,7 +77,7 @@ namespace ORB_SLAM3_Wrapper
         // sort the map array in init kf id order.
         std::sort(mapsList.begin(), mapsList.end(), compareInitKFid());
         allKFs_ = makeKFIdPair(mapsList);
-        std::vector<ORB_SLAM3::Map *> mapsList2 = orbAtlas_->GetAllMaps();
+        // std::vector<ORB_SLAM3::Map *> mapsList2 = orbAtlas_->GetAllMaps();
         // std::cout << "Current map id: " << orbAtlas_->GetCurrentMap()->GetId() << std::endl;
         // for (auto mp : mapsList2)
         // {
@@ -171,7 +173,7 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle, bool exhaustive_search)
     {
-        while(mSLAM_->GetLoopClosing()->loopDetected())
+        while(loopClosing_ && mSLAM_->GetLoopClosing()->loopDetected())
         {
             std::cout << "Waiting for loop closure to finish" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(30));
@@ -538,7 +540,7 @@ namespace ORB_SLAM3_Wrapper
             Tcw = mSLAM_->TrackRGBD(cvRGB->image, cvD->image, typeConversions_->stampToSec(msgRGB->header.stamp), vImuMeas);
             auto currentTrackingState = mSLAM_->GetTrackingState();
             auto orbLoopClosing = mSLAM_->GetLoopClosing();
-            if (orbLoopClosing->mergeDetected())
+            if (loopClosing_ && orbLoopClosing->mergeDetected())
             {
                 // do not publish any values during map merging. This is because the reference poses change.
                 std::cout << "Waiting for merge to finish." << endl;
@@ -601,7 +603,7 @@ namespace ORB_SLAM3_Wrapper
         Tcw = mSLAM_->TrackRGBD(cvRGB->image, cvD->image, typeConversions_->stampToSec(msgRGB->header.stamp));
         auto currentTrackingState = mSLAM_->GetTrackingState();
         auto orbLoopClosing = mSLAM_->GetLoopClosing();
-        if (orbLoopClosing->mergeDetected())
+        if (loopClosing_ && orbLoopClosing->mergeDetected())
         {
             // do not publish any values during map merging. This is because the reference poses change.
             std::cout << "Waiting for merge to finish." << endl;

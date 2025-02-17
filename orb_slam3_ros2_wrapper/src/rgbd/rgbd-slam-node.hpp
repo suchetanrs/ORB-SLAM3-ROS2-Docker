@@ -142,6 +142,7 @@ namespace ORB_SLAM3_Wrapper
         int map_data_publish_frequency_;
         int landmark_publish_frequency_;
         bool publish_traversability_data_;
+        bool do_loop_closing_;
         std::chrono::_V2::system_clock::time_point frequency_tracker_clock_;
 
         ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
