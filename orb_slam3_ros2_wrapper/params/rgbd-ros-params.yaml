@@ -12,7 +12,6 @@ ORB_SLAM3_RGBD_ROS2:
     depth_image_topic_name: depth_camera
     imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
     odom_topic_name: ground_truth_pose #Used if odometry_mode parameter is set to true. (Set to ground_truth_pose for pose from simulation example. You can choose the topic you want)
-    lidar_topic_name: lidar/points
     robot_x: 0.0
     robot_y: 0.0
     visualization: true
@@ -22,4 +21,9 @@ ORB_SLAM3_RGBD_ROS2:
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
     landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)
     do_loop_closing: true
-    publish_traversability_data: true
+    do_loop_closing: false
+
+    # traversability related
+    lidar_topic_name: lidar/points
+    publish_traversability_data: true # publishes the traversability grid and the occupancy map. Works only if `traversability_ros_integration` is set to false.
+    traversability_ros_integration: false # if true, publishes the messages on /traversability_keyframe_additions and /traversability_keyframe_updates. If true, does not involve the traversability class within ORB_SLAM3 and must be integrated with ROS. Set it to true if you want traversability to run in a seperate process.

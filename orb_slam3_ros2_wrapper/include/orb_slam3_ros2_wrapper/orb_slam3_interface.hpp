@@ -48,6 +48,7 @@ namespace ORB_SLAM3_Wrapper
                           ORB_SLAM3::System::eSensor sensor,
                           bool bUseViewer,
                           bool loopClosing,
+                          bool useTraversability,
                           double robotX,
                           double robotY,
                           std::string globalFrame,

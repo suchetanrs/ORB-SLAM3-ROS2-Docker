@@ -97,18 +97,24 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("landmark_publish_frequency", rclcpp::ParameterValue(1000));
         this->get_parameter("landmark_publish_frequency", landmark_publish_frequency_);
 
+        this->declare_parameter("do_loop_closing", rclcpp::ParameterValue(true));
+        this->get_parameter("do_loop_closing", do_loop_closing_);
+
         this->declare_parameter("publish_traversability_data", rclcpp::ParameterValue(false));
         this->get_parameter("publish_traversability_data", publish_traversability_data_);
         
         this->declare_parameter("do_loop_closing", rclcpp::ParameterValue(true));
         this->get_parameter("do_loop_closing", do_loop_closing_);
 
+        this->declare_parameter("traversability_ros_integration", rclcpp::ParameterValue(false));
+        this->get_parameter("traversability_ros_integration", traversability_ros_integration_);
+
         // Timers
         mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
 
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                            sensor, bUseViewer, do_loop_closing_, robot_x_,
+                                                                            sensor, bUseViewer, do_loop_closing_, !traversability_ros_integration_, robot_x_,
                                                                             robot_y_, global_frame_, odom_frame_id_, robot_base_frame_id_);
 
         frequency_tracker_count_ = 0;
@@ -180,12 +186,16 @@ namespace ORB_SLAM3_Wrapper
 #ifdef WITH_TRAVERSABILITY_MAP
     void RgbdSlamNode::LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar)
     {
+        if(traversability_ros_integration_)
+            return;
         // RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
         interface_->handleLidarPCL(msgLidar->header.stamp, msgLidar);
     }
 
     void RgbdSlamNode::publishTraversabilityData()
     {
+        if(traversability_ros_integration_)
+            return;
         if(!publish_traversability_data_)
             return;
         std::lock_guard<std::mutex> lock(latestTimeMutex_);

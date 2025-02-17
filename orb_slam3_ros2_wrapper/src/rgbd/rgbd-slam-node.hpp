@@ -141,8 +141,9 @@ namespace ORB_SLAM3_Wrapper
         double frequency_tracker_count_ = 0;
         int map_data_publish_frequency_;
         int landmark_publish_frequency_;
-        bool publish_traversability_data_;
         bool do_loop_closing_;
+        bool publish_traversability_data_;
+        bool traversability_ros_integration_;
         std::chrono::_V2::system_clock::time_point frequency_tracker_clock_;
 
         ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;

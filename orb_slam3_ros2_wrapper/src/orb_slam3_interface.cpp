@@ -12,6 +12,7 @@ namespace ORB_SLAM3_Wrapper
                                          ORB_SLAM3::System::eSensor sensor,
                                          bool bUseViewer,
                                          bool loopClosing,
+                                         bool useTraversability,
                                          double robotX,
                                          double robotY,
                                          std::string globalFrame,
@@ -29,7 +30,7 @@ namespace ORB_SLAM3_Wrapper
           robotFrame_(robotFrame)
     {
         std::cout << "Interface constructor started" << endl;
-        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing);
+        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing, useTraversability);
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
         std::cout << "Interface constructor complete" << endl;
         std::cout << "Robot X: " << robotX_ << " Robot Y: " << robotY_ << std::endl;
