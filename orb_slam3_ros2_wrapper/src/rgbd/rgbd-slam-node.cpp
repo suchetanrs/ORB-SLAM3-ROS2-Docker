@@ -82,12 +82,15 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("landmark_publish_frequency", rclcpp::ParameterValue(1000));
         this->get_parameter("landmark_publish_frequency", landmark_publish_frequency_);
 
+        this->declare_parameter("do_loop_closing", rclcpp::ParameterValue(true));
+        this->get_parameter("do_loop_closing", do_loop_closing_);
+
         // Timers
         mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
 
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                            sensor, bUseViewer, robot_x_,
+                                                                            sensor, bUseViewer, do_loop_closing_, robot_x_,
                                                                             robot_y_, global_frame_, odom_frame_id_, robot_base_frame_id_);
 
         frequency_tracker_count_ = 0;

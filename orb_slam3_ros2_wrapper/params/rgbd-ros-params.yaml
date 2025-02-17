@@ -4,6 +4,7 @@
 
 ORB_SLAM3_RGBD_ROS2:
   ros__parameters:
+    # slam related
     robot_base_frame: base_footprint
     global_frame: map
     odom_frame: odom
@@ -15,7 +16,8 @@ ORB_SLAM3_RGBD_ROS2:
     robot_y: 0.0
     visualization: true
     ros_visualization: false
-    odometry_mode: true
+    odometry_mode: false
     publish_tf: true
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
     landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)
+    do_loop_closing: true
