@@ -7,10 +7,10 @@ Camera.type: "PinHole"
 
 # Camera calibration and distortion parameters (OpenCV) 
 # Right Camera calibration and distortion parameters (OpenCV)
-Camera.fx: 528.433756558705
-Camera.fy: 528.433756558705
-Camera.cx: 320.5
-Camera.cy: 240.5
+Camera.fx: 432.496042035043
+Camera.fy: 432.496042035043
+Camera.cx: 320.0
+Camera.cy: 240.0
 
 
 # distortion parameters
@@ -63,7 +63,7 @@ IMU.Frequency: 92
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1250
+ORBextractor.nFeatures: 900
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
