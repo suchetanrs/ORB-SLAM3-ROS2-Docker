@@ -129,6 +129,10 @@ namespace ORB_SLAM3_Wrapper
                 mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
             }
         }
+        for (auto& overridenRefPoses : mapReferencePosesOverrides_)
+        {
+            mapReferencePoses_[overridenRefPoses.first] = overridenRefPoses.second;
+        }
         // std::cout << "+++++++++++++++++++++++++++++++++" << std::endl;
         mapReferencesMutex_.unlock();
     }
@@ -334,11 +338,22 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::correctTrackedPose(Sophus::SE3f &s)
     {
+        std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         mapReferencesMutex_.lock();
         latestTrackedPose_ = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(
             mapReferencePoses_[orbAtlas_->GetCurrentMap()], s);
         mapReferencesMutex_.unlock();
     }
+
+    void ORBSLAM3Interface::resetLocalMapping()
+    {
+        std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
+        auto latestMapPose = latestTrackedPose_;
+        mSLAM_->ResetActiveMap();
+        mapReferencesMutex_.lock();
+        mapReferencePosesOverrides_[orbAtlas_->GetCurrentMap()] = latestMapPose;
+        mapReferencesMutex_.unlock();
+    };
 
     void ORBSLAM3Interface::getDirectOdomToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
     {
@@ -346,6 +361,7 @@ namespace ORB_SLAM3_Wrapper
         tf.child_frame_id = robotFrame_;
         if (hasTracked_)
         {
+            std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             // get transform between map and odom and send the transform.
             auto tfMapOdom = latestTrackedPose_;
             geometry_msgs::msg::Pose poseMapOdom = tf2::toMsg(tfMapOdom);
@@ -378,6 +394,7 @@ namespace ORB_SLAM3_Wrapper
                                    msgOdom->pose.pose.orientation.y,
                                    msgOdom->pose.pose.orientation.z));
             // get transform between map and odom and send the transform.
+            std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             auto tfMapOdom = latestTrackedPose_ * latestOdomTransform_.inverse();
             geometry_msgs::msg::Pose poseMapOdom = tf2::toMsg(tfMapOdom);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
@@ -394,6 +411,7 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::getRobotPose(geometry_msgs::msg::PoseStamped& pose)
     {
+        std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         pose.header.frame_id = globalFrame_;
         pose.pose = tf2::toMsg(latestTrackedPose_);
     }
@@ -529,7 +547,6 @@ namespace ORB_SLAM3_Wrapper
 
     bool ORBSLAM3Interface::trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
     {
-        ScopedEvent event("trackRGBD", time_profiler_);
         orbAtlas_ = mSLAM_->GetAtlas();
         cv_bridge::CvImageConstPtr cvRGB;
         cv_bridge::CvImageConstPtr cvD;

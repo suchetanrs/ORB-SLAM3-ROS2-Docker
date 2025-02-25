@@ -28,7 +28,7 @@ namespace ORB_SLAM3_Wrapper
 
         imuSub_ = this->create_subscription<sensor_msgs::msg::Imu>(this->get_parameter("imu_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::ImuCallback, this, std::placeholders::_1));
         odomSub_ = this->create_subscription<nav_msgs::msg::Odometry>(this->get_parameter("odom_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::OdomCallback, this, std::placeholders::_1));
-        
+
         // ROS Publishers
         //---- the following is published when a service is called
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
@@ -45,6 +45,7 @@ namespace ORB_SLAM3_Wrapper
         getMapPointsService_ = this->create_service<slam_msgs::srv::GetLandmarksInView>("orb_slam3/get_landmarks_in_view", std::bind(&RgbdSlamNode::getMapPointsInViewServer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, pointsInViewCallbackGroup_);
         mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapPointsService_ = this->create_service<slam_msgs::srv::GetAllLandmarksInMap>("orb_slam3/get_all_landmarks_in_map", std::bind(&RgbdSlamNode::publishMapPointCloud, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, mapPointsCallbackGroup_);
+        resetLocalMapSrv_ = this->create_service<std_srvs::srv::SetBool>("orb_slam3/reset_mapping", std::bind(&RgbdSlamNode::resetActiveMapSrv, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, mapPointsCallbackGroup_);
 
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
@@ -189,6 +190,13 @@ namespace ORB_SLAM3_Wrapper
             // Print the time taken for each line
             response->landmarks = mapPCL;
         }
+    }
+
+    void RgbdSlamNode::resetActiveMapSrv(std::shared_ptr<rmw_request_id_t> request_header,
+                           std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                           std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+    {
+        interface_->resetLocalMapping();
     }
 
     void RgbdSlamNode::publishMapData()

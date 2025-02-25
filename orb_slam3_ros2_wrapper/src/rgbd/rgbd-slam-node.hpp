@@ -29,6 +29,8 @@
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
+#include "std_srvs/srv/set_bool.hpp"
+
 #include <slam_msgs/msg/map_data.hpp>
 #include <slam_msgs/srv/get_map.hpp>
 #include <slam_msgs/srv/get_landmarks_in_view.hpp>
@@ -67,6 +69,10 @@ namespace ORB_SLAM3_Wrapper
                                   std::shared_ptr<slam_msgs::srv::GetAllLandmarksInMap::Request> request,
                                   std::shared_ptr<slam_msgs::srv::GetAllLandmarksInMap::Response> response);
 
+        void resetActiveMapSrv(std::shared_ptr<rmw_request_id_t> request_header,
+                               std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                               std::shared_ptr<std_srvs::srv::SetBool::Response> response);
+
         /**
          * @brief Callback function for GetMap service.
          * @param request_header Request header.
@@ -103,6 +109,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Service<slam_msgs::srv::GetMap>::SharedPtr getMapDataService_;
         rclcpp::Service<slam_msgs::srv::GetLandmarksInView>::SharedPtr getMapPointsService_;
         rclcpp::Service<slam_msgs::srv::GetAllLandmarksInMap>::SharedPtr mapPointsService_;
+        rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr resetLocalMapSrv_;
         // ROS Timers
         rclcpp::TimerBase::SharedPtr mapDataTimer_;
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;

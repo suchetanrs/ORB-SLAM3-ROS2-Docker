@@ -101,6 +101,8 @@ namespace ORB_SLAM3_Wrapper
             return typeConversions_;
         };
 
+        void resetLocalMapping();
+
     private:
         std::shared_ptr<ORB_SLAM3::System> mSLAM_;
         std::shared_ptr<WrapperTypeConversions> typeConversions_;
@@ -117,8 +119,10 @@ namespace ORB_SLAM3_Wrapper
         std::mutex currentMapPointsMutex_;
 
         std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
+        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePosesOverrides_;
         std::mutex mapReferencesMutex_;
         std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
+        std::mutex latestTrackedPoseMutex_;
         Eigen::Affine3d latestTrackedPose_;
         bool hasTracked_ = false;
         double robotX_, robotY_;
