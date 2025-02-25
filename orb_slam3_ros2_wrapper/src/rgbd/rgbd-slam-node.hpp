@@ -140,7 +140,6 @@ namespace ORB_SLAM3_Wrapper
         bool publish_tf_;
         double frequency_tracker_count_ = 0;
         int map_data_publish_frequency_;
-        int landmark_publish_frequency_;
         bool do_loop_closing_;
         bool publish_traversability_data_;
         bool traversability_ros_integration_;

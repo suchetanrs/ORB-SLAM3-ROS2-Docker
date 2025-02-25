@@ -19,7 +19,6 @@ ORB_SLAM3_RGBD_ROS2:
     odometry_mode: false
     publish_tf: true
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
-    landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)
     do_loop_closing: true
 
     # traversability related
@@ -35,3 +34,4 @@ local_traversability_node:
 traversability_threshold_node:
   ros__parameters:
     lethal_obstacle_threshold: 55 # between 0 to 100
+    do_loop_closing: true

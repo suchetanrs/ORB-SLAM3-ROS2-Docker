@@ -32,6 +32,7 @@ namespace ORB_SLAM3_Wrapper
         std::cout << "Interface constructor started" << endl;
         mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing, useTraversability);
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
+        time_profiler_ = TimeProfiler::getInstance();
         std::cout << "Interface constructor complete" << endl;
         std::cout << "Robot X: " << robotX_ << " Robot Y: " << robotY_ << std::endl;
     }
@@ -44,6 +45,7 @@ namespace ORB_SLAM3_Wrapper
         typeConversions_.reset();
         mapReferencePoses_.clear();
         allKFs_.clear();
+        delete time_profiler_;
     }
 
     std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> ORBSLAM3Interface::makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList)
@@ -576,6 +578,7 @@ namespace ORB_SLAM3_Wrapper
 
     bool ORBSLAM3Interface::trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
     {
+        ScopedEvent event("trackRGBD", time_profiler_);
         orbAtlas_ = mSLAM_->GetAtlas();
         cv_bridge::CvImageConstPtr cvRGB;
         cv_bridge::CvImageConstPtr cvD;
@@ -612,10 +615,14 @@ namespace ORB_SLAM3_Wrapper
         }
         if (currentTrackingState == 2)
         {
+            // time_profiler_->startEvent("RefPosesCalc");
             calculateReferencePoses();
+            // time_profiler_->endEvent("RefPosesCalc");
+            // time_profiler_->startEvent("CorrectTracked");
             correctTrackedPose(Tcw);
-            std::vector<ORB_SLAM3::MapPoint *> tempMapPoints;
-            auto tempTwc = Tcw.inverse();
+            // time_profiler_->endEvent("CorrectTracked");
+            // auto tempTwc = Tcw.inverse();
+            // std::vector<ORB_SLAM3::MapPoint *> tempMapPoints;
             // mapPointsVisibleFromPose(tempTwc, tempMapPoints, 1000, 5.0, 2.0);
             hasTracked_ = true;
             return true;

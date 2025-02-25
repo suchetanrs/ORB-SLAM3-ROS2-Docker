@@ -88,4 +88,3 @@ The very initial versions of this code were derived from [thien94/orb_slam3_ros_
 | `odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `false`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```|
 | `publish_tf`               | `true`         | Publishes the map->odom tf in case odometry_mode is set to `true` and map->odom->base_link in case odometry_mode is set to `false`.|
 | `map_data_publish_frequency`| `1000`         | Time interval at which map_data should be published (ms).|
-| `landmark_publish_frequency`| `1000`         | Time interval at which landmarks should be published (ms).|
