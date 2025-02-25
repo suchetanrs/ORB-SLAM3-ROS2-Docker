@@ -29,7 +29,7 @@ namespace ORB_SLAM3_Wrapper
 
         imuSub_ = this->create_subscription<sensor_msgs::msg::Imu>(this->get_parameter("imu_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::ImuCallback, this, std::placeholders::_1));
         odomSub_ = this->create_subscription<nav_msgs::msg::Odometry>(this->get_parameter("odom_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::OdomCallback, this, std::placeholders::_1));
-        
+
         // ROS Publishers
         //---- the following is published when a service is called
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
@@ -41,15 +41,16 @@ namespace ORB_SLAM3_Wrapper
 
         gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_traversability_map", 10);
         traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
-        
+
         additions_pub_ = create_publisher<traversability_msgs::msg::KeyFrameAdditions>("traversability_keyframe_additions", 10);
         updates_pub_ = create_publisher<traversability_msgs::msg::KeyFrameUpdates>("traversability_keyframe_updates", 10);
-        
+
         publishOccupancyCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&RgbdSlamNode::publishTraversabilityData, this), publishOccupancyCallbackGroup_);
 #endif
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
+        slamInfoPub_ = this->create_publisher<slam_msgs::msg::SlamInfo>("slam_info", 10);
         //---- the following is published continously
         mapDataPub_ = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         robotPoseMapFrame_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("robot_pose_slam", 10);
@@ -60,6 +61,7 @@ namespace ORB_SLAM3_Wrapper
         getMapPointsService_ = this->create_service<slam_msgs::srv::GetLandmarksInView>("orb_slam3/get_landmarks_in_view", std::bind(&RgbdSlamNode::getMapPointsInViewServer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, pointsInViewCallbackGroup_);
         mapPointsCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapPointsService_ = this->create_service<slam_msgs::srv::GetAllLandmarksInMap>("orb_slam3/get_all_landmarks_in_map", std::bind(&RgbdSlamNode::publishMapPointCloud, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, mapPointsCallbackGroup_);
+        resetLocalMapSrv_ = this->create_service<std_srvs::srv::SetBool>("orb_slam3/reset_mapping", std::bind(&RgbdSlamNode::resetActiveMapSrv, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), rmw_qos_profile_services_default, mapPointsCallbackGroup_);
 
         // TF
         tfBroadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
@@ -139,7 +141,7 @@ namespace ORB_SLAM3_Wrapper
         std::lock_guard<std::mutex> lock(latestTimeMutex_);
         latestTime_ = msgOdom->header.stamp;
         if (odometry_mode_)
-        {   // populate map to odom tf if odometry is being used
+        { // populate map to odom tf if odometry is being used
             RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
             interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
         }
@@ -180,7 +182,7 @@ namespace ORB_SLAM3_Wrapper
 #ifdef WITH_TRAVERSABILITY_MAP
     void RgbdSlamNode::LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar)
     {
-        if(traversability_ros_integration_)
+        if (traversability_ros_integration_)
             return;
         // RCLCPP_INFO_STREAM(this->get_logger(), "PCLCallback");
         interface_->handleLidarPCL(msgLidar->header.stamp, msgLidar);
@@ -188,9 +190,9 @@ namespace ORB_SLAM3_Wrapper
 
     void RgbdSlamNode::publishTraversabilityData()
     {
-        if(traversability_ros_integration_)
+        if (traversability_ros_integration_)
             return;
-        if(!publish_traversability_data_)
+        if (!publish_traversability_data_)
             return;
         std::lock_guard<std::mutex> lock(latestTimeMutex_);
         auto map = interface_->getTraversabilityData();
@@ -253,19 +255,31 @@ namespace ORB_SLAM3_Wrapper
                a.orientation.w != b.orientation.w;
     }
 
+    void RgbdSlamNode::resetActiveMapSrv(std::shared_ptr<rmw_request_id_t> request_header,
+                                         std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                                         std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+    {
+        interface_->resetLocalMapping();
+    }
+
     void RgbdSlamNode::publishMapData()
     {
         if (isTracked_)
         {
             auto start = std::chrono::high_resolution_clock::now();
+            slam_msgs::msg::SlamInfo slamInfoMsg;
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Publishing map data");
-            RCLCPP_INFO_STREAM(this->get_logger(), "Current ORB-SLAM3 tracking frequency: " << frequency_tracker_count_ / std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - frequency_tracker_clock_).count() << " frames / sec");
+            double tracking_freq = frequency_tracker_count_ / std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - frequency_tracker_clock_).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Current ORB-SLAM3 tracking frequency: " << tracking_freq << " frames / sec");
             frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
             frequency_tracker_count_ = 0;
             // publish the map data (current active keyframes etc)
             slam_msgs::msg::MapData mapDataMsg;
             interface_->mapDataToMsg(mapDataMsg, true, false);
             mapDataPub_->publish(mapDataMsg);
+            slamInfoMsg.num_maps = interface_->getNumberOfMaps();
+            slamInfoMsg.num_keyframes_in_current_map = mapDataMsg.graph.poses_id.size();
+            slamInfoMsg.tracking_frequency = tracking_freq;
             auto t1 = std::chrono::high_resolution_clock::now();
             auto time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to create mapdata: " << time_publishMapData << " seconds");
@@ -283,7 +297,7 @@ namespace ORB_SLAM3_Wrapper
                 return;
             }
 #ifdef WITH_TRAVERSABILITY_MAP
-            if(!traversability_ros_integration_)
+            if (!traversability_ros_integration_)
                 return;
 
             // Process all poses
@@ -340,6 +354,7 @@ namespace ORB_SLAM3_Wrapper
             time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to create traversability data: " << time_publishMapData << " seconds");
 #endif
+            slamInfoPub_->publish(slamInfoMsg);
         }
     }
 
@@ -359,7 +374,7 @@ namespace ORB_SLAM3_Wrapper
     {
         RCLCPP_INFO(this->get_logger(), "GetMapPointsInView service called.");
         std::vector<slam_msgs::msg::MapPoint> landmarks;
-        std::vector<ORB_SLAM3::MapPoint*> points;
+        std::vector<ORB_SLAM3::MapPoint *> points;
         interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation, request->exhaustive_search);
         auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
         auto affinePosToMap = affineMapToPos.inverse().cast<double>();
