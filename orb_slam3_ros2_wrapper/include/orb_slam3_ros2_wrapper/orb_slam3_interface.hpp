@@ -103,6 +103,11 @@ namespace ORB_SLAM3_Wrapper
 
         void resetLocalMapping();
 
+        size_t getNumberOfMaps()
+        {
+            return orbAtlas_->GetAllMaps().size(); 
+        };
+
     private:
         std::shared_ptr<ORB_SLAM3::System> mSLAM_;
         std::shared_ptr<WrapperTypeConversions> typeConversions_;

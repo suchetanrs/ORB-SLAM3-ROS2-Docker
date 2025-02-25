@@ -1,0 +1,3 @@
+int32 num_maps
+int32 num_keyframes_in_current_map
+float32 tracking_frequency

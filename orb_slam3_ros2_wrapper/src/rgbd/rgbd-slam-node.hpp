@@ -32,6 +32,7 @@
 #include "std_srvs/srv/set_bool.hpp"
 
 #include <slam_msgs/msg/map_data.hpp>
+#include <slam_msgs/msg/slam_info.hpp>
 #include <slam_msgs/srv/get_map.hpp>
 #include <slam_msgs/srv/get_landmarks_in_view.hpp>
 #include <slam_msgs/srv/get_all_landmarks_in_map.hpp>
@@ -101,6 +102,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr visibleLandmarksPub_;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr visibleLandmarksPose_;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr robotPoseMapFrame_;
+        rclcpp::Publisher<slam_msgs::msg::SlamInfo>::SharedPtr slamInfoPub_;
         // TF
         std::shared_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
         std::shared_ptr<tf2_ros::TransformListener> tfListener_;

@@ -34,6 +34,7 @@ namespace ORB_SLAM3_Wrapper
         mapPointsPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("map_points", 10);
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
+        slamInfoPub_ = this->create_publisher<slam_msgs::msg::SlamInfo>("slam_info", 10);
         //---- the following is published continously
         mapDataPub_ = this->create_publisher<slam_msgs::msg::MapData>("map_data", 10);
         robotPoseMapFrame_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("robot_pose_slam", 10);
@@ -204,18 +205,24 @@ namespace ORB_SLAM3_Wrapper
         if (isTracked_)
         {
             auto start = std::chrono::high_resolution_clock::now();
+            slam_msgs::msg::SlamInfo slamInfoMsg;
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Publishing map data");
-            RCLCPP_INFO_STREAM(this->get_logger(), "Current ORB-SLAM3 tracking frequency: " << frequency_tracker_count_ / std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - frequency_tracker_clock_).count() << " frames / sec");
+            double tracking_freq = frequency_tracker_count_ / std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - frequency_tracker_clock_).count();
+            RCLCPP_INFO_STREAM(this->get_logger(), "Current ORB-SLAM3 tracking frequency: " << tracking_freq << " frames / sec");
             frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
             frequency_tracker_count_ = 0;
             // publish the map data (current active keyframes etc)
             slam_msgs::msg::MapData mapDataMsg;
             interface_->mapDataToMsg(mapDataMsg, true, false);
             mapDataPub_->publish(mapDataMsg);
+            slamInfoMsg.num_maps = interface_->getNumberOfMaps();
+            slamInfoMsg.num_keyframes_in_current_map = mapDataMsg.graph.poses_id.size();
+            slamInfoMsg.tracking_frequency = tracking_freq;
             auto t1 = std::chrono::high_resolution_clock::now();
             auto time_publishMapData = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - start).count();
             RCLCPP_DEBUG_STREAM(this->get_logger(), "Time to create mapdata: " << time_publishMapData << " seconds");
             RCLCPP_INFO_STREAM(this->get_logger(), "*************************");
+            slamInfoPub_->publish(slamInfoMsg);
         }
     }
 
