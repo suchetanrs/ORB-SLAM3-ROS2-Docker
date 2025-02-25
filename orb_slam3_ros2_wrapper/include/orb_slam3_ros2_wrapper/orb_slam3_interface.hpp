@@ -30,6 +30,7 @@
 #include "Map.h"
 #include "Atlas.h"
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
+#include "orb_slam3_ros2_wrapper/time_profiler.hpp"
 
 namespace ORB_SLAM3_Wrapper
 {
@@ -78,6 +79,11 @@ namespace ORB_SLAM3_Wrapper
 
         void getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapGraph);
 
+        TimeProfiler* getTimeProfiler()
+        {
+            return time_profiler_;
+        };
+
         void getCurrentMapPoints(sensor_msgs::msg::PointCloud2 &mapPointCloud);
 
         void mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
@@ -119,6 +125,8 @@ namespace ORB_SLAM3_Wrapper
         std::string globalFrame_;
         std::string odomFrame_;
         std::string robotFrame_;
+
+        TimeProfiler* time_profiler_;
     };
 }
 

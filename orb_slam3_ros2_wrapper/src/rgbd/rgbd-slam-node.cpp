@@ -79,9 +79,6 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("map_data_publish_frequency", rclcpp::ParameterValue(1000));
         this->get_parameter("map_data_publish_frequency", map_data_publish_frequency_);
 
-        this->declare_parameter("landmark_publish_frequency", rclcpp::ParameterValue(1000));
-        this->get_parameter("landmark_publish_frequency", landmark_publish_frequency_);
-
         this->declare_parameter("do_loop_closing", rclcpp::ParameterValue(true));
         this->get_parameter("do_loop_closing", do_loop_closing_);
 

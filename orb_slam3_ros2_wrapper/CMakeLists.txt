@@ -57,6 +57,7 @@ link_directories(
 add_executable(rgbd
   src/type_conversion.cpp
   src/orb_slam3_interface.cpp
+  src/time_profiler.cpp
   src/rgbd/rgbd-slam-node.cpp
   src/rgbd/rgbd.cpp
 )
