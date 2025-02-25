@@ -102,9 +102,6 @@ namespace ORB_SLAM3_Wrapper
 
         this->declare_parameter("publish_traversability_data", rclcpp::ParameterValue(false));
         this->get_parameter("publish_traversability_data", publish_traversability_data_);
-        
-        this->declare_parameter("do_loop_closing", rclcpp::ParameterValue(true));
-        this->get_parameter("do_loop_closing", do_loop_closing_);
 
         this->declare_parameter("traversability_ros_integration", rclcpp::ParameterValue(false));
         this->get_parameter("traversability_ros_integration", traversability_ros_integration_);
@@ -289,6 +286,9 @@ namespace ORB_SLAM3_Wrapper
                 return;
             }
 #ifdef WITH_TRAVERSABILITY_MAP
+            if(!traversability_ros_integration_)
+                return;
+
             // Process all poses
             for (size_t i = 0; i < mapDataMsg.graph.poses_id.size(); ++i)
             {

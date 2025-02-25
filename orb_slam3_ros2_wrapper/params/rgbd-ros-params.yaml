@@ -21,9 +21,17 @@ ORB_SLAM3_RGBD_ROS2:
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
     landmark_publish_frequency: 1000 # publish every 1000.0 milliseconds (has no effect if ros_visualization is false)
     do_loop_closing: true
-    do_loop_closing: false
 
     # traversability related
     lidar_topic_name: lidar/points
     publish_traversability_data: true # publishes the traversability grid and the occupancy map. Works only if `traversability_ros_integration` is set to false.
     traversability_ros_integration: false # if true, publishes the messages on /traversability_keyframe_additions and /traversability_keyframe_updates. If true, does not involve the traversability class within ORB_SLAM3 and must be integrated with ROS. Set it to true if you want traversability to run in a seperate process.
+
+local_traversability_node:
+  ros__parameters:
+    pointcloud_topic_name: "lidar/points"
+    expected_frequency: 4.0 # Hz.
+
+traversability_threshold_node:
+  ros__parameters:
+    lethal_obstacle_threshold: 55 # between 0 to 100
