@@ -170,7 +170,6 @@ namespace ORB_SLAM3_Wrapper
 
     void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
     {
-        auto camPose = typeConversions_->se3ROSToORB(typeConversions_->poseToAffine(cameraPose));
         auto T_mapros_base = typeConversions_->poseToAffine(cameraPose);
         auto T_maporb_cam = robotBase_to_cameraLink_.inverse() * T_mapros_base * robotBase_to_cameraLink_;
         auto camPose = typeConversions_->se3ROSToORB(T_maporb_cam);
