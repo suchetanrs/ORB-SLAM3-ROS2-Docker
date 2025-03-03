@@ -70,8 +70,8 @@ COPY traversability_mapping/traversability_ros_interface /root/trav_ws/src/trave
 RUN if [ "$USE_CI" = "true" ]; then \
     . /opt/ros/humble/setup.sh && cd /home/traversability/traversability_mapping/ && ./build.sh && \
     . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh && \
-    . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install && \
-    . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install; \
+    . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install && \
+    . /opt/ros/humble/setup.sh && . /root/trav_ws/install/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install; \
     fi
 
 RUN rm -rf /home/orb/ORB_SLAM3 /root/colcon_ws /home/traversability /root/trav_ws
