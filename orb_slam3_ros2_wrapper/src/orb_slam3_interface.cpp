@@ -177,7 +177,9 @@ namespace ORB_SLAM3_Wrapper
             std::cout << "Waiting for external KF to get added" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(30));
         }
-        auto camPose = typeConversions_->se3ROSToORB(typeConversions_->poseToAffine(cameraPose));
+        auto T_mapros_base = typeConversions_->poseToAffine(cameraPose);
+        auto T_maporb_cam = robotBase_to_cameraLink_.inverse() * T_mapros_base * robotBase_to_cameraLink_;
+        auto camPose = typeConversions_->se3ROSToORB(T_maporb_cam);
         mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle, exhaustive_search);
     }
 
