@@ -143,7 +143,7 @@ namespace ORB_SLAM3_Wrapper
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;
         std::string global_frame_;
-        double robot_x_, robot_y_;
+        double robot_x_, robot_y_, robot_z_, robot_qx_, robot_qy_, robot_qz_, robot_qw_;
         bool isTracked_ = false;
         bool odometry_mode_;
         bool publish_tf_;

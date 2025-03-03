@@ -34,3 +34,4 @@ container_root/profilers/**
 **perf**
 **.osa**
 container_root/.bash_history
+container_root/ros_env_vars.sh

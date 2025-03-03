@@ -72,7 +72,7 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("visualization", rclcpp::ParameterValue(true));
         this->get_parameter("visualization", bUseViewer);
 
-        this->declare_parameter("robot_base_frame", "base_link");
+        this->declare_parameter("robot_base_frame", "base_footprint");
         this->get_parameter("robot_base_frame", robot_base_frame_id_);
 
         this->declare_parameter("global_frame", "map");
@@ -86,6 +86,32 @@ namespace ORB_SLAM3_Wrapper
 
         this->declare_parameter("robot_y", rclcpp::ParameterValue(1.0));
         this->get_parameter("robot_y", robot_y_);
+
+        this->declare_parameter("robot_z", rclcpp::ParameterValue(1.0));
+        this->get_parameter("robot_z", robot_z_);
+
+        // Declare and get the quaternion components
+        this->declare_parameter("robot_qx", rclcpp::ParameterValue(0.0));
+        this->get_parameter("robot_qx", robot_qx_);
+
+        this->declare_parameter("robot_qy", rclcpp::ParameterValue(0.0));
+        this->get_parameter("robot_qy", robot_qy_);
+
+        this->declare_parameter("robot_qz", rclcpp::ParameterValue(0.0));
+        this->get_parameter("robot_qz", robot_qz_);
+
+        this->declare_parameter("robot_qw", rclcpp::ParameterValue(1.0));
+        this->get_parameter("robot_qw", robot_qw_);
+
+        // Create and populate the Pose message
+        geometry_msgs::msg::Pose initial_pose;
+        initial_pose.position.x = robot_x_;
+        initial_pose.position.y = robot_y_;
+        initial_pose.position.z = robot_z_;
+        initial_pose.orientation.x = robot_qx_;
+        initial_pose.orientation.y = robot_qy_;
+        initial_pose.orientation.z = robot_qz_;
+        initial_pose.orientation.w = robot_qw_;
 
         this->declare_parameter("odometry_mode", rclcpp::ParameterValue(false));
         this->get_parameter("odometry_mode", odometry_mode_);
@@ -110,8 +136,7 @@ namespace ORB_SLAM3_Wrapper
         mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
 
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                            sensor, bUseViewer, do_loop_closing_, !traversability_ros_integration_, robot_x_,
-                                                                            robot_y_, global_frame_, odom_frame_id_, robot_base_frame_id_);
+                                                                            sensor, bUseViewer, do_loop_closing_, !traversability_ros_integration_, initial_pose, global_frame_, odom_frame_id_, robot_base_frame_id_);
 
         frequency_tracker_count_ = 0;
         frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
@@ -377,7 +402,7 @@ namespace ORB_SLAM3_Wrapper
         std::vector<ORB_SLAM3::MapPoint *> points;
         interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation, request->exhaustive_search);
         auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
-        auto affinePosToMap = affineMapToPos.inverse().cast<double>();
+        auto affinePosToMap = affineMapToPos.inverse();
         // Populate the pose of the points vector into the ros message
         for (auto &point : points)
         {
