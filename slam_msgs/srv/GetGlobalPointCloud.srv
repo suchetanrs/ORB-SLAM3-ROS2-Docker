@@ -10,6 +10,7 @@ int16 ground_color_green
 int16 ground_color_blue
 float32 z_thresh_min # ground treated below this
 float32 z_thresh_max # points above this discarded
+float32 x_thresh_max
 bool get_grayscale
 ---
 bool response

@@ -12,8 +12,7 @@ namespace ORB_SLAM3_Wrapper
                                          ORB_SLAM3::System::eSensor sensor,
                                          bool bUseViewer,
                                          bool loopClosing,
-                                         double robotX,
-                                         double robotY,
+                                         geometry_msgs::msg::Pose initialRobotPose,
                                          std::string globalFrame,
                                          std::string odomFrame,
                                          std::string robotFrame)
@@ -22,8 +21,7 @@ namespace ORB_SLAM3_Wrapper
           sensor_(sensor),
           bUseViewer_(bUseViewer),
           loopClosing_(loopClosing),
-          robotX_(robotX),
-          robotY_(robotY),
+          initialRobotPose_(initialRobotPose),
           globalFrame_(globalFrame),
           odomFrame_(odomFrame),
           robotFrame_(robotFrame)
@@ -33,7 +31,10 @@ namespace ORB_SLAM3_Wrapper
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
         time_profiler_ = TimeProfiler::getInstance();
         std::cout << "Interface constructor complete" << endl;
-        std::cout << "Robot X: " << robotX_ << " Robot Y: " << robotY_ << std::endl;
+        robotBase_to_cameraLink_ = Eigen::Affine3f(
+            Eigen::Translation3f(initialRobotPose_.position.x, initialRobotPose_.position.y, initialRobotPose_.position.z) *
+            Eigen::Quaternionf(initialRobotPose_.orientation.w, initialRobotPose_.orientation.x, initialRobotPose_.orientation.y, initialRobotPose_.orientation.z));
+        std::cout << "Robot X: " << initialRobotPose_.position.x << " Robot Y: " << initialRobotPose_.position.y << std::endl;
     }
 
     ORBSLAM3Interface::~ORBSLAM3Interface()
@@ -99,10 +100,8 @@ namespace ORB_SLAM3_Wrapper
             if (c == 0)
             {
                 auto poseWithoutOffset = typeConversions_->se3ToAffine(mapsList[c]->GetOriginKF()->GetPose());
-                auto poseOffset = Eigen::Affine3d(
-                    Eigen::Translation3d(robotX_, robotY_, 0.0) *
-                    Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0));
-                mapReferencePoses_[mapsList[c]] = poseOffset * poseWithoutOffset;
+                // transform from map_orb -> camera
+                mapReferencePoses_[mapsList[c]] = poseWithoutOffset;
             }
             else
             {
@@ -126,9 +125,11 @@ namespace ORB_SLAM3_Wrapper
                     throw std::runtime_error("The parent map pose for this map ID does not exist. This should not happen.");
                 }
                 auto parentMapORBPose = allKFs_[parentMapID]->GetPose();
-                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
+                // transform from map_orb -> camera
+                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
             }
         }
+        // used for reset map service. To contonue tracking where it was left off. 
         for (auto& overridenRefPoses : mapReferencePosesOverrides_)
         {
             mapReferencePoses_[overridenRefPoses.first] = overridenRefPoses.second;
@@ -157,6 +158,8 @@ namespace ORB_SLAM3_Wrapper
                         continue;
                     }
                     auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[KF->mnId]->GetMap()], worldPos);
+                    // robotBase_to_cameraLink_ is map_ros->map_orb
+                    mapPointWorld = robotBase_to_cameraLink_ * mapPointWorld;
                     mapReferencesMutex_.unlock();
                     trackedMapPoints.push_back(mapPointWorld);
                 }
@@ -320,9 +323,11 @@ namespace ORB_SLAM3_Wrapper
                         {
                             auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
                             mapReferencesMutex_.lock();
-                            auto mapPointWorld = typeConversions_->transformPointWithReference<geometry_msgs::msg::Point>(mapReferencePoses_[allKFs_[kFId]->GetMap()], worldPos);
+                            auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[kFId]->GetMap()], worldPos);
+                            mapPointWorld = robotBase_to_cameraLink_ * mapPointWorld;
+                            auto mapPointWorldMsg = typeConversions_->eigenToPointMsg(mapPointWorld);
                             mapReferencesMutex_.unlock();
-                            pushedKf.word_pts.push_back(mapPointWorld);
+                            pushedKf.word_pts.push_back(mapPointWorldMsg);
                         }
                     }
                     mapDataMsg.nodes.push_back(pushedKf);
@@ -340,18 +345,18 @@ namespace ORB_SLAM3_Wrapper
     {
         std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         mapReferencesMutex_.lock();
-        latestTrackedPose_ = typeConversions_->transformPoseWithReference<Eigen::Affine3d>(
+        latestTrackedPoseORB_camera_ = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(
             mapReferencePoses_[orbAtlas_->GetCurrentMap()], s);
+        latestTrackedPose_ = robotBase_to_cameraLink_ * latestTrackedPoseORB_camera_ * robotBase_to_cameraLink_.inverse();
         mapReferencesMutex_.unlock();
     }
 
     void ORBSLAM3Interface::resetLocalMapping()
     {
         std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
-        auto latestMapPose = latestTrackedPose_;
         mSLAM_->ResetActiveMap();
         mapReferencesMutex_.lock();
-        mapReferencePosesOverrides_[orbAtlas_->GetCurrentMap()] = latestMapPose;
+        mapReferencePosesOverrides_[orbAtlas_->GetCurrentMap()] = latestTrackedPoseORB_camera_;
         mapReferencesMutex_.unlock();
     };
 
@@ -364,7 +369,7 @@ namespace ORB_SLAM3_Wrapper
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             // get transform between map and odom and send the transform.
             auto tfMapOdom = latestTrackedPose_;
-            geometry_msgs::msg::Pose poseMapOdom = tf2::toMsg(tfMapOdom);
+            geometry_msgs::msg::Pose poseMapOdom = typeConversions_->affine3fToPose(tfMapOdom);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
             rclcpp::Time odomTimestamp = headerToUse.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
@@ -384,19 +389,19 @@ namespace ORB_SLAM3_Wrapper
         tf.child_frame_id = odomFrame_;
         if (hasTracked_)
         {
-            // convert odom value to Eigen::Affine3d
-            auto latestOdomTransform_ = Eigen::Affine3d(
-                Eigen::Translation3d(msgOdom->pose.pose.position.x,
+            // convert odom value to Eigen::Affine3f
+            auto latestOdomTransform_ = Eigen::Affine3f(
+                Eigen::Translation3f(msgOdom->pose.pose.position.x,
                                      msgOdom->pose.pose.position.y,
                                      msgOdom->pose.pose.position.z) *
-                Eigen::Quaterniond(msgOdom->pose.pose.orientation.w,
+                Eigen::Quaternionf(msgOdom->pose.pose.orientation.w,
                                    msgOdom->pose.pose.orientation.x,
                                    msgOdom->pose.pose.orientation.y,
                                    msgOdom->pose.pose.orientation.z));
             // get transform between map and odom and send the transform.
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             auto tfMapOdom = latestTrackedPose_ * latestOdomTransform_.inverse();
-            geometry_msgs::msg::Pose poseMapOdom = tf2::toMsg(tfMapOdom);
+            geometry_msgs::msg::Pose poseMapOdom = typeConversions_->affine3fToPose(tfMapOdom);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
             rclcpp::Time odomTimestamp = msgOdom->header.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
@@ -413,7 +418,7 @@ namespace ORB_SLAM3_Wrapper
     {
         std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         pose.header.frame_id = globalFrame_;
-        pose.pose = tf2::toMsg(latestTrackedPose_);
+        pose.pose = typeConversions_->affine3fToPose(latestTrackedPose_);
     }
 
     void ORBSLAM3Interface::getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapKFOnly)
@@ -426,7 +431,9 @@ namespace ORB_SLAM3_Wrapper
                 Sophus::SE3f kfPose = kf->GetPose();
                 geometry_msgs::msg::PoseStamped kfPoseStamped;
                 mapReferencesMutex_.lock();
-                kfPoseStamped.pose = typeConversions_->transformPoseWithReference<geometry_msgs::msg::Pose>(mapReferencePoses_[kf->GetMap()], kfPose);
+                auto affinePose = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[kf->GetMap()], kfPose);
+                affinePose = robotBase_to_cameraLink_ * affinePose * robotBase_to_cameraLink_.inverse();
+                kfPoseStamped.pose = typeConversions_->affine3fToPose(affinePose);
                 mapReferencesMutex_.unlock();
                 kfPoseStamped.header.frame_id = globalFrame_;
                 kfPoseStamped.header.stamp = typeConversions_->secToStamp(kf->mTimeStamp);
@@ -446,7 +453,9 @@ namespace ORB_SLAM3_Wrapper
                 mapReferencesMutex_.unlock();
                 Sophus::SE3f kFPose = pKFcurr->GetPose();
                 geometry_msgs::msg::PoseStamped poseStamped;
-                poseStamped.pose = typeConversions_->transformPoseWithReference<geometry_msgs::msg::Pose>(currReferencePose_, kFPose);
+                auto affinePose = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(currReferencePose_, kFPose);
+                affinePose = robotBase_to_cameraLink_ * affinePose * robotBase_to_cameraLink_.inverse();
+                poseStamped.pose = typeConversions_->affine3fToPose(affinePose);
                 poseStamped.header.frame_id = globalFrame_;
                 poseStamped.header.stamp = typeConversions_->secToStamp(pKFcurr->mTimeStamp);
                 // push to pose graph.

@@ -34,7 +34,7 @@ public:
     {
         // 1) Subscribers
         pc_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-            "/camera/colored_pointcloud",
+            "lidar/points",
             rclcpp::SensorDataQoS(),
             std::bind(&PosePointCloudCollector::pointCloudCallback, this, std::placeholders::_1));
 
@@ -169,14 +169,14 @@ private:
 
         // 2) Transform each stored pointcloud into the map frame
 
-        // 2.a) Lookup the static transform from camera_depth_optical_frame -> camera_link once
+        // 2.a) Lookup the static transform from lidar_link -> base_footprint once
         geometry_msgs::msg::TransformStamped cdo_to_cl;
         try
         {
             // If your frames are reversed, swap the order below
             cdo_to_cl = tf_buffer_.lookupTransform(
-                "camera_link",                // target frame
-                "camera_depth_optical_frame", // source frame
+                "base_footprint",                // target frame
+                "lidar_link", // source frame
                 tf2::TimePointZero);
         }
         catch (const tf2::TransformException &ex)
@@ -185,7 +185,7 @@ private:
             response->response = false;
             return;
         }
-        // TF from camera_depth_optical_frame -> camera_link.
+        // TF from lidar_link -> base_footprint.
         // If cdo_to_cl is T_CL_CDO, then its Eigen form is:
         Eigen::Isometry3d T_CL_CDO = tf2::transformToEigen(cdo_to_cl.transform);
 
@@ -194,6 +194,7 @@ private:
         global_map_cloud.clear();
         float max_z = request->z_thresh_max;
         float min_z = request->z_thresh_min;
+        float max_x = request->x_thresh_max;
         bool use_grayscale = request->get_grayscale;
 
         int ground_red = request->ground_color_red;
@@ -218,10 +219,10 @@ private:
             local_voxel_filter.filter(pcl_in);
 
             // Build an Eigen transform from the geometry_msgs::Pose.
-            // Here we assume Pose is T_map_cameraLink: (map -> camera_link).
+            // Here we assume Pose is T_map_cameraLink: (map -> base_footprint).
             Eigen::Isometry3d T_map_CL = poseToEigen(camera_pose);
 
-            // So final transform from camera_depth_optical_frame -> map:
+            // So final transform from lidar_link -> map:
             //   T_map_CDO = T_map_CL * T_CL_CDO
             Eigen::Isometry3d T_map_CDO = T_pitch_down * T_map_CL * T_CL_CDO;
 
@@ -235,6 +236,9 @@ private:
                     continue;
 
                 if (pt.z > max_z)
+                    continue;
+
+                if (pt.x > max_x)
                     continue;
 
                 Eigen::Vector3d p_in(pt.x, pt.y, pt.z);

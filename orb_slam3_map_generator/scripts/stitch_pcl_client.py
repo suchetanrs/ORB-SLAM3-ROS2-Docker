@@ -33,7 +33,8 @@ class GlobalPointCloudClient(Node):
         req.ground_color_green = request_params.get('ground_color_green', 255)
         req.ground_color_blue = request_params.get('ground_color_blue', 255)
         req.z_thresh_min = request_params.get('z_thresh_min', 0.0)
-        req.z_thresh_max = request_params.get('z_thresh_max', 2.0)
+        req.z_thresh_max = request_params.get('z_thresh_max', 1.5)
+        req.x_thresh_max = request_params.get('x_thresh_max', 5.0)
         req.get_grayscale = request_params.get('get_grayscale', False)
 
         self.get_logger().info('Sending request to trigger_global_cloud service...')
@@ -48,15 +49,16 @@ def main(args=None):
 
     # Define request parameters (modify thesFalsee as needed)
     request_parameters = {
-        'map_pitch': -10.0,
-        'global_voxel_resolution': 0.01,
-        'local_voxel_resolution': 0.01,
+        'map_pitch': 0.0,
+        'global_voxel_resolution': 0.05,
+        'local_voxel_resolution': 0.05,
         'ground_color_red': 200,
         'ground_color_green': 200,
         'ground_color_blue': 200,
-        'z_thresh_min': -1.5,
-        'z_thresh_max': 1.5,
-        'get_grayscale': True
+        'z_thresh_min': -10.0,
+        'z_thresh_max': 0.8,
+        'x_thresh_max': 2.0,
+        'get_grayscale': False
     }
 
     future = client_node.send_request(request_parameters)

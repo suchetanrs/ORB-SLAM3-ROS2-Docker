@@ -42,8 +42,7 @@ namespace ORB_SLAM3_Wrapper
                           ORB_SLAM3::System::eSensor sensor,
                           bool bUseViewer,
                           bool loopClosing,
-                          double robotX,
-                          double robotY,
+                          geometry_msgs::msg::Pose initialRobotPose,
                           std::string globalFrame,
                           std::string odomFrame,
                           std::string robotFrame);
@@ -123,14 +122,16 @@ namespace ORB_SLAM3_Wrapper
         std::mutex mapDataMutex_;
         std::mutex currentMapPointsMutex_;
 
-        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePoses_;
-        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3d> mapReferencePosesOverrides_;
+        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3f> mapReferencePoses_;
+        std::unordered_map<ORB_SLAM3::Map *, Eigen::Affine3f> mapReferencePosesOverrides_;
         std::mutex mapReferencesMutex_;
         std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> allKFs_;
         std::mutex latestTrackedPoseMutex_;
-        Eigen::Affine3d latestTrackedPose_;
+        Eigen::Affine3f latestTrackedPose_; // from map_ros to base_footprint
+        Eigen::Affine3f latestTrackedPoseORB_camera_; // from map_orb to camera_link
+        Eigen::Affine3f robotBase_to_cameraLink_;
         bool hasTracked_ = false;
-        double robotX_, robotY_;
+        geometry_msgs::msg::Pose initialRobotPose_;
         std::string globalFrame_;
         std::string odomFrame_;
         std::string robotFrame_;

@@ -120,9 +120,9 @@ namespace ORB_SLAM3_Wrapper
         return tfCameraTranslation;
     }
 
-    Eigen::Affine3d WrapperTypeConversions::se3ToAffine(const Sophus::SE3f &s)
+    Eigen::Affine3f WrapperTypeConversions::se3ToAffine(const Sophus::SE3f &s)
     {
-        Eigen::Affine3d affineTf = se3ORBToROS(s).cast<double>();
+        Eigen::Affine3f affineTf = se3ORBToROS(s);
         return affineTf;
     }
 
@@ -154,9 +154,23 @@ namespace ORB_SLAM3_Wrapper
 
     geometry_msgs::msg::Pose WrapperTypeConversions::se3ToPoseMsg(const Sophus::SE3f &s)
     {
-        Eigen::Affine3d poseTransform = se3ORBToROS(s).cast<double>();
-        geometry_msgs::msg::Pose pose = tf2::toMsg(poseTransform);
+        Eigen::Affine3f poseTransform = se3ORBToROS(s);
+        geometry_msgs::msg::Pose pose = affine3fToPose(poseTransform);
         return pose;
+    }
+
+    geometry_msgs::msg::Pose WrapperTypeConversions::affine3fToPose(const Eigen::Affine3f & in)
+    {
+        geometry_msgs::msg::Pose msg;
+        msg.position.x = in.translation().x();
+        msg.position.y = in.translation().y();
+        msg.position.z = in.translation().z();
+        Eigen::Quaternionf q(in.linear());
+        msg.orientation.x = q.x();
+        msg.orientation.y = q.y();
+        msg.orientation.z = q.z();
+        msg.orientation.w = q.w();
+        return msg;
     }
 
     sensor_msgs::msg::PointCloud2 WrapperTypeConversions::MapPointsToPCL(std::vector<Eigen::Vector3f>& mapPoints)
@@ -257,15 +271,15 @@ namespace ORB_SLAM3_Wrapper
     }
 
     template <>
-    geometry_msgs::msg::Pose WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3d &affineMapToRef, Sophus::SE3f &transform)
+    geometry_msgs::msg::Pose WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, Sophus::SE3f &transform)
     {
         // Convert SE3 to affine.
         auto affine_map_to_pose = affineMapToRef * se3ToAffine(transform);
-        return tf2::toMsg(affine_map_to_pose);
+        return affine3fToPose(affine_map_to_pose);
     }
 
     template <>
-    Eigen::Affine3d WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3d &affineMapToRef, Sophus::SE3f &transform)
+    Eigen::Affine3f WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, Sophus::SE3f &transform)
     {
         // Convert SE3 to affine.
         auto affineMapToPose = affineMapToRef * se3ToAffine(transform);
@@ -273,14 +287,14 @@ namespace ORB_SLAM3_Wrapper
     }
 
     template <>
-    geometry_msgs::msg::Point WrapperTypeConversions::transformPointWithReference(Eigen::Affine3d &affineMapToRef, Eigen::Vector3f &point)
+    geometry_msgs::msg::Point WrapperTypeConversions::transformPointWithReference(Eigen::Affine3f &affineMapToRef, Eigen::Vector3f &point)
     {
         auto affine_map_to_pose = affineMapToRef.cast<float>() * point;
         return eigenToPointMsg(affine_map_to_pose);
     }
 
     template <>
-    Eigen::Vector3f WrapperTypeConversions::transformPointWithReference(Eigen::Affine3d &affineMapToRef, Eigen::Vector3f &point)
+    Eigen::Vector3f WrapperTypeConversions::transformPointWithReference(Eigen::Affine3f &affineMapToRef, Eigen::Vector3f &point)
     {
         auto affine_map_to_pose = affineMapToRef.cast<float>() * point;
         return affine_map_to_pose;

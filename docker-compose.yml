@@ -12,6 +12,7 @@ services:
       - /etc/localtime:/etc/localtime:rw
       #ros-workspaces
       - ./container_root/:/root/
+      - ./ros_env_vars.sh:/root/ros_env_vars.sh
       - ./orb_slam3_ros2_wrapper/:/root/colcon_ws/src/orb_slam3_ros2_wrapper/
       - ./orb_slam3_map_generator/:/root/colcon_ws/src/orb_slam3_map_generator/
       - ./slam_msgs/:/root/colcon_ws/src/slam_msgs/
