@@ -19,6 +19,8 @@
 #include <vector>
 #include <limits>
 #include <memory>
+#include <mutex>
+#include <unordered_map>
 
 // Takes in the subscribed map_data and provides a service to trigger a global pointcloud stitching process.
 // The stitched pointcloud can then be viewed on a topic.
@@ -28,20 +30,32 @@ class PosePointCloudCollector : public rclcpp::Node
 public:
     PosePointCloudCollector()
         : Node("pose_pointcloud_collector"),
-          buffer_duration_(10.0),
+          buffer_duration_(3.0),
           tf_buffer_(this->get_clock()),
           tf_listener_(tf_buffer_)
     {
+        // Create separate callback groups
+        callback_group_pc_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        callback_group_map_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+        callback_group_service_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+
+        // Setup subscription options for each callback group
+        rclcpp::SubscriptionOptions pc_sub_options;
+        pc_sub_options.callback_group = callback_group_pc_;
+
+        rclcpp::SubscriptionOptions map_sub_options;
+        map_sub_options.callback_group = callback_group_map_;
+
         // 1) Subscribers
         pc_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
             "lidar/points",
-            rclcpp::SensorDataQoS(),
-            std::bind(&PosePointCloudCollector::pointCloudCallback, this, std::placeholders::_1));
+            rclcpp::QoS(rclcpp::KeepLast(10)).reliable().durability_volatile(),
+            std::bind(&PosePointCloudCollector::pointCloudCallback, this, std::placeholders::_1), pc_sub_options);
 
         map_graph_sub_ = this->create_subscription<slam_msgs::msg::MapData>(
             "/map_data",
             10,
-            std::bind(&PosePointCloudCollector::MapDataCallback, this, std::placeholders::_1));
+            std::bind(&PosePointCloudCollector::MapDataCallback, this, std::placeholders::_1), map_sub_options);
 
         // 2) Publisher for the final global pointcloud
         global_pc_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("global_pointcloud", 1);
@@ -63,7 +77,8 @@ private:
     // Depth camera pointcloud subscriber
     void pointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
     {
-        // Add the new pointcloud to the end of the buffer
+        // RCLCPP_INFO_STREAM(this->get_logger(), "Received pointcloud");
+        buffer_mutex_.lock();
         pointcloud_buffer_.push_back(*msg);
 
         // Remove old messages beyond our desired buffer duration
@@ -80,6 +95,7 @@ private:
                 break;
             }
         }
+        buffer_mutex_.unlock();
     }
 
     // ORB-SLAM3 MapData subscriber
@@ -109,6 +125,7 @@ private:
             double best_time_diff = std::numeric_limits<double>::infinity();
             const sensor_msgs::msg::PointCloud2 *best_match = nullptr;
 
+            buffer_mutex_.lock();
             for (auto &pc : pointcloud_buffer_)
             {
                 rclcpp::Time pc_time(pc.header.stamp);
@@ -119,6 +136,7 @@ private:
                     best_match = &pc;
                 }
             }
+            buffer_mutex_.unlock();
 
             if (best_match)
             {
@@ -336,12 +354,18 @@ private:
 
     // Pointcloud buffer and stored pairings
     std::deque<sensor_msgs::msg::PointCloud2> pointcloud_buffer_;
+    std::mutex buffer_mutex_;
     double buffer_duration_;
 
     // For each matched pose-cloud pair, store the Pose as well
     std::unordered_map<int32_t, sensor_msgs::msg::PointCloud2> stored_pose_clouds_; // (pose_id, PC)
     std::unordered_map<int32_t, geometry_msgs::msg::Pose> stored_poses_;            // Matching geometry_msgs::Pose
     std::mutex global_pcl_mutex_;
+
+    // Callback groups
+    rclcpp::CallbackGroup::SharedPtr callback_group_pc_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_map_;
+    rclcpp::CallbackGroup::SharedPtr callback_group_service_;
 };
 
 // Main
@@ -349,7 +373,11 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<PosePointCloudCollector>();
-    rclcpp::spin(node);
+
+    // Use a multithreaded executor to allow callbacks in different groups to run concurrently
+    rclcpp::executors::MultiThreadedExecutor executor;
+    executor.add_node(node);
+    executor.spin();
     rclcpp::shutdown();
     return 0;
 }
