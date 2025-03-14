@@ -8,10 +8,10 @@ container_root/.config/
 container_root/.dotnet/
 container_root/.local/
 container_root/.pki/
-container_root/.ros/
+container_root/.ros/log
 container_root/.rviz2/
 container_root/.viminfo/
-container_root/.bash_history/
+container_root/.bash_history
 container_root/.cmake
 **.vscode**
 showgit.py
