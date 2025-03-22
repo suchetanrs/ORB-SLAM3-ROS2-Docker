@@ -111,4 +111,4 @@ cd
 sros
 sws
 strav
-source ./ros_env_vars.sh
+source /root/ros_env_vars.sh
