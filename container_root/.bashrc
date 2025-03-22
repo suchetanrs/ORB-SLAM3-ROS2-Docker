@@ -109,4 +109,4 @@ export RCUTILS_COLORIZED_OUTPUT=1
 cd
 sros
 sws
-source ./ros_env_vars.sh
+source /root/ros_env_vars.sh
