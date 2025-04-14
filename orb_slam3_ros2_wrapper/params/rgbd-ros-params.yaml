@@ -25,7 +25,6 @@ ORB_SLAM3_RGBD_ROS2:
     robot_qw: 1.0
 
     visualization: true
-    ros_visualization: false
     odometry_mode: false
     publish_tf: true
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
