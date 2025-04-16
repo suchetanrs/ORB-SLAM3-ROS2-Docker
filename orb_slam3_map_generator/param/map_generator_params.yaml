@@ -1,0 +1,12 @@
+colored_pointcloud_node:
+  ros__parameters:
+    rgb_image_topic: "rgb_camera"
+    depth_image_topic: "depth_camera"
+    rgb_info_topic: "rgb_camera/camera_info"
+    depth_info_topic: "camera_info"
+
+orb_slam3_pointcloud_stitcher:
+  ros__parameters:
+    depth_pointcloud_topic: "lidar/points"
+    input_pointcloud_rate: 10.0
+    robot_base_frame: "base_footprint" # should be the same frame as the one used in the slam

@@ -1,16 +1,8 @@
 # This is for 3D Map stitching and this is not feature complete.
 
-float32 map_pitch
-float32 map_roll
-float32 map_yaw
-float32 global_voxel_resolution
-float32 local_voxel_resolution
-int16 ground_color_red
-int16 ground_color_green
-int16 ground_color_blue
-float32 z_thresh_min # ground treated below this
-float32 z_thresh_max # points above this discarded
-float32 x_thresh_max
-bool get_grayscale
+float32 global_voxel_resolution 0.3
+float32 local_voxel_resolution 0.3
+float32 z_thresh_max 2.0 # points above this discarded
+bool get_grayscale True
 ---
 bool response

@@ -22,20 +22,39 @@ public:
     ColoredPointCloudNode()
         : Node("colored_pointcloud_node")
     {
+        this->declare_parameter<std::string>("rgb_image_topic", "rgb_camera");
+        this->declare_parameter<std::string>("depth_image_topic", "depth_camera");
+        this->declare_parameter<std::string>("rgb_info_topic", "rgb_camera/camera_info");
+        this->declare_parameter<std::string>("depth_info_topic", "camera_info");
+        
+        // Get parameter values.
+        std::string rgb_image_topic;
+        std::string depth_image_topic;
+        std::string rgb_info_topic;
+        std::string depth_info_topic;
+        this->get_parameter("rgb_image_topic", rgb_image_topic);
+        this->get_parameter("depth_image_topic", depth_image_topic);
+        this->get_parameter("rgb_info_topic", rgb_info_topic);
+        this->get_parameter("depth_info_topic", depth_info_topic);
+
+        RCLCPP_INFO_STREAM(this->get_logger(), "RGB image topic: " << rgb_image_topic);
+        RCLCPP_INFO_STREAM(this->get_logger(), "Depth image topic: " << depth_image_topic);
+        RCLCPP_INFO_STREAM(this->get_logger(), "RGB info topic: " << rgb_info_topic);
+        RCLCPP_INFO_STREAM(this->get_logger(), "Depth info topic: " << depth_info_topic);
+        RCLCPP_INFO(this->get_logger(), "=================================");
+
         // Set up subscribers using message_filters
-        rgb_image_sub_.subscribe(this, "/camera/color/image_raw");
-        depth_image_sub_.subscribe(this, "/camera/depth/image_raw");
+        rgb_image_sub_.subscribe(this, rgb_image_topic);
+        depth_image_sub_.subscribe(this, depth_image_topic);
 
         rgb_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-            "/camera/color/camera_info", 10,
+            rgb_info_topic, 10,
             std::bind(&ColoredPointCloudNode::rgbInfoCallback, this, std::placeholders::_1));
 
         depth_info_sub_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
-            "/camera/depth/camera_info", 10,
+            depth_info_topic, 10,
             std::bind(&ColoredPointCloudNode::depthInfoCallback, this, std::placeholders::_1));
 
-        // ApproximateTime or ExactTime: pick which you prefer
-        // Here we use ApproximateTime for demonstration
         typedef message_filters::sync_policies::ApproximateTime<
             sensor_msgs::msg::Image,
             sensor_msgs::msg::Image>
@@ -114,7 +133,7 @@ private:
 
         // Prepare PointCloud2 message
         sensor_msgs::msg::PointCloud2 cloud_msg;
-        cloud_msg.header = depth_msg->header;
+        cloud_msg.header = rgb_msg->header;
         cloud_msg.height = depth_image.rows;
         cloud_msg.width = depth_image.cols;
         cloud_msg.is_bigendian = false;
