@@ -49,8 +49,8 @@ def generate_launch_description():
             base_frame = robot_namespace.perform(context) + "/"
 
         param_substitutions = {
-            'robot_base_frame': base_frame + 'base_footprint',
-            'odom_frame': base_frame + 'odom'
+            # 'robot_base_frame': base_frame + 'base_footprint',
+            # 'odom_frame': base_frame + 'odom'
             }
 
 
