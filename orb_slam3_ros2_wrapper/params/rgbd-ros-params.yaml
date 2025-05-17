@@ -5,27 +5,27 @@
 ORB_SLAM3_RGBD_ROS2:
   ros__parameters:
     # slam related
-    robot_base_frame: base_footprint
+    robot_base_frame: base_link
     global_frame: map
     odom_frame: odom
-    rgb_image_topic_name: rgb_camera
-    depth_image_topic_name: depth_camera
+    rgb_image_topic_name: camera/camera/color/image_raw
+    depth_image_topic_name: camera/camera/depth/image_rect_raw
     imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
-    odom_topic_name: ground_truth_pose #Used if odometry_mode parameter is set to true. (Set to ground_truth_pose for pose from simulation example. You can choose the topic you want)
+    odom_topic_name: odometry/filtered #Used if odometry_mode parameter is set to true. (Set to ground_truth_pose for pose from simulation example. You can choose the topic you want)
 
     # the below parameters are used to adjust the initial pose with respect to the map. 
     # the camera pose maybe translated and rotated with respect to the base_footprint. The wrapper publishes map->base_footprint. Hence this relative transform needs to be accounted.
-    # the below transform is the transform from base_footpring -> camera_link
-    robot_x: 0.7
+    # the below transform is the transform from base_link -> camera_link
+    robot_x: 0.0
     robot_y: 0.0
-    robot_z: 1.150
+    robot_z: 0.0 #1.0
     robot_qx: 0.0
     robot_qy: 0.0
     robot_qz: 0.0
     robot_qw: 1.0
 
     visualization: true
-    odometry_mode: false
+    odometry_mode: true #false
     publish_tf: true
     map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
     do_loop_closing: true

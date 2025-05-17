@@ -49,8 +49,8 @@ def generate_launch_description():
             base_frame = robot_namespace.perform(context) + "/"
 
         param_substitutions = {
-            # 'robot_base_frame': base_frame + 'base_footprint',
-            # 'odom_frame': base_frame + 'odom'
+            'robot_base_frame': base_frame + 'base_link',
+            'odom_frame': base_frame + 'odom'
             }
 
 
@@ -69,7 +69,16 @@ def generate_launch_description():
             arguments=[vocabulary_file_path, config_file_path],
             parameters=[configured_params])
         
-        return [declare_params_file_cmd, orb_slam3_node]
+        poller_node = Node(
+            package='slam_map_poller',
+            executable='poller_node',
+            name='map_poller',
+            namespace=robot_namespace.perform(context),
+            output='screen',
+            parameters=[{'poll_rate': 2.0}],  # Hz
+        )
+        
+        return [declare_params_file_cmd, orb_slam3_node, poller_node]
 
     opaque_function = OpaqueFunction(function=all_nodes_launch, args=[robot_namespace])
 #---------------------------------------------
