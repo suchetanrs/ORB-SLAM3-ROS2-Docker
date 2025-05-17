@@ -60,6 +60,7 @@ RUN apt-get install -y gdb gdbserver ros-humble-rmw-cyclonedds-cpp
 COPY ORB_SLAM3 /home/orb/ORB_SLAM3
 COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper
 COPY orb_slam3_map_generator /root/colcon_ws/src/orb_slam3_map_generator
+COPY slam_map_poller /root/colcon_ws/src/slam_map_poller
 COPY slam_msgs /root/colcon_ws/src/slam_msgs
 
 # Build ORB-SLAM3 with its dependencies.
