@@ -54,10 +54,10 @@ If you are inside the container, run the following:
 1. ```ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py```
 3. You can adjust the robot namespace in the ```unirobot.launch.py``` file.
 
-## Running this with a Gazebo Classic simulation.
+## Running this with a Gazebo Sim simulation.
 
 1. Setup the ORB-SLAM3 ROS2 Docker using the steps above. Once you do (1) step in the ```Launching ORB-SLAM3``` section, you should see a window popup which is waiting for images. This is partially indicative of the setup correctly done.
-2. Setup the simulation by following the README [here](https://github.com/suchetanrs/gz-sim-environment)
+2. Setup the simulation by following the README [here (humble)](https://github.com/suchetanrs/gz-sim-environment/tree/humble) or [here (jazzy)](https://github.com/suchetanrs/gz-sim-environment/tree/jazzy)
 3. Once you are able to teleop the robot, you should be able to run ORB-SLAM3 with both the containers (simulation and wrapper) running parallely.
 
 ## Running the map_generator package.
