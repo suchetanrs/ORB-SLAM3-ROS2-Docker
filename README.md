@@ -57,7 +57,7 @@ If you are inside the container, run the following:
 ## Running this with a Gazebo Sim simulation.
 
 1. Setup the ORB-SLAM3 ROS2 Docker using the steps above. Once you do (1) step in the ```Launching ORB-SLAM3``` section, you should see a window popup which is waiting for images. This is partially indicative of the setup correctly done.
-2. Setup the simulation by following the README [here (humble)](https://github.com/suchetanrs/gz-sim-environment/tree/humble) or [here (jazzy)](https://github.com/suchetanrs/gz-sim-environment/tree/jazzy)
+2. Setup the simulation by following the README [here (humble)](https://github.com/suchetanrs/gz-sim-environment/tree/humble) (recommended) or [here (jazzy)](https://github.com/suchetanrs/gz-sim-environment/tree/jazzy)
 3. Once you are able to teleop the robot, you should be able to run ORB-SLAM3 with both the containers (simulation and wrapper) running parallely.
 
 ## Running the map_generator package.
@@ -72,7 +72,7 @@ To run the package, these steps can be followed:
 4. If you wish to publish the global pointcloud at any point during the SLAM's operation, simply run the python file in the top-right terminal. You should be able to view the global pointcloud in rviz (you can launch RViz with the correct configuration from the bottom-right terminal).
 
 ### Potential issues you may face.
-The simulation and the wrapper both have their ```ROS_DOMAIN_ID``` set to 55 so they are meant to work out of the box. However, you may face issues if this environment variable is not set properly. Before you start the wrapper, run ```ros2 topic list``` and make sure the topics namespaced with ```robot_0``` are visible inside the ORB-SLAM3 container provided the simulation is running along the side.
+The simulation and the wrapper both have their ```ROS_DOMAIN_ID``` set to 55 so they are meant to work out of the box. However, you may face issues if this environment variable is not set properly. Before you start the wrapper, run ```ros2 topic list``` and make sure the topics `/rgb_camera` and `/depth_camera` are visible inside the ORB-SLAM3 container provided the simulation is running along the side.
 
 ## Services
 | Service Name          | Purpose | type |
