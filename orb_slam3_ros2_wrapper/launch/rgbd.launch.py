@@ -31,17 +31,9 @@ def generate_launch_description():
     robot_namespace =  LaunchConfiguration('robot_namespace')
     robot_namespace_arg = DeclareLaunchArgument('robot_namespace', default_value="robot",
         description='The namespace of the robot')
-
-    robot_x = LaunchConfiguration('robot_x')
-    robot_x_arg = DeclareLaunchArgument('robot_x', default_value="1.0",
-        description='The namespace of the robot')
-
-    robot_y = LaunchConfiguration('robot_y')
-    robot_y_arg = DeclareLaunchArgument('robot_y', default_value="1.0",
-        description='The namespace of the robot')
 #---------------------------------------------
 
-    def all_nodes_launch(context, robot_namespace, robot_x, robot_y):
+    def all_nodes_launch(context, robot_namespace):
         params_file = LaunchConfiguration('params_file')
         vocabulary_file_path = "/home/orb/ORB_SLAM3/Vocabulary/ORBvoc.txt"
         config_file_path = "/root/colcon_ws/src/orb_slam3_ros2_wrapper/params/gazebo_rgbd.yaml"
@@ -57,10 +49,8 @@ def generate_launch_description():
             base_frame = robot_namespace.perform(context) + "/"
 
         param_substitutions = {
-            'robot_base_frame': base_frame + 'base_footprint',
-            'odom_frame': base_frame + 'odom',
-            'robot_x': robot_x.perform(context),
-            'robot_y': robot_y.perform(context)
+            # 'robot_base_frame': base_frame + 'base_footprint',
+            # 'odom_frame': base_frame + 'odom'
             }
 
 
@@ -89,13 +79,11 @@ def generate_launch_description():
         
         return [declare_params_file_cmd, orb_slam3_node, threshold_traversability_ros]
 
-    opaque_function = OpaqueFunction(function=all_nodes_launch, args=[robot_namespace, robot_x, robot_y])
+    opaque_function = OpaqueFunction(function=all_nodes_launch, args=[robot_namespace])
 #---------------------------------------------
 
     return LaunchDescription([
         declare_use_sim_time_cmd,
         robot_namespace_arg,
-        robot_x_arg,
-        robot_y_arg,
         opaque_function
     ])
