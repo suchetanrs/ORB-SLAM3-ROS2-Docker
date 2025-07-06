@@ -31,6 +31,7 @@
 #include "Atlas.h"
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/time_profiler.hpp"
+#include "orb_slam3_ros2_wrapper/ros_common.hpp"
 
 #ifdef WITH_TRAVERSABILITY_MAP
 #include <grid_map_core/GridMap.hpp>
@@ -53,7 +54,9 @@ namespace ORB_SLAM3_Wrapper
                           geometry_msgs::msg::Pose initialRobotPose,
                           std::string globalFrame,
                           std::string odomFrame,
-                          std::string robotFrame);
+                          std::string robotFrame,
+                          Eigen::Affine3f tf_SlamToLidar,
+                          Eigen::Affine3f tf_BaseToSlam);
 
         ~ORBSLAM3Interface();
 

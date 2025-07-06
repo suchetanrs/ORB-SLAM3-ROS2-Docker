@@ -58,20 +58,19 @@ RUN apt-get update && apt-get update --fix-missing
 RUN apt-get update && apt-get install ros-humble-pcl-ros tmux -y
 RUN apt-get install ros-humble-nav2-common x11-apps nano -y
 RUN apt-get install -y gdb gdbserver ros-humble-rmw-cyclonedds-cpp ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-common ros-humble-vision-opencv
+RUN apt-get install -y ros-humble-grid-map*
 
 COPY ORB_SLAM3 /home/orb/ORB_SLAM3
 COPY orb_slam3_ros2_wrapper /root/colcon_ws/src/orb_slam3_ros2_wrapper
 COPY orb_slam3_map_generator /root/colcon_ws/src/orb_slam3_map_generator
 COPY slam_msgs /root/colcon_ws/src/slam_msgs
-COPY traversability_mapping /home/traversability/traversability_mapping
-COPY traversability_mapping/traversability_ros_interface /root/trav_ws/src/traversability_ros_interface
+COPY traversability_mapping /root/trav_ws/src/traversability_mapping
 
 # Build ORB-SLAM3 with its dependencies.
 RUN if [ "$USE_CI" = "true" ]; then \
-    . /opt/ros/humble/setup.sh && cd /home/traversability/traversability_mapping/ && ./build.sh && \
+    . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install && . /root/trav_ws/install/setup.sh && \
     . /opt/ros/humble/setup.sh && cd /home/orb/ORB_SLAM3 && mkdir -p build && ./build.sh && \
-    . /opt/ros/humble/setup.sh && cd /root/trav_ws/ && colcon build --symlink-install && \
-    . /opt/ros/humble/setup.sh && . /root/trav_ws/install/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install; \
+    . /opt/ros/humble/setup.sh && cd /root/colcon_ws/ && colcon build --symlink-install; \
     fi
 
-RUN rm -rf /home/orb/ORB_SLAM3 /root/colcon_ws /home/traversability /root/trav_ws
+RUN rm -rf /home/orb/ORB_SLAM3 /root/colcon_ws /root/trav_ws

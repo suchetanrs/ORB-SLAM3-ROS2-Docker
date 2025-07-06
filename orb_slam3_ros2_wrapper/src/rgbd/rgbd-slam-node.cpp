@@ -47,6 +47,13 @@ namespace ORB_SLAM3_Wrapper
 
         publishOccupancyCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&RgbdSlamNode::publishTraversabilityData, this), publishOccupancyCallbackGroup_);
+
+        std::string parameter_file_path_;
+        this->declare_parameter("traversability_parameter_file_path", rclcpp::ParameterValue(""));
+        this->get_parameter("traversability_parameter_file_path", parameter_file_path_);
+        RCLCPP_INFO_STREAM(this->get_logger(), "Parameter file path: " << parameter_file_path_);
+
+        ParameterHandler::getInstance(parameter_file_path_);
 #endif
         visibleLandmarksPub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("visible_landmarks", 10);
         visibleLandmarksPose_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("visible_landmarks_pose", 10);
@@ -135,8 +142,11 @@ namespace ORB_SLAM3_Wrapper
         mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&RgbdSlamNode::publishMapData, this), mapDataCallbackGroup_);
 
+        Eigen::Affine3f tf_SlamToLidar;
+        Eigen::Affine3f tf_BaseToSlam;
+        populateTransforms("camera_link", robot_base_frame_id_, "lidar_link", this->get_clock(), this->get_logger(), tfBuffer_, tf_SlamToLidar, tf_BaseToSlam);
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                            sensor, bUseViewer, do_loop_closing_, !traversability_ros_integration_, initial_pose, global_frame_, odom_frame_id_, robot_base_frame_id_);
+                                                                            sensor, bUseViewer, do_loop_closing_, !traversability_ros_integration_, initial_pose, global_frame_, odom_frame_id_, robot_base_frame_id_, tf_SlamToLidar, tf_BaseToSlam);
 
         frequency_tracker_count_ = 0;
         frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();

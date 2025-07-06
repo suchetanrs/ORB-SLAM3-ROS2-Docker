@@ -56,6 +56,7 @@ find_package(traversability_mapping)
 if(traversability_mapping_FOUND)
    find_package(grid_map_ros REQUIRED)
    find_package(traversability_msgs REQUIRED)
+   find_package(traversability_mapping_common REQUIRED)
     include_directories(
     ${traversability_mapping_INCLUDE_DIRS}
     )
@@ -81,7 +82,8 @@ else()
 endif(traversability_mapping_FOUND)
 if(traversability_mapping_FOUND)
    target_link_libraries(rgbd
-   type_conversion
+   Sophus::Sophus
+   traversability_mapping_common
    traversabilitySystem
    )
 endif(traversability_mapping_FOUND)
@@ -103,7 +105,8 @@ if(BUILD_TESTING)
   ament_add_gtest(typeconversionTests tests/typeConversionsTests.cpp src/type_conversion.cpp)
   ament_target_dependencies(typeconversionTests rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs grid_map_ros nav_msgs tf2_geometry_msgs)
   target_link_libraries(typeconversionTests
-  type_conversion
+  Sophus::Sophus
+  traversability_mapping_common
   traversabilitySystem
   )
 endif()

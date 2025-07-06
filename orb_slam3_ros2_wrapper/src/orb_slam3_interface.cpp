@@ -16,7 +16,9 @@ namespace ORB_SLAM3_Wrapper
                                          geometry_msgs::msg::Pose initialRobotPose,
                                          std::string globalFrame,
                                          std::string odomFrame,
-                                         std::string robotFrame)
+                                         std::string robotFrame,
+                                         Eigen::Affine3f tf_SlamToLidar,
+                                         Eigen::Affine3f tf_BaseToSlam)
         : strVocFile_(strVocFile),
           strSettingsFile_(strSettingsFile),
           sensor_(sensor),
@@ -28,7 +30,7 @@ namespace ORB_SLAM3_Wrapper
           robotFrame_(robotFrame)
     {
         std::cout << "Interface constructor started" << endl;
-        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing, useTraversability);
+        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing, useTraversability, tf_SlamToLidar, tf_BaseToSlam);
         typeConversions_ = std::make_shared<WrapperTypeConversions>();
         time_profiler_ = TimeProfiler::getInstance();
         std::cout << "Interface constructor complete" << endl;

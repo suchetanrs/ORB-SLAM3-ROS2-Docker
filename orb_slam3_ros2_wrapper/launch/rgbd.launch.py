@@ -19,6 +19,7 @@ def generate_launch_description():
 
     #Essential_paths
     orb_wrapper_pkg = get_package_share_directory('orb_slam3_ros2_wrapper')
+    traversability_pkg = get_package_share_directory('traversability_mapping')
 #---------------------------------------------
 
     # LAUNCH ARGS
@@ -31,6 +32,13 @@ def generate_launch_description():
     robot_namespace =  LaunchConfiguration('robot_namespace')
     robot_namespace_arg = DeclareLaunchArgument('robot_namespace', default_value="robot",
         description='The namespace of the robot')
+
+    traversability_params_file = LaunchConfiguration('traversability_params_file')
+    
+    declare_traversability_params_file_cmd = DeclareLaunchArgument(
+        'traversability_params_file',
+        default_value=os.path.join(traversability_pkg, 'params', 'traversabilityParams.yaml'),
+        description='Full path to the traversability parameters file to use for all launched nodes')
 #---------------------------------------------
 
     def all_nodes_launch(context, robot_namespace):
@@ -68,7 +76,7 @@ def generate_launch_description():
             # prefix=["gdbserver localhost:3000"],
             namespace=robot_namespace.perform(context),
             arguments=[vocabulary_file_path, config_file_path],
-            parameters=[configured_params])
+            parameters=[configured_params, {"traversability_parameter_file_path": traversability_params_file}])
 
         threshold_traversability_ros = Node(
             package='traversability_mapping_ros',
@@ -84,6 +92,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         declare_use_sim_time_cmd,
+        declare_traversability_params_file_cmd,
         robot_namespace_arg,
         opaque_function
     ])
