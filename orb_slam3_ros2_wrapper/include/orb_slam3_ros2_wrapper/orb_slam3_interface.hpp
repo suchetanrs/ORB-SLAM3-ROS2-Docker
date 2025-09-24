@@ -72,7 +72,7 @@ namespace ORB_SLAM3_Wrapper
 
         void getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf);
 
-        void getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf);
+        void getMapToOdomTF(const geometry_msgs::msg::TransformStamped& odomToBaseTf, geometry_msgs::msg::TransformStamped &tf);
 
         void getRobotPose(geometry_msgs::msg::PoseStamped& pose);
 
