@@ -148,7 +148,7 @@ namespace ORB_SLAM3_Wrapper
             interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
         }
         else
-            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 4000, "Odometry msg recorded but no odometry mode is true, set to false to use this odometry");
+            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 10000, "Odometry msg recorded but `odometry_mode` parameter is false. Set to true to use incoming odometry messages.");
     }
 
     void RgbdSlamNode::RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD)
@@ -157,20 +157,24 @@ namespace ORB_SLAM3_Wrapper
         if (interface_->trackRGBD(msgRGB, msgD, Tcw))
         {
             isTracked_ = true;
+            // if tf publishing is enabled, move into this block.
             if (publish_tf_)
             {
-                // populate map to base_footprint tf if odometry is not being used
+                // populate map to base_footprint tf if odometry is not being used to get transform map -> base_link
                 if (!odometry_mode_)
                 {
-                    tfMapOdom_ = geometry_msgs::msg::TransformStamped();
-                    tfMapOdom_.header.stamp = msgRGB->header.stamp;
-                    tfMapOdom_.header.frame_id = global_frame_;
-                    tfMapOdom_.child_frame_id = odom_frame_id_;
-                    tfBroadcaster_->sendTransform(tfMapOdom_);
-                    interface_->getDirectOdomToRobotTF(msgRGB->header, tfMapOdom_);
+                    auto tfMapRobot = geometry_msgs::msg::TransformStamped();
+                    tfMapRobot.header.stamp = msgRGB->header.stamp;
+                    tfMapRobot.header.frame_id = global_frame_;
+                    tfMapRobot.child_frame_id = odom_frame_id_;
+                    interface_->getDirectMapToRobotTF(msgRGB->header, tfMapRobot);
+                    tfBroadcaster_->sendTransform(tfMapRobot);
                 }
-                // publish the tf if publish_tf_ is true
-                tfBroadcaster_->sendTransform(tfMapOdom_);
+                // populate map to odom tf if odometry is being used to get transform map -> odom -> base_link
+                else
+                {
+                    tfBroadcaster_->sendTransform(tfMapOdom_);
+                }
             }
             geometry_msgs::msg::PoseStamped pose;
             interface_->getRobotPose(pose);
