@@ -362,29 +362,27 @@ namespace ORB_SLAM3_Wrapper
         mapReferencesMutex_.unlock();
     };
 
-    void ORBSLAM3Interface::getDirectOdomToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
+    void ORBSLAM3Interface::getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf)
     {
-        tf.header.frame_id = odomFrame_;
-        tf.child_frame_id = robotFrame_;
         if (hasTracked_)
         {
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             // get transform between map and odom and send the transform.
-            auto tfMapOdom = latestTrackedPose_;
-            geometry_msgs::msg::Pose poseMapOdom = typeConversions_->affine3fToPose(tfMapOdom);
+            auto poseInMap = latestTrackedPose_;
+            geometry_msgs::msg::Pose poseInMapROS = typeConversions_->affine3fToPose(poseInMap);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
             rclcpp::Time odomTimestamp = headerToUse.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
             tf.header.frame_id = globalFrame_;
             tf.child_frame_id = robotFrame_;
-            tf.transform.translation.x = poseMapOdom.position.x;
-            tf.transform.translation.y = poseMapOdom.position.y;
-            tf.transform.translation.z = poseMapOdom.position.z;
-            tf.transform.rotation = poseMapOdom.orientation;
+            tf.transform.translation.x = poseInMapROS.position.x;
+            tf.transform.translation.y = poseInMapROS.position.y;
+            tf.transform.translation.z = poseInMapROS.position.z;
+            tf.transform.rotation = poseInMapROS.orientation;
         }
     }
 
-    void ORBSLAM3Interface::getMapToOdomTF(const nav_msgs::msg::Odometry::SharedPtr msgOdom, geometry_msgs::msg::TransformStamped &tf)
+    void ORBSLAM3Interface::getMapToOdomTF(const geometry_msgs::msg::TransformStamped& odomToBaseTf, geometry_msgs::msg::TransformStamped &tf)
     {
         // tf.header.stamp;
         tf.header.frame_id = globalFrame_;
@@ -393,19 +391,19 @@ namespace ORB_SLAM3_Wrapper
         {
             // convert odom value to Eigen::Affine3f
             auto latestOdomTransform_ = Eigen::Affine3f(
-                Eigen::Translation3f(msgOdom->pose.pose.position.x,
-                                     msgOdom->pose.pose.position.y,
-                                     msgOdom->pose.pose.position.z) *
-                Eigen::Quaternionf(msgOdom->pose.pose.orientation.w,
-                                   msgOdom->pose.pose.orientation.x,
-                                   msgOdom->pose.pose.orientation.y,
-                                   msgOdom->pose.pose.orientation.z));
+                Eigen::Translation3f(odomToBaseTf.transform.translation.x,
+                                     odomToBaseTf.transform.translation.y,
+                                     odomToBaseTf.transform.translation.z) *
+                Eigen::Quaternionf(odomToBaseTf.transform.rotation.w,
+                                   odomToBaseTf.transform.rotation.x,
+                                   odomToBaseTf.transform.rotation.y,
+                                   odomToBaseTf.transform.rotation.z));
             // get transform between map and odom and send the transform.
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             auto tfMapOdom = latestTrackedPose_ * latestOdomTransform_.inverse();
             geometry_msgs::msg::Pose poseMapOdom = typeConversions_->affine3fToPose(tfMapOdom);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
-            rclcpp::Time odomTimestamp = msgOdom->header.stamp;
+            rclcpp::Time odomTimestamp = odomToBaseTf.header.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
             tf.header.frame_id = globalFrame_;
             tf.child_frame_id = odomFrame_;

@@ -55,7 +55,6 @@ namespace ORB_SLAM3_Wrapper
 
         // ROS 2 Callbacks.
         void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
-        void OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom);
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
                           const sensor_msgs::msg::Image::SharedPtr msgD);
 

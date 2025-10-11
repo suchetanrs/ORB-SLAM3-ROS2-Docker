@@ -100,10 +100,9 @@ The simulation and the wrapper both have their ```ROS_DOMAIN_ID``` set to 55 so 
 | `rgb_image_topic_name` | `rgb_camera` | The topic to recieve rgb images. |
 | `depth_image_topic_name` | `depth_camera` | The topic to recieve depth images. |
 | `imu_topic_name` | `imu` | The topic to recieve IMU messages (Not used in RGB-D mode). |
-| `odom_topic_name` | `odom` | The topic to recieve on board odometry messages (Used only if `odometry_mode` is set to true). |
 | `visualization`         | `true`        | A boolean flag to enable or disable visualization. When set to `true`, the ORB-SLAM3 viewer will show up with the tracked points and the keyframe trajectories.|
-| `odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `false`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```|
-| `publish_tf`               | `true`         | Publishes the map->odom tf in case `odometry_mode` is set to `true` and map->odom->base_link in case odometry_mode is set to `false`.|
+| `odometry_mode`      | `false`       | A boolean flag to toggle odometry mode. When `false`, the system operates without relying on odometry data, which might be used in scenarios where odometry information is unavailable or unreliable. In this case, it publishes the transform directly between the ```global_frame``` and the ```robot_base_frame```. Further information can be found on the [FAQ](https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker/wiki/FAQs)|
+| `publish_tf`               | `true`         | Publishes the map->odom tf in case `odometry_mode` is set to `true` and map->odom->base_link in case odometry_mode is set to `false`. Further information can be found on the [FAQ](https://github.com/suchetanrs/ORB-SLAM3-ROS2-Docker/wiki/FAQs)|
 | `map_data_publish_frequency`| `1000`         | Time interval at which map_data should be published (ms).|
 | `do_loop_closing`| `true`         | Enable or disable loop closing in ORB-SLAM3. This will also disable re-localisation and multi-map if `false`|
 

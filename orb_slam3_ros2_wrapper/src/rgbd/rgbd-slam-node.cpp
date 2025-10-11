@@ -18,7 +18,6 @@ namespace ORB_SLAM3_Wrapper
         this->declare_parameter("rgb_image_topic_name", rclcpp::ParameterValue("camera/image_raw"));
         this->declare_parameter("depth_image_topic_name", rclcpp::ParameterValue("depth/image_raw"));
         this->declare_parameter("imu_topic_name", rclcpp::ParameterValue("imu"));
-        this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
 
         // ROS Subscribers
         rgbSub_ = std::make_shared<message_filters::Subscriber<sensor_msgs::msg::Image>>(this, this->get_parameter("rgb_image_topic_name").as_string());
@@ -27,7 +26,6 @@ namespace ORB_SLAM3_Wrapper
         syncApproximate_->registerCallback(&RgbdSlamNode::RGBDCallback, this);
 
         imuSub_ = this->create_subscription<sensor_msgs::msg::Imu>(this->get_parameter("imu_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::ImuCallback, this, std::placeholders::_1));
-        odomSub_ = this->create_subscription<nav_msgs::msg::Odometry>(this->get_parameter("odom_topic_name").as_string(), 1000, std::bind(&RgbdSlamNode::OdomCallback, this, std::placeholders::_1));
 
         // ROS Publishers
         //---- the following is published when a service is called
@@ -140,37 +138,41 @@ namespace ORB_SLAM3_Wrapper
         interface_->handleIMU(msgIMU);
     }
 
-    void RgbdSlamNode::OdomCallback(const nav_msgs::msg::Odometry::SharedPtr msgOdom)
-    {
-        if (odometry_mode_)
-        {   // populate map to odom tf if odometry is being used
-            RCLCPP_DEBUG_STREAM(this->get_logger(), "OdomCallback");
-            interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
-        }
-        else
-            RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 4000, "Odometry msg recorded but no odometry mode is true, set to false to use this odometry");
-    }
-
     void RgbdSlamNode::RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD)
     {
         Sophus::SE3f Tcw;
         if (interface_->trackRGBD(msgRGB, msgD, Tcw))
         {
             isTracked_ = true;
+            // if tf publishing is enabled, move into this block.
             if (publish_tf_)
             {
-                // populate map to base_footprint tf if odometry is not being used
+                // populate map to base_footprint tf if odometry is not being used to get transform map -> base_link
                 if (!odometry_mode_)
                 {
-                    tfMapOdom_ = geometry_msgs::msg::TransformStamped();
-                    tfMapOdom_.header.stamp = msgRGB->header.stamp;
-                    tfMapOdom_.header.frame_id = global_frame_;
-                    tfMapOdom_.child_frame_id = odom_frame_id_;
-                    tfBroadcaster_->sendTransform(tfMapOdom_);
-                    interface_->getDirectOdomToRobotTF(msgRGB->header, tfMapOdom_);
+                    auto tfMapRobot = geometry_msgs::msg::TransformStamped();
+                    tfMapRobot.header.stamp = msgRGB->header.stamp;
+                    tfMapRobot.header.frame_id = global_frame_;
+                    tfMapRobot.child_frame_id = odom_frame_id_;
+                    interface_->getDirectMapToRobotTF(msgRGB->header, tfMapRobot);
+                    tfBroadcaster_->sendTransform(tfMapRobot);
                 }
-                // publish the tf if publish_tf_ is true
-                tfBroadcaster_->sendTransform(tfMapOdom_);
+                // populate map to odom tf if odometry is being used to get transform map -> odom -> base_link
+                else
+                {
+                    try
+                    {
+                        auto msgOdom = tfBuffer_->lookupTransform(odom_frame_id_, robot_base_frame_id_, tf2::TimePointZero);
+                        interface_->getMapToOdomTF(msgOdom, tfMapOdom_);
+                        tfBroadcaster_->sendTransform(tfMapOdom_);
+                    }
+                    catch (tf2::TransformException &ex)
+                    {
+                        RCLCPP_WARN(this->get_logger(), "Could not transform %s to %s: %s", odom_frame_id_.c_str(), robot_base_frame_id_.c_str(), ex.what());
+                        RCLCPP_ERROR(this->get_logger(), "You have set the parameter `odometry_mode` to true. This requires the transform between `odom_frame` and `robot_base_frame` to exist. If you do not have odometry information, set odometry_mode to false.");
+                        return;
+                    }
+                }
             }
             geometry_msgs::msg::PoseStamped pose;
             interface_->getRobotPose(pose);
