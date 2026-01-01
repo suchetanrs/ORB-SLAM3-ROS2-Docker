@@ -45,7 +45,6 @@ namespace ORB_SLAM3_Wrapper
         typeConversions_.reset();
         mapReferencePoses_.clear();
         allKFs_.clear();
-        delete time_profiler_;
     }
 
     std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> ORBSLAM3Interface::makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList)
@@ -340,7 +339,6 @@ namespace ORB_SLAM3_Wrapper
                 }
             }
         }
-        mapDataMutex_.unlock();
     }
 
     void ORBSLAM3Interface::correctTrackedPose(Sophus::SE3f &s)
