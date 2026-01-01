@@ -116,4 +116,4 @@ The very initial versions of this code were derived from [thien94/orb_slam3_ros_
 
 # Star history
 
-<img src="star-history-2025416.png" alt="Star-history" width="600">
+<img src="star-history.png" alt="Star-history" width="600">
