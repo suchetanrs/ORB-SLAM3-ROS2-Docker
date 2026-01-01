@@ -103,11 +103,6 @@ namespace ORB_SLAM3_Wrapper
 
         bool processTrackedPose(const Sophus::SE3f& Tcw);
 
-        std::shared_ptr<WrapperTypeConversions> getTypeConversionPtr()
-        {
-            return typeConversions_;
-        };
-
         void resetLocalMapping();
 
         size_t getNumberOfMaps()
@@ -117,7 +112,6 @@ namespace ORB_SLAM3_Wrapper
 
     private:
         std::shared_ptr<ORB_SLAM3::System> mSLAM_;
-        std::shared_ptr<WrapperTypeConversions> typeConversions_;
         ORB_SLAM3::Atlas *orbAtlas_;
         std::string strVocFile_;
         std::string strSettingsFile_;

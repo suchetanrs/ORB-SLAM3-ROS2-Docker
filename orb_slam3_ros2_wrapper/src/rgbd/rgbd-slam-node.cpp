@@ -10,6 +10,7 @@
 
 namespace ORB_SLAM3_Wrapper
 {
+    using namespace WrapperTypeConversions;
     RgbdSlamNode::RgbdSlamNode(const std::string &strVocFile,
                                const std::string &strSettingsFile,
                                ORB_SLAM3::System::eSensor sensor)
@@ -79,7 +80,7 @@ namespace ORB_SLAM3_Wrapper
             return;
         }
         // track the frame.
-        auto Tcw = interface()->slam()->TrackRGBD(cvRGB->image, cvD->image, interface()->getTypeConversionPtr()->stampToSec(msgRGB->header.stamp));
+        auto Tcw = interface()->slam()->TrackRGBD(cvRGB->image, cvD->image, stampToSec(msgRGB->header.stamp));
         
         // process the tracked pose.
         interface()->processTrackedPose(Tcw);

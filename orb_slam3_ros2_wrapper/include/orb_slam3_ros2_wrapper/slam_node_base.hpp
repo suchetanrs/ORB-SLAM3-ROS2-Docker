@@ -111,8 +111,6 @@ namespace ORB_SLAM3_Wrapper
         int map_data_publish_frequency_;
         bool do_loop_closing_;
         std::chrono::_V2::system_clock::time_point frequency_tracker_clock_;
-
-        ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
         std::shared_ptr<ORB_SLAM3_Wrapper::ORBSLAM3Interface> interface_;
         geometry_msgs::msg::TransformStamped tfMapOdom_;
     };

@@ -9,6 +9,7 @@
 
 namespace ORB_SLAM3_Wrapper
 {
+    using namespace WrapperTypeConversions;
 
     SlamNodeBase::SlamNodeBase(const std::string &node_name,
                                const std::string &strVocFile,
@@ -243,15 +244,15 @@ namespace ORB_SLAM3_Wrapper
         std::vector<slam_msgs::msg::MapPoint> landmarks;
         std::vector<ORB_SLAM3::MapPoint *> points;
         interface_->mapPointsVisibleFromPose(request->pose, points, 1000, request->max_dist_pose_observation, request->max_angle_pose_observation);
-        auto affineMapToPos = interface_->getTypeConversionPtr()->poseToAffine(request->pose);
+        auto affineMapToPos = poseToAffine(request->pose);
         auto affinePosToMap = affineMapToPos.inverse();
         // Populate the pose of the points vector into the ros message
         for (const auto &point : points)
         {
             slam_msgs::msg::MapPoint landmark;
             Eigen::Vector3f landmark_position = point->GetWorldPos();
-            auto position = interface_->getTypeConversionPtr()->vector3fORBToROS(landmark_position);
-            position = interface_->getTypeConversionPtr()->transformPointWithReference<Eigen::Vector3f>(affinePosToMap, position);
+            auto position = vector3fORBToROS(landmark_position);
+            position = transformPointWithReference<Eigen::Vector3f>(affinePosToMap, position);
             // RCLCPP_INFO_STREAM(this->get_logger(), "x: " << position.x() << " y: " << position.y() << " z: " << position.z());
             landmark.position.x = position.x();
             landmark.position.y = position.y();
@@ -259,7 +260,7 @@ namespace ORB_SLAM3_Wrapper
             landmarks.push_back(landmark);
         }
         response->map_points = landmarks;
-        auto cloud = interface_->getTypeConversionPtr()->MapPointsToPCL(points);
+        auto cloud = MapPointsToPCL(points);
         visibleLandmarksPub_->publish(cloud);
 
         // Convert the pose in request to PoseStamped and publish

@@ -27,9 +27,8 @@
 
 namespace ORB_SLAM3_Wrapper
 {
-    class WrapperTypeConversions
+    namespace WrapperTypeConversions
     {
-    public:
         // **************************************DATA TYPE CONVERSIONS*************************************
         /**
          * @brief Converts a ROS timestamp to seconds.
