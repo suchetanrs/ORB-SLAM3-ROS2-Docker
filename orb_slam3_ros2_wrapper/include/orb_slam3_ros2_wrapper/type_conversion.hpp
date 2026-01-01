@@ -114,7 +114,7 @@ namespace ORB_SLAM3_Wrapper
          * @return Transformed pose.
          */
         template <typename T>
-        T transformPoseWithReference(Eigen::Affine3f &, Sophus::SE3f &);
+        T transformPoseWithReference(Eigen::Affine3f &, const Sophus::SE3f &);
 
         /**
          * @brief Transforms a pose using a reference pose and SE3 transform.

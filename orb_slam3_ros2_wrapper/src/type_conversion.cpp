@@ -271,7 +271,7 @@ namespace ORB_SLAM3_Wrapper
     }
 
     template <>
-    geometry_msgs::msg::Pose WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, Sophus::SE3f &transform)
+    geometry_msgs::msg::Pose WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, const Sophus::SE3f &transform)
     {
         // Convert SE3 to affine.
         auto affine_map_to_pose = affineMapToRef * se3ToAffine(transform);
@@ -279,7 +279,7 @@ namespace ORB_SLAM3_Wrapper
     }
 
     template <>
-    Eigen::Affine3f WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, Sophus::SE3f &transform)
+    Eigen::Affine3f WrapperTypeConversions::transformPoseWithReference(Eigen::Affine3f &affineMapToRef, const Sophus::SE3f &transform)
     {
         // Convert SE3 to affine.
         auto affineMapToPose = affineMapToRef * se3ToAffine(transform);

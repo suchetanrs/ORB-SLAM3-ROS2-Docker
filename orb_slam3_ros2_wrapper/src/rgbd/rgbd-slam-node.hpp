@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <fstream>
 #include <chrono>
+#include <queue>
+#include <mutex>
 
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
@@ -47,6 +49,12 @@ namespace ORB_SLAM3_Wrapper
         std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depthSub_;
         std::shared_ptr<message_filters::Synchronizer<approximate_sync_policy>> syncApproximate_;
         rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imuSub_;
+
+        ORB_SLAM3::System::eSensor sensor_;
+
+        // Only used for IMU_RGBD.
+        std::queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
+        std::mutex imuBufMutex_;
     };
 }
 #endif
