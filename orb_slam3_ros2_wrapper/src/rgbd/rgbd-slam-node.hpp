@@ -15,7 +15,6 @@
 #include <mutex>
 
 #include <sensor_msgs/msg/image.hpp>
-#include <sensor_msgs/msg/imu.hpp>
 
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
@@ -37,7 +36,6 @@ namespace ORB_SLAM3_Wrapper
         typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::msg::Image, sensor_msgs::msg::Image> approximate_sync_policy;
 
         // ROS 2 Callbacks.
-        void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
         void RGBDCallback(const sensor_msgs::msg::Image::SharedPtr msgRGB,
                           const sensor_msgs::msg::Image::SharedPtr msgD);
 
@@ -48,13 +46,6 @@ namespace ORB_SLAM3_Wrapper
         std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> rgbSub_;
         std::shared_ptr<message_filters::Subscriber<sensor_msgs::msg::Image>> depthSub_;
         std::shared_ptr<message_filters::Synchronizer<approximate_sync_policy>> syncApproximate_;
-        rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imuSub_;
-
-        ORB_SLAM3::System::eSensor sensor_;
-
-        // Only used for IMU_RGBD.
-        std::queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
-        std::mutex imuBufMutex_;
     };
 }
 #endif

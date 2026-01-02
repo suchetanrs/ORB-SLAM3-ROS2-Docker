@@ -10,7 +10,6 @@ ORB_SLAM3_RGBD_ROS2:
     odom_frame: odom
     rgb_image_topic_name: rgb_camera
     depth_image_topic_name: depth_camera
-    imu_topic_name: imu #Not used in this variant. Try RGB_IMU to use this information.
 
     # the below parameters are used to adjust the initial pose with respect to the map. 
     # the camera pose maybe translated and rotated with respect to the base_footprint. The wrapper publishes map->base_footprint. Hence this relative transform needs to be accounted.
