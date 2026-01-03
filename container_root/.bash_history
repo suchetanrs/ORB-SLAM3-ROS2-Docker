@@ -498,3 +498,28 @@ ls
 tmux
 ls
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ros2 topic list
+ros2 topic echo /imu
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_map_generator map_generator.launch.py
+ros2 run demo_nodes_cpp talker
+rviz2 -d orb_slam3.rviz
+clear
+ls
+cd colcon_ws/
+ls
+rm -rf build/ install/ log/o
+rm -rf build/ install/ log/
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+c
+clear
+cd
+ls
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd
+ls
+./launch_slam.sh 
