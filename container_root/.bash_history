@@ -498,3 +498,114 @@ ls
 tmux
 ls
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh
+$ lspci | grep -i nvidia
+lspci | grep -i nvidia
+sudo apt install lspci
+hostnamectl
+gcc --version
+nvidia-smi
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+nvidia-smi 
+lspci | grep -i nvidia
+hostnamectl
+# inside the container
+apt-get update && apt-get install -y wget ca-certificates gnupg
+# set these for Ubuntu 22.04 x86_64
+distro=ubuntu2204
+arch=x86_64
+wget https://developer.download.nvidia.com/compute/cuda/repos/$distro/$arch/cuda-keyring_1.1-1_all.deb
+dpkg -i cuda-keyring_1.1-1_all.deb
+apt-get update
+apt-get install -y cuda-toolkit-12-2
+cd
+nvidia-smi 
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+cd /home/orb/ORB_SLAM3/
+ls
+chmod +x build.sh
+sudo ./build.sh
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd Thirdparty/
+ls
+git clone https://github.com/stevenlovegrove/Pangolin
+cd Pangolin && git checkout v0.9.1 && mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_INSTALL_PREFIX=/usr/local ..
+make -j8 && make install
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd Examples
+ls
+cd ..
+ls
+./run_script $dataset_name 1
+ls
+./run_script.sh 
+./run_script.sh MH_01 1
+cd Thirdparty/
+ls
+cd ..
+ls
+cat run_script.sh 
+./run_script.sh MH01 1
+ls
+cat build.sh 
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh
+./run_script.sh MH01 1
+ls
+cat build.sh 
+cd Thirdparty/Pangolin/
+ls
+cd build/
+ls
+cd ..
+ls
+cd ..
+ls
+cd DBoW2/
+ls
+cd lib/
+ls
+cd ..
+ls
+cd ..
+ls
+cd Pangolin/build/
+ls
+cd ../../..
+ls
+./build
+./build.sh 
+cd Thirdparty/Pangolin/build/
+ls
+cd ../..
+ls
+cd ..
+ls
+./run_script.sh MH01 0
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd
+ls
+./launch_slam.sh 
+ls
+cd /home/orb/ORB_SLAM3/
+./build.sh 

@@ -18,6 +18,14 @@ services:
       - ./slam_msgs/:/root/colcon_ws/src/slam_msgs/
       - ./ORB_SLAM3/:/home/orb/ORB_SLAM3/
     privileged: true
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     network_mode: host
     ipc: host
     pid: host
@@ -25,4 +33,6 @@ services:
     tty: true
     environment:
       - DISPLAY
+      - TERM
+      - QT_X11_NO_MITSHM=1
     entrypoint: /bin/bash

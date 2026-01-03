@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(orb_slam3_ros2_wrapper)
+project(orb_slam3_ros2_wrapper LANGUAGES CUDA CXX)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -49,6 +49,7 @@ include_directories(
   include
   ${ORB_SLAM3_ROOT_DIR}/include
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
+  ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 
 link_directories(
@@ -63,6 +64,12 @@ add_executable(rgbd
   src/rgbd/rgbd.cpp
 )
 ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs std_srvs)
+
+set_target_properties(rgbd
+                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+set_target_properties(rgbd PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_compile_options(-w)
 
 # add_executable(test1
 #   src/ft.cpp
