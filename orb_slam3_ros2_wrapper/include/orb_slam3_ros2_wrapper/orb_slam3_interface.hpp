@@ -29,6 +29,10 @@
 #include "Frame.h"
 #include "Map.h"
 #include "Atlas.h"
+
+#ifdef ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA
+#include "Kernels/KernelController.h"
+#endif
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/time_profiler.hpp"
 

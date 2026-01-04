@@ -609,3 +609,264 @@ ls
 ls
 cd /home/orb/ORB_SLAM3/
 ./build.sh 
+nvidia-smi 
+ls
+clear
+ls
+cd /root/
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd
+ls
+cd /
+ls
+cd
+ls
+cd /home/
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ls
+cd colcon_ws/
+ls
+cd src/
+ls
+cd orb_slam3_ros2_wrapper/
+ls
+cd scripts/
+ls
+nano monitor_cpu_ram.sh
+ls
+sudo chmod +x monitor_cpu_ram.sh 
+ls
+pwd
+cd
+ls
+clear
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+rviz2 -d orb_slam3.rviz
+nvidia-smi 
+clear
+ls
+clear
+htop
+top
+clear
+sudo apt-get install htop
+htop
+pidof 1409280
+pidof rgbd
+htop -p 1409280
+pidof rgbd
+htop -p $(pidof rgbd)
+pidof orb_slam3
+pidof rgbd
+ps aux | grep orb
+htop
+ls
+cd /home/orb/ORB_SLAM3/
+./build.sh 
+ls
+cd
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ldd /home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Examples/Stereo-Inertial/stereo_inertial_euroc | egrep -i 'not found|pango|ORB_SLAM3|opencv' || true
+ldd build/orb_slam3_ros2_wrapper/rgbd | egrep -i 'not found|pango|ORB_SLAM3|opencv' || true
+export LD_LIBRARY_PATH=/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/Pangolin/build:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/DBoW2/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/g2o/lib:${LD_LIBRARY_PATH:-}
+ldd build/orb_slam3_ros2_wrapper/rgbd | egrep -i 'not found|pango|ORB_SLAM3|opencv' || true
+export LD_LIBRARY_PATH=/home/orb/ORB_SLAM3/lib:/home/orb/ORB_SLAM3/Thirdparty/Pangolin/build:/home/orb/ORB_SLAM3/Thirdparty/DBoW2/lib:/home/orb/ORB_SLAM3/Thirdparty/g2o/lib:${LD_LIBRARY_PATH:-}
+ldd build/orb_slam3_ros2_wrapper/rgbd | egrep -i 'not found|pango|ORB_SLAM3|opencv' || true
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+tmux
+ls
+cd
+ls
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+export LD_LIBRARY_PATH=/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/Pangolin/build:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/DBoW2/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/g2o/lib:${LD_LIBRARY_PATH:-}
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+export LD_LIBRARY_PATH=/home/orb/ORB_SLAM3/lib:/home/orb/ORB_SLAM3/Thirdparty/Pangolin/build:/home/orb/ORB_SLAM3/Thirdparty/DBoW2/lib:/home/orb/ORB_SLAM3/Thirdparty/g2o/lib:${LD_LIBRARY_PATH:-}
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /home/orb/ORB_SLAM3/
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+export LD_LIBRARY_PATH=/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/Pangolin/build:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/DBoW2/lib:/home/suchetan/ORB-SLAM3-ROS2-Docker/ORB_SLAM3/Thirdparty/g2o/lib:${LD_LIBRARY_PATH:-}
+ls
+cd
+ls
+./launch_slam.sh 
+ls
+nvidia-smi
+clear
+ls
+clear
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd
+cd /usr/include/
+ls
+cd ..
+cd local/
+ls
+cd include/
+ls
+cd pangolin/
+ls
+cd windowing/
+ls
+cd ../..
+ls
+cd ..
+ls
+cd share/
+ls
+cd ..
+ls
+clear
+cd
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+rviz2 -d orb_slam3.rviz
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+nvcc --version
+python3
+clear
+ls
+cd
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+cd
+ls
+clear
+ls
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd
+ls
+./launch_slam.sh 
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+git status
+ls
+cd colcon_ws/
+ls
+rm -rf build/ install/ log/
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+cd build/
+ls
+cd orb_slam3_ros2_wrapper/
+ls
+ldd rgbd | egrep -i 'not found|pango|ORB_SLAM3|opencv' || true
+cd
+ls
+nautilus .
+cd /usr/local/
+ls
+cd bin/
+ls
+cd ..
+ls
+cd share/
+ls
+cd ..
+ls
+cd lib/
+ls
+cd
+ldconfig
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+lc
+ls
+clear
+ls
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ldconfig
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ls
+rviz2 -d orb_slam3.rviz
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 topic list
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ls
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+rm -rf ~/.python_history 
+ls
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd
+ls
+./launch_slam.sh 
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+cd
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+nvidia-smi 
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+nvcc --version
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ls
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+grep -R "ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA" build/orb_slam3_ros2_wrapper/CMakeCache.txt
+rm -rf build/ install/ log/
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+clear
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+rm -rf build/ install/ log/
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+grep -R "ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA" build/orb_slam3_ros2_wrapper/CMakeCache.txt
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+grep -R "ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA" build/orb_slam3_ros2_wrapper/CMakeCache.txt
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+grep -R "ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA" build/orb_slam3_ros2_wrapper/CMakeCache.txt
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py

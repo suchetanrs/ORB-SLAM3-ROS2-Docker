@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(orb_slam3_ros2_wrapper LANGUAGES CUDA CXX)
+project(orb_slam3_ros2_wrapper LANGUAGES CXX)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -45,12 +45,23 @@ find_package(pcl_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(std_srvs REQUIRED)
 
+option(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA "Enable CUDA support if available" OFF)
+
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  include(CheckLanguage)
+  enable_language(CUDA)
+  message(WARNING "CUDA support requested for ORB_SLAM3_ROS2_WRAPPER")
+endif()
+
 include_directories(
   include
   ${ORB_SLAM3_ROOT_DIR}/include
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
-  ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
+
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+endif()
 
 link_directories(
   include
@@ -65,11 +76,10 @@ add_executable(rgbd
 )
 ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs std_srvs)
 
-set_target_properties(rgbd
-                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-set_target_properties(rgbd PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-add_compile_options(-w)
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(rgbd PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(rgbd PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
 
 # add_executable(test1
 #   src/ft.cpp

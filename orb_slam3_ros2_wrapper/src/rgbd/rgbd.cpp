@@ -16,6 +16,18 @@ int main(int argc, char **argv)
 
     rclcpp::init(argc, argv);
 
+#ifdef ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA
+    bool RunOrbExtractionOnGPU = true;
+    bool RunStereoMatchOnGPU = false;
+    bool RunSearchLocalPointsOnGPU = true;
+    bool RunPoseEstimationOnGPU = true;
+    bool RunPoseOptimization = false;
+
+    // RunOrbExtractionOnGPU, RunStereoMatchOnGPU, RunSearchLocalPointsOnGPU, RunPoseEstimationOnGPU, RunPoseOptimization
+    KernelController::setGPURunMode(RunOrbExtractionOnGPU, RunStereoMatchOnGPU, RunSearchLocalPointsOnGPU, RunPoseEstimationOnGPU, RunPoseOptimization);
+#  pragma message("ORB_SLAM3_ROS2_WRAPPER: CUDA mode enabled (compiling GPU path)")
+#endif
+
     auto node = std::make_shared<ORB_SLAM3_Wrapper::RgbdSlamNode>(argv[1], argv[2], ORB_SLAM3::System::RGBD);
     std::cout << "============================ " << std::endl;
 
