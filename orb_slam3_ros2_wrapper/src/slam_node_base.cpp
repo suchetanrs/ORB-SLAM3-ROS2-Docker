@@ -17,6 +17,23 @@ namespace ORB_SLAM3_Wrapper
                                ORB_SLAM3::System::eSensor sensor)
         : rclcpp::Node(node_name)
     {
+#ifdef ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA
+        bool RunOrbExtractionOnGPU = true;
+        bool RunStereoMatchOnGPU = true;
+        bool RunSearchLocalPointsOnGPU = true;
+        bool RunPoseEstimationOnGPU = true;
+        bool RunPoseOptimization = false;
+
+        // RunOrbExtractionOnGPU, RunStereoMatchOnGPU, RunSearchLocalPointsOnGPU, RunPoseEstimationOnGPU, RunPoseOptimization
+        KernelController::setGPURunMode(RunOrbExtractionOnGPU, RunStereoMatchOnGPU, RunSearchLocalPointsOnGPU, RunPoseEstimationOnGPU, RunPoseOptimization);
+        std::cout << "======================== CUDA CONFIGURATION ========================" << std::endl;
+        std::cout << "RunOrbExtractionOnGPU: " << (RunOrbExtractionOnGPU ? "True" : "False") << std::endl;
+        std::cout << "RunStereoMatchOnGPU: " << (RunStereoMatchOnGPU ? "True" : "False") << std::endl;
+        std::cout << "RunSearchLocalPointsOnGPU: " << (RunSearchLocalPointsOnGPU ? "True" : "False") << std::endl;
+        std::cout << "RunPoseEstimationOnGPU: " << (RunPoseEstimationOnGPU ? "True" : "False") << std::endl;
+        std::cout << "RunPoseOptimization: " << (RunPoseOptimization ? "True" : "False") << std::endl;
+// #  pragma message("ORB_SLAM3_ROS2_WRAPPER: CUDA mode enabled (compiling GPU path))")
+#endif
 
         // ROS Publishers
         //---- the following is published when a service is called

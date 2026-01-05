@@ -91,6 +91,9 @@ add_library(orb_slam3_ros2_wrapper_common SHARED
   src/slam_node_base.cpp
 )
 ament_target_dependencies(orb_slam3_ros2_wrapper_common ${dependencies})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  target_compile_definitions(orb_slam3_ros2_wrapper_common PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
 
 
 add_executable(rgbd

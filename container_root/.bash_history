@@ -906,3 +906,67 @@ ls
 cd
 ls
 ./launch_slam.sh 
+ls
+nvidia-smi 
+ls
+cd colcon_ws/
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ls
+cd 
+cd /home/orb/ORB_SLAM3/
+ls
+./build.sh 
+clear
+ls
+clear
+ls
+clear
+cd
+ls
+cd colcon_ws/
+ls
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+source install/setup.bash
+clear
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+cd
+cd /home/orb/ORB_SLAM3/
+ls
+./build.sh 
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+nvidia-smi 
+clear
+ls
+./launch_slam.sh 
+ls
+cd /home/orb/ORB_SLAM3/
+ls
+./build.sh 
+cd
+ls
+cd colcon_ws/
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+cd /tmp/
+ls
+cd
+ls
+clear
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=stereo
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=stereo
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=stereo
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=stereo
+cd /home/orb/ORB_SLAM3/
+./build.sh 
+cd
+cd colcon_ws/
+cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
+ls
+cd
+ls
+./launch_slam.sh 

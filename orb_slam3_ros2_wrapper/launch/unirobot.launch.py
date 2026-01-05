@@ -59,7 +59,7 @@ def generate_launch_description():
     monitor_enabled_arg = DeclareLaunchArgument(
         "monitor_enabled",
         default_value="true",
-        description="Enable lightweight CPU/RAM monitor for process 'rgbd'.",
+        description="Enable lightweight CPU/RAM monitor for the selected sensor configuration.",
     )
 
     # Print to screen: monitor should log to stdout
@@ -67,7 +67,7 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("monitor_enabled")),
         cmd=[
             "/root/colcon_ws/src/orb_slam3_ros2_wrapper/scripts/monitor_cpu_ram.sh",
-            "--name", "rgbd",
+            "--name", sensor_config,
             "--hz", "0.3",
             # no --out: stdout goes to screen via `output="screen"`
         ],
@@ -76,9 +76,9 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        sensor_config_arg,
         monitor_enabled_arg,
         monitor_process,
-        sensor_config_arg,
         rgbd_launch,
         rgbd_imu_launch,
         mono_imu_launch,
