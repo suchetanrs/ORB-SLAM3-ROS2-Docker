@@ -69,6 +69,8 @@ public:
         // 2) Publisher for the final global pointcloud
         global_pc_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("global_pointcloud", 1);
 
+        local_pc_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>("local_pointcloud", 1);
+
         // 3) Service for triggering processing and publishing
         process_service_ = this->create_service<slam_msgs::srv::GetGlobalPointCloud>(
             "trigger_global_cloud",
@@ -160,6 +162,73 @@ private:
                 RCLCPP_INFO(this->get_logger(),
                             "Stored pointcloud for pose_id=%d (time diff=%.6f sec).",
                             pose_id, best_time_diff);
+                
+                pcl::PointCloud<pcl::PointXYZRGB> pcl_in_dense;
+                pcl::fromROSMsg(*best_match, pcl_in_dense);
+
+                pcl::PointCloud<pcl::PointXYZRGB> pcl_in;
+                pcl::VoxelGrid<pcl::PointXYZRGB> local_voxel_filter;
+                local_voxel_filter.setInputCloud(pcl_in_dense.makeShared());
+                local_voxel_filter.setLeafSize(0.05, 0.05, 0.05); // 5 cm voxel size
+                local_voxel_filter.filter(pcl_in);
+
+                // 1) Transform each stored pointcloud into the map frame
+
+                // 1.a) Lookup the static transform from lidar_link -> base_footprint once
+                geometry_msgs::msg::TransformStamped cdo_to_cl;
+                try
+                {
+                    // If your frames are reversed, swap the order below
+                    cdo_to_cl = tf_buffer_.lookupTransform(
+                        robot_base_frame_id_,  // target frame
+                        *pointcloud_frame_id_, // source frame
+                        tf2::TimePointZero);
+                }
+                catch (const tf2::TransformException &ex)
+                {
+                    RCLCPP_ERROR(this->get_logger(), "TF lookup exception: %s", ex.what());
+                    return;
+                }
+                // TF from lidar_link -> base_footprint.
+                // If cdo_to_cl is T_CL_CDO, then its Eigen form is:
+                Eigen::Isometry3d T_CL_CDO = tf2::transformToEigen(cdo_to_cl.transform);
+
+                // Build an Eigen transform from the geometry_msgs::Pose.
+                // Here we assume Pose is T_map_cameraLink: (map -> base_footprint).
+                Eigen::Isometry3d T_map_CL = poseToEigen(stored_poses_[pose_id]);
+
+                // So final transform from lidar_link -> map:
+                //   T_map_CDO = T_map_CL * T_CL_CDO
+                Eigen::Isometry3d T_map_CDO = T_map_CL * T_CL_CDO;
+
+                // Transform each point in pcl_in
+                pcl::PointCloud<pcl::PointXYZRGB> pcl_out;
+                pcl_out.reserve(pcl_in.size());
+                for (const auto &pt : pcl_in)
+                {
+                    // Skip invalid points if needed
+                    if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
+                        continue;
+
+                    Eigen::Vector3d p_in(pt.x, pt.y, pt.z);
+                    Eigen::Vector3d p_out = T_map_CDO * p_in;
+
+                    // Make a copy that includes the color fields
+                    pcl::PointXYZRGB transformed_pt;
+                    transformed_pt.x = p_out.x();
+                    transformed_pt.y = p_out.y();
+                    transformed_pt.z = p_out.z();
+                    transformed_pt.rgb = pt.rgb; // Copy the color
+
+                    pcl_out.push_back(transformed_pt);
+                }
+
+
+                sensor_msgs::msg::PointCloud2 output;
+                pcl::toROSMsg(pcl_out, output);
+                output.header.frame_id = "map";
+                output.header.stamp = msg->header.stamp;
+                local_pc_pub_->publish(output);
             }
             else
             {
@@ -211,8 +280,8 @@ private:
         Eigen::Isometry3d T_CL_CDO = tf2::transformToEigen(cdo_to_cl.transform);
 
         // Use an accumulating PCL cloud in map frame
-        pcl::PointCloud<pcl::PointXYZRGB> global_map_cloud;
-        global_map_cloud.clear();
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr global_map_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
+        global_map_cloud->clear();
         float max_z = request->z_thresh_max;
         bool use_grayscale = request->get_grayscale;
 
@@ -274,7 +343,7 @@ private:
             }
 
             // Append to the global map cloud
-            global_map_cloud += pcl_out;
+            *global_map_cloud += pcl_out;
 
             RCLCPP_INFO(this->get_logger(), "Transformed cloud for pose_id=%d, size=%lu points.",
                         pose_id, pcl_out.size());
@@ -282,7 +351,7 @@ private:
 
         pcl::PointCloud<pcl::PointXYZRGB> global_map_filtered;
         pcl::VoxelGrid<pcl::PointXYZRGB> global_voxel_filter;
-        global_voxel_filter.setInputCloud(global_map_cloud.makeShared());
+        global_voxel_filter.setInputCloud(global_map_cloud);
         global_voxel_filter.setLeafSize(request->global_voxel_resolution, request->global_voxel_resolution, request->global_voxel_resolution); // 5 cm voxel size
         global_voxel_filter.filter(global_map_filtered);
 
@@ -332,6 +401,7 @@ private:
 
     // Publisher
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr global_pc_pub_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr local_pc_pub_;
 
     // Service
     rclcpp::Service<slam_msgs::srv::GetGlobalPointCloud>::SharedPtr process_service_;

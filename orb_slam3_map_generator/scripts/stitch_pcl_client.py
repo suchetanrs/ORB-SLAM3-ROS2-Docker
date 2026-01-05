@@ -46,7 +46,7 @@ def main(args=None):
     request_parameters = {
         'global_voxel_resolution': 0.05,
         'local_voxel_resolution': 0.05,
-        'z_thresh_max': 0.8,
+        'z_thresh_max': 100.0,
         'get_grayscale': False
     }
 

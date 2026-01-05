@@ -47,6 +47,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         declare_use_sim_time_cmd,
-        # depth_image_to_pcl_node,
+        depth_image_to_pcl_node,
         stitch_pcl_node
     ])

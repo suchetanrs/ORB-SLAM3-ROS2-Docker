@@ -154,7 +154,7 @@ private:
         sensor_msgs::PointCloud2Iterator<uint8_t> out_rgb(cloud_msg, "rgb");
 
         // Example depth_scale if your depth is in mm (e.g., 16UC1)
-        double depth_scale = 0.001;
+        double depth_scale = 1.0;
 
         for (int v = 0; v < depth_image.rows; ++v)
         {
@@ -176,7 +176,7 @@ private:
                 else if (depth_image.type() == CV_32FC1)
                 {
                     float d = depth_image.at<float>(v, u);
-                    if (std::isnan(d) || d <= 0.0f)
+                    if (std::isnan(d) || d <= 0.0f || d >= 6.0)
                     {
                         Z = std::numeric_limits<float>::quiet_NaN();
                     }
