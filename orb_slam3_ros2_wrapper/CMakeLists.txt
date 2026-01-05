@@ -104,7 +104,14 @@ add_executable(mono_imu
 ament_target_dependencies(mono_imu ${dependencies})
 target_link_libraries(mono_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
 
-install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu
+add_executable(stereo
+  src/stereo/stereo-slam-node.cpp
+  src/stereo/stereo.cpp
+)
+ament_target_dependencies(stereo ${dependencies})
+target_link_libraries(stereo orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+
+install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu stereo
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch params

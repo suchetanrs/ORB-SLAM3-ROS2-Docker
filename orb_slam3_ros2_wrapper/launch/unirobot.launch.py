@@ -14,7 +14,7 @@ def generate_launch_description():
     sensor_config_arg = DeclareLaunchArgument(
         "sensor_config",
         default_value="rgbd",
-        description="Sensor configuration to launch: 'rgbd' (default), 'rgbd_imu', or 'mono_imu'")
+        description="Sensor configuration to launch: 'rgbd' (default), 'rgbd_imu', 'mono_imu' or 'stereo'")
 
     orb_slam3_launch_file_dir = os.path.join(
         get_package_share_directory('orb_slam3_ros2_wrapper'), 'launch')
@@ -27,6 +27,9 @@ def generate_launch_description():
 
     mono_imu_launch_file_path = os.path.join(
         orb_slam3_launch_file_dir, 'mono_imu.launch.py')
+    
+    stereo_launch_file_path = os.path.join(
+        orb_slam3_launch_file_dir, 'stereo.launch.py')
 
     rgbd_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(rgbd_launch_file_path),
@@ -45,10 +48,17 @@ def generate_launch_description():
         launch_arguments={"robot_namespace": robot_namespace}.items(),
         condition=IfCondition(PythonExpression(["'", sensor_config, "' == 'mono_imu'"])),
     )
+    
+    stereo_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(stereo_launch_file_path),
+        launch_arguments={"robot_namespace": robot_namespace}.items(),
+        condition=IfCondition(PythonExpression(["'", sensor_config, "' == 'stereo'"])),
+    )
 
     return LaunchDescription([
         sensor_config_arg,
         rgbd_launch,
         rgbd_imu_launch,
         mono_imu_launch,
+        stereo_launch,
     ])
