@@ -498,3 +498,52 @@ ls
 tmux
 ls
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
+ls
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clear
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py--show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py --show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clwar
+clear
+ls
+cd
+ls
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py --show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
+l
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
+ls
+cd colcon_ws/
+ls
+rm -rf build/ install/ log/
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 topic hz /imu
+ls
+clear
+ls
+clear
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+clear
+ls
+cd
+ls
+./launch_slam.sh 

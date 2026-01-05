@@ -55,25 +55,56 @@ link_directories(
   include
 )
 
-add_executable(rgbd
+set(dependencies 
+  rclcpp 
+  sensor_msgs 
+  cv_bridge 
+  message_filters 
+  ORB_SLAM3 
+  Pangolin 
+  tf2_ros 
+  tf2_eigen 
+  slam_msgs 
+  pcl_ros 
+  pcl_conversions 
+  PCL 
+  nav_msgs 
+  std_srvs
+)
+
+add_library(orb_slam3_ros2_wrapper_common SHARED
   src/type_conversion.cpp
   src/orb_slam3_interface.cpp
   src/time_profiler.cpp
   src/slam_node_base.cpp
+)
+ament_target_dependencies(orb_slam3_ros2_wrapper_common ${dependencies})
+
+
+add_executable(rgbd
   src/rgbd/rgbd-slam-node.cpp
   src/rgbd/rgbd.cpp
 )
-ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs std_srvs)
+ament_target_dependencies(rgbd ${dependencies})
+target_link_libraries(rgbd orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
 
-# add_executable(test1
-#   src/ft.cpp
-#   src/test_frame.cpp
-# )
-# ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
-# ament_target_dependencies(test1 rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
-# test1
-target_link_libraries(rgbd ${PCL_LIBRARIES})
-install(TARGETS rgbd
+
+add_executable(rgbd_imu
+  src/rgbd-imu/rgbd-imu-slam-node.cpp
+  src/rgbd-imu/rgbd_imu.cpp
+)
+ament_target_dependencies(rgbd_imu ${dependencies})
+target_link_libraries(rgbd_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+
+
+add_executable(mono_imu
+  src/mono-imu/mono-imu-slam-node.cpp
+  src/mono-imu/mono_imu.cpp
+)
+ament_target_dependencies(mono_imu ${dependencies})
+target_link_libraries(mono_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+
+install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch params
