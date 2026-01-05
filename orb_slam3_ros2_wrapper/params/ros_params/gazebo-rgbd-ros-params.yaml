@@ -1,0 +1,29 @@
+# Add a "/" at the start of the topics to avoid namespacing
+# The frame_ids are automatically namespaced in the rgbd.launch.py file.
+# If the robot namespace is "robot_0" then the frame_ids become "robot_0/camera_link"
+
+ORB_SLAM3_RGBD_ROS2:
+  ros__parameters:
+    # slam related
+    robot_base_frame: base_footprint
+    global_frame: map
+    odom_frame: odom
+    rgb_image_topic_name: rgb_camera
+    depth_image_topic_name: depth_camera
+
+    # the below parameters are used to adjust the initial pose with respect to the map. 
+    # the camera pose maybe translated and rotated with respect to the base_footprint. The wrapper publishes map->base_footprint. Hence this relative transform needs to be accounted.
+    # the below transform is the transform from base_footpring -> camera_link
+    robot_x: 0.7
+    robot_y: 0.0
+    robot_z: 1.150
+    robot_qx: 0.0
+    robot_qy: 0.0
+    robot_qz: 0.0
+    robot_qw: 1.0
+
+    visualization: true
+    odometry_mode: false
+    publish_tf: true
+    map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
+    do_loop_closing: true

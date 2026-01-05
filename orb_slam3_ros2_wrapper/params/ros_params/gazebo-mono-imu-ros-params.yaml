@@ -1,0 +1,30 @@
+# Add a "/" at the start of the topics to avoid namespacing
+# The frame_ids are automatically namespaced in the launch file.
+
+ORB_SLAM3_IMU_MONO_ROS2:
+  ros__parameters:
+    # slam related
+    robot_base_frame: base_footprint
+    global_frame: map
+    odom_frame: odom
+
+    # topics
+    image_topic_name: rgb_camera
+    imu_topic_name: imu
+
+    # base_footprint -> camera_link (used to account for camera offset w.r.t. base)
+    robot_x: 0.7
+    robot_y: 0.0
+    robot_z: 1.150
+    robot_qx: 0.0
+    robot_qy: 0.0
+    robot_qz: 0.0
+    robot_qw: 1.0
+
+    visualization: true
+    odometry_mode: false
+    publish_tf: true
+    map_data_publish_frequency: 1000 # publish every 1000.0 milliseconds
+    do_loop_closing: true
+
+

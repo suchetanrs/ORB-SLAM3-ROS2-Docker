@@ -8,6 +8,10 @@
 
 #include <iostream>
 #include <algorithm>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -17,6 +21,10 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "sensor_msgs/msg/imu.hpp"
 #include "sensor_msgs/msg/point_cloud2.hpp"
+#include "std_msgs/msg/header.hpp"
+#include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 #include <slam_msgs/msg/map_data.hpp>
 #include <slam_msgs/msg/map_graph.hpp>
@@ -68,7 +76,7 @@ namespace ORB_SLAM3_Wrapper
          */
         void mapDataToMsg(slam_msgs::msg::MapData &mapDataMsg, bool currentMapKFOnly, bool includeMapPoints = false, std::vector<int> kFIDforMapPoints = std::vector<int>());
 
-        void correctTrackedPose(Sophus::SE3f &s);
+        void correctTrackedPose(const Sophus::SE3f &s);
 
         void getDirectMapToRobotTF(std_msgs::msg::Header headerToUse, geometry_msgs::msg::TransformStamped &tf);
 
@@ -89,16 +97,11 @@ namespace ORB_SLAM3_Wrapper
 
         void mapPointsVisibleFromPose(Sophus::SE3f& cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle);
 
-        void handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU);
+        ORB_SLAM3::System* slam() { return mSLAM_.get(); }
 
-        bool trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
+        ORB_SLAM3::System::eSensor sensor() const { return sensor_; }
 
-        bool trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw);
-
-        std::shared_ptr<WrapperTypeConversions> getTypeConversionPtr()
-        {
-            return typeConversions_;
-        };
+        bool processTrackedPose(const Sophus::SE3f& Tcw);
 
         void resetLocalMapping();
 
@@ -109,16 +112,12 @@ namespace ORB_SLAM3_Wrapper
 
     private:
         std::shared_ptr<ORB_SLAM3::System> mSLAM_;
-        std::shared_ptr<WrapperTypeConversions> typeConversions_;
         ORB_SLAM3::Atlas *orbAtlas_;
         std::string strVocFile_;
         std::string strSettingsFile_;
         ORB_SLAM3::System::eSensor sensor_;
         bool bUseViewer_;
         bool loopClosing_;
-
-        queue<sensor_msgs::msg::Imu::SharedPtr> imuBuf_;
-        std::mutex bufMutex_;
         std::mutex mapDataMutex_;
         std::mutex currentMapPointsMutex_;
 

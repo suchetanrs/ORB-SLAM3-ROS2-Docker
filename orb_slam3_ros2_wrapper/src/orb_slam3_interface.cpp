@@ -7,6 +7,7 @@
 
 namespace ORB_SLAM3_Wrapper
 {
+    using namespace WrapperTypeConversions;
     ORBSLAM3Interface::ORBSLAM3Interface(const std::string &strVocFile,
                                          const std::string &strSettingsFile,
                                          ORB_SLAM3::System::eSensor sensor,
@@ -28,7 +29,7 @@ namespace ORB_SLAM3_Wrapper
     {
         std::cout << "Interface constructor started" << endl;
         mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing);
-        typeConversions_ = std::make_shared<WrapperTypeConversions>();
+        orbAtlas_ = mSLAM_->GetAtlas();
         time_profiler_ = TimeProfiler::getInstance();
         std::cout << "Interface constructor complete" << endl;
         robotBase_to_cameraLink_ = Eigen::Affine3f(
@@ -42,10 +43,8 @@ namespace ORB_SLAM3_Wrapper
         std::cout << "Interface destructor" << endl;
         mSLAM_->Shutdown();
         mSLAM_.reset();
-        typeConversions_.reset();
         mapReferencePoses_.clear();
         allKFs_.clear();
-        delete time_profiler_;
     }
 
     std::unordered_map<long unsigned int, ORB_SLAM3::KeyFrame *> ORBSLAM3Interface::makeKFIdPair(std::vector<ORB_SLAM3::Map *> mapsList)
@@ -99,7 +98,7 @@ namespace ORB_SLAM3_Wrapper
             // std::cout << "Map ID: " << mapsList[c]->GetId() << " origin kf ID: " << mapsList[c]->GetOriginKF()->mnId << " init kf id: " << mapsList[c]->GetInitKFid() << " max kf id: " << mapsList[c]->GetMaxKFid() << std::endl;
             if (c == 0)
             {
-                auto poseWithoutOffset = typeConversions_->se3ToAffine(mapsList[c]->GetOriginKF()->GetPose());
+                auto poseWithoutOffset = se3ToAffine(mapsList[c]->GetOriginKF()->GetPose());
                 // transform from map_orb -> camera
                 mapReferencePoses_[mapsList[c]] = poseWithoutOffset;
             }
@@ -126,7 +125,7 @@ namespace ORB_SLAM3_Wrapper
                 }
                 auto parentMapORBPose = allKFs_[parentMapID]->GetPose();
                 // transform from map_orb -> camera
-                mapReferencePoses_[mapsList[c]] = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
+                mapReferencePoses_[mapsList[c]] = transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[allKFs_[parentMapID]->GetMap()], parentMapORBPose);
             }
         }
         // used for reset map service. To contonue tracking where it was left off. 
@@ -150,14 +149,14 @@ namespace ORB_SLAM3_Wrapper
             {
                 if (!mapPoint->isBad())
                 {
-                    auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
+                    auto worldPos = vector3fORBToROS(mapPoint->GetWorldPos());
                     mapReferencesMutex_.lock();
                     if (allKFs_.count(KF->mnId) == 0)
                     {
                         mapReferencesMutex_.unlock();
                         continue;
                     }
-                    auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[KF->mnId]->GetMap()], worldPos);
+                    auto mapPointWorld = transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[KF->mnId]->GetMap()], worldPos);
                     // robotBase_to_cameraLink_ is map_ros->map_orb
                     mapPointWorld = robotBase_to_cameraLink_ * mapPointWorld;
                     mapReferencesMutex_.unlock();
@@ -165,14 +164,14 @@ namespace ORB_SLAM3_Wrapper
                 }
             }
         }
-        mapPointCloud = typeConversions_->MapPointsToPCL(trackedMapPoints);
+        mapPointCloud = MapPointsToPCL(trackedMapPoints);
     }
 
     void ORBSLAM3Interface::mapPointsVisibleFromPose(geometry_msgs::msg::Pose cameraPose, std::vector<ORB_SLAM3::MapPoint*>& points, int maxLandmarks, float maxDistance, float maxAngle)
     {
-        auto T_mapros_base = typeConversions_->poseToAffine(cameraPose);
+        auto T_mapros_base = poseToAffine(cameraPose);
         auto T_maporb_cam = robotBase_to_cameraLink_.inverse() * T_mapros_base * robotBase_to_cameraLink_;
-        auto camPose = typeConversions_->se3ROSToORB(T_maporb_cam);
+        auto camPose = se3ROSToORB(T_maporb_cam);
         mapPointsVisibleFromPose(camPose, points, maxLandmarks, maxDistance, maxAngle);
     }
 
@@ -187,7 +186,7 @@ namespace ORB_SLAM3_Wrapper
         auto Twc = Tcw.inverse();
 
         std::cout << "Input camera pose: " << std::endl; 
-        auto eulerAngles = typeConversions_->rotationORBToEulerROS(Twc.rotationMatrix());
+        auto eulerAngles = rotationORBToEulerROS(Twc.rotationMatrix());
         std::cout << "Translation:" << Twc.translation().transpose() << std::endl;
         std::cout << "Roll ROS coord: " << eulerAngles(0) << std::endl;
         std::cout << "Pitch ROS coord: " << eulerAngles(1) << std::endl;
@@ -218,7 +217,7 @@ namespace ORB_SLAM3_Wrapper
         for(auto pKFMp : mapKFs_)
         {
             auto rel_T_CamToKF = Tcw * pKFMp->GetPoseInverse();
-            auto relEulerAngles = typeConversions_->rotationORBToEulerROS(rel_T_CamToKF.rotationMatrix());
+            auto relEulerAngles = rotationORBToEulerROS(rel_T_CamToKF.rotationMatrix());
             float distBwKfs = rel_T_CamToKF.translation().norm();
 
             // checks ......
@@ -323,11 +322,11 @@ namespace ORB_SLAM3_Wrapper
                     {
                         if (!mapPoint->isBad())
                         {
-                            auto worldPos = typeConversions_->vector3fORBToROS(mapPoint->GetWorldPos());
+                            auto worldPos = vector3fORBToROS(mapPoint->GetWorldPos());
                             mapReferencesMutex_.lock();
-                            auto mapPointWorld = typeConversions_->transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[kFId]->GetMap()], worldPos);
+                            auto mapPointWorld = transformPointWithReference<Eigen::Vector3f>(mapReferencePoses_[allKFs_[kFId]->GetMap()], worldPos);
                             mapPointWorld = robotBase_to_cameraLink_ * mapPointWorld;
-                            auto mapPointWorldMsg = typeConversions_->eigenToPointMsg(mapPointWorld);
+                            auto mapPointWorldMsg = eigenToPointMsg(mapPointWorld);
                             mapReferencesMutex_.unlock();
                             pushedKf.word_pts.push_back(mapPointWorldMsg);
                         }
@@ -340,14 +339,13 @@ namespace ORB_SLAM3_Wrapper
                 }
             }
         }
-        mapDataMutex_.unlock();
     }
 
-    void ORBSLAM3Interface::correctTrackedPose(Sophus::SE3f &s)
+    void ORBSLAM3Interface::correctTrackedPose(const Sophus::SE3f &s)
     {
         std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         mapReferencesMutex_.lock();
-        latestTrackedPoseORB_camera_ = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(
+        latestTrackedPoseORB_camera_ = transformPoseWithReference<Eigen::Affine3f>(
             mapReferencePoses_[orbAtlas_->GetCurrentMap()], s);
         latestTrackedPose_ = robotBase_to_cameraLink_ * latestTrackedPoseORB_camera_ * robotBase_to_cameraLink_.inverse();
         mapReferencesMutex_.unlock();
@@ -369,7 +367,7 @@ namespace ORB_SLAM3_Wrapper
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             // get transform between map and odom and send the transform.
             auto poseInMap = latestTrackedPose_;
-            geometry_msgs::msg::Pose poseInMapROS = typeConversions_->affine3fToPose(poseInMap);
+            geometry_msgs::msg::Pose poseInMapROS = affine3fToPose(poseInMap);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
             rclcpp::Time odomTimestamp = headerToUse.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
@@ -401,7 +399,7 @@ namespace ORB_SLAM3_Wrapper
             // get transform between map and odom and send the transform.
             std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
             auto tfMapOdom = latestTrackedPose_ * latestOdomTransform_.inverse();
-            geometry_msgs::msg::Pose poseMapOdom = typeConversions_->affine3fToPose(tfMapOdom);
+            geometry_msgs::msg::Pose poseMapOdom = affine3fToPose(tfMapOdom);
             rclcpp::Duration transformTimeout_ = rclcpp::Duration::from_seconds(0.5);
             rclcpp::Time odomTimestamp = odomToBaseTf.header.stamp;
             tf.header.stamp = odomTimestamp + transformTimeout_;
@@ -418,7 +416,7 @@ namespace ORB_SLAM3_Wrapper
     {
         std::lock_guard<std::mutex> lock(latestTrackedPoseMutex_);
         pose.header.frame_id = globalFrame_;
-        pose.pose = typeConversions_->affine3fToPose(latestTrackedPose_);
+        pose.pose = affine3fToPose(latestTrackedPose_);
     }
 
     void ORBSLAM3Interface::getOptimizedPoseGraph(slam_msgs::msg::MapGraph &graph, bool currentMapKFOnly)
@@ -431,12 +429,12 @@ namespace ORB_SLAM3_Wrapper
                 Sophus::SE3f kfPose = kf->GetPose();
                 geometry_msgs::msg::PoseStamped kfPoseStamped;
                 mapReferencesMutex_.lock();
-                auto affinePose = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[kf->GetMap()], kfPose);
+                auto affinePose = transformPoseWithReference<Eigen::Affine3f>(mapReferencePoses_[kf->GetMap()], kfPose);
                 affinePose = robotBase_to_cameraLink_ * affinePose * robotBase_to_cameraLink_.inverse();
-                kfPoseStamped.pose = typeConversions_->affine3fToPose(affinePose);
+                kfPoseStamped.pose = affine3fToPose(affinePose);
                 mapReferencesMutex_.unlock();
                 kfPoseStamped.header.frame_id = globalFrame_;
-                kfPoseStamped.header.stamp = typeConversions_->secToStamp(kf->mTimeStamp);
+                kfPoseStamped.header.stamp = secToStamp(kf->mTimeStamp);
                 graph.poses.push_back(kfPoseStamped);
                 graph.poses_id.push_back(kf->mnId);
             }
@@ -453,11 +451,11 @@ namespace ORB_SLAM3_Wrapper
                 mapReferencesMutex_.unlock();
                 Sophus::SE3f kFPose = pKFcurr->GetPose();
                 geometry_msgs::msg::PoseStamped poseStamped;
-                auto affinePose = typeConversions_->transformPoseWithReference<Eigen::Affine3f>(currReferencePose_, kFPose);
+                auto affinePose = transformPoseWithReference<Eigen::Affine3f>(currReferencePose_, kFPose);
                 affinePose = robotBase_to_cameraLink_ * affinePose * robotBase_to_cameraLink_.inverse();
-                poseStamped.pose = typeConversions_->affine3fToPose(affinePose);
+                poseStamped.pose = affine3fToPose(affinePose);
                 poseStamped.header.frame_id = globalFrame_;
-                poseStamped.header.stamp = typeConversions_->secToStamp(pKFcurr->mTimeStamp);
+                poseStamped.header.stamp = secToStamp(pKFcurr->mTimeStamp);
                 // push to pose graph.
                 graph.poses.push_back(poseStamped);
                 graph.poses_id.push_back(pKFcurr->mnId);
@@ -465,123 +463,8 @@ namespace ORB_SLAM3_Wrapper
         }
     }
 
-    void ORBSLAM3Interface::handleIMU(const sensor_msgs::msg::Imu::SharedPtr msgIMU)
+    bool ORBSLAM3Interface::processTrackedPose(const Sophus::SE3f& Tcw)
     {
-        bufMutex_.lock();
-        imuBuf_.push(msgIMU);
-        bufMutex_.unlock();
-    }
-
-    bool ORBSLAM3Interface::trackRGBDi(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
-    {
-        orbAtlas_ = mSLAM_->GetAtlas();
-        cv_bridge::CvImageConstPtr cvRGB;
-        cv_bridge::CvImageConstPtr cvD;
-        // Copy the ros rgb image message to cv::Mat.
-        try
-        {
-            cvRGB = cv_bridge::toCvShare(msgRGB);
-        }
-        catch (cv_bridge::Exception &e)
-        {
-            std::cerr << "cv_bridge exception RGB!" << endl;
-            return false;
-        }
-
-        // Copy the ros depth image message to cv::Mat.
-        try
-        {
-            cvD = cv_bridge::toCvShare(msgD);
-        }
-        catch (cv_bridge::Exception &e)
-        {
-            std::cerr << "cv_bridge exception D!" << endl;
-            return false;
-        }
-
-        vector<ORB_SLAM3::IMU::Point> vImuMeas;
-        bufMutex_.lock();
-        if (!imuBuf_.empty())
-        {
-            // Load imu measurements from buffer
-            vImuMeas.clear();
-            while (!imuBuf_.empty() && typeConversions_->stampToSec(imuBuf_.front()->header.stamp) <= std::min(typeConversions_->stampToSec(msgRGB->header.stamp), typeConversions_->stampToSec(msgD->header.stamp)))
-            {
-                double t = typeConversions_->stampToSec(imuBuf_.front()->header.stamp);
-                cv::Point3f acc(imuBuf_.front()->linear_acceleration.x, imuBuf_.front()->linear_acceleration.y, imuBuf_.front()->linear_acceleration.z);
-                cv::Point3f gyr(imuBuf_.front()->angular_velocity.x, imuBuf_.front()->angular_velocity.y, imuBuf_.front()->angular_velocity.z);
-                vImuMeas.push_back(ORB_SLAM3::IMU::Point(acc, gyr, t));
-                imuBuf_.pop();
-            }
-        }
-        bufMutex_.unlock();
-        if (imuBuf_.size() > 0)
-        {
-            // track the frame.
-            Tcw = mSLAM_->TrackRGBD(cvRGB->image, cvD->image, typeConversions_->stampToSec(msgRGB->header.stamp), vImuMeas);
-            auto currentTrackingState = mSLAM_->GetTrackingState();
-            auto orbLoopClosing = mSLAM_->GetLoopClosing();
-            if (loopClosing_ && orbLoopClosing->mergeDetected())
-            {
-                // do not publish any values during map merging. This is because the reference poses change.
-                std::cout << "Waiting for merge to finish." << endl;
-                return false;
-            }
-            if (currentTrackingState == 2)
-            {
-                calculateReferencePoses();
-                correctTrackedPose(Tcw);
-                hasTracked_ = true;
-                return true;
-            }
-            else
-            {
-                switch (currentTrackingState)
-                {
-                case 0:
-                    std::cerr << "ORB-SLAM failed: No images yet." << endl;
-                    break;
-                case 1:
-                    std::cerr << "ORB-SLAM failed: Not initialized." << endl;
-                    break;
-                case 3:
-                    std::cerr << "ORB-SLAM failed: Tracking LOST." << endl;
-                    break;
-                }
-                return false;
-            }
-        }
-        return false;
-    }
-
-    bool ORBSLAM3Interface::trackRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD, Sophus::SE3f &Tcw)
-    {
-        orbAtlas_ = mSLAM_->GetAtlas();
-        cv_bridge::CvImageConstPtr cvRGB;
-        cv_bridge::CvImageConstPtr cvD;
-        // Copy the ros rgb image message to cv::Mat.
-        try
-        {
-            cvRGB = cv_bridge::toCvShare(msgRGB);
-        }
-        catch (cv_bridge::Exception &e)
-        {
-            std::cerr << "cv_bridge exception RGB!" << endl;
-            return false;
-        }
-
-        // Copy the ros depth image message to cv::Mat.
-        try
-        {
-            cvD = cv_bridge::toCvShare(msgD);
-        }
-        catch (cv_bridge::Exception &e)
-        {
-            std::cerr << "cv_bridge exception D!" << endl;
-            return false;
-        }
-        // track the frame.
-        Tcw = mSLAM_->TrackRGBD(cvRGB->image, cvD->image, typeConversions_->stampToSec(msgRGB->header.stamp));
         auto currentTrackingState = mSLAM_->GetTrackingState();
         auto orbLoopClosing = mSLAM_->GetLoopClosing();
         if (loopClosing_ && orbLoopClosing->mergeDetected())

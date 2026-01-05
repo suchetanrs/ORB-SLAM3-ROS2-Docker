@@ -6,7 +6,7 @@
 #include <cstddef>
 
 TEST(TypeConversionsTest, SE3ConversionRoundTrip) {
-    ORB_SLAM3_Wrapper::WrapperTypeConversions typeConversion_;
+    using namespace ORB_SLAM3_Wrapper::WrapperTypeConversions;
     // Create a random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -23,10 +23,10 @@ TEST(TypeConversionsTest, SE3ConversionRoundTrip) {
     randomAffine.translate(Eigen::Vector3f(dis2(gen), dis2(gen), dis2(gen)));
 
     // Convert ROS (Affine3f) to ORB (SE3f)
-    Sophus::SE3f orbSE3 = typeConversion_.se3ROSToORB(randomAffine);
+    Sophus::SE3f orbSE3 = se3ROSToORB(randomAffine);
 
     // Convert back to ROS (Affine3f)
-    Eigen::Affine3f convertedAffine = typeConversion_.se3ORBToROS(orbSE3);
+    Eigen::Affine3f convertedAffine = se3ORBToROS(orbSE3);
 
     // Compare the original and converted matrices
     ASSERT_TRUE(randomAffine.isApprox(convertedAffine, 1e-5))
