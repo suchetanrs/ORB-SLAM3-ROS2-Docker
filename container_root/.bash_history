@@ -679,6 +679,19 @@ ldd build/orb_slam3_ros2_wrapper/rgbd | egrep -i 'not found|pango|ORB_SLAM3|open
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py 
 tmux
 ls
+clear
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clear
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py--show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py --show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+clwar
+clear
+ls
 cd
 ls
 ./launch_slam.sh 
@@ -765,6 +778,18 @@ ls
 cd /home/orb/ORB_SLAM3/
 ls
 git status
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py --show-args
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
+l
+./launch_slam.sh 
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=rgbd_imu
+ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=mono_imu
 ls
 cd colcon_ws/
 ls
@@ -819,6 +844,12 @@ cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon bu
 cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
 rm -rf ~/.python_history 
 ls
+ls
+cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
+ros2 topic hz /imu
+ls
+clear
+ls
 clear
 ls
 cd /root/colcon_ws && cd /home/orb/ORB_SLAM3/ && ./build.sh && cd - && colcon build --symlink-install && source install/setup.bash
@@ -870,3 +901,8 @@ cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_R
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
 cd /root/colcon_ws/ && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
 ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py
+clear
+ls
+cd
+ls
+./launch_slam.sh 
