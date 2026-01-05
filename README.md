@@ -36,11 +36,19 @@ sudo chmod +x container_root/shell_scripts/docker_install.sh
 3. ```source ~/.bashrc```
 4. You can see the built images on your machine by running ```sudo docker images```.
 
+### To build NVIDIA CUDA version:
+
+Replace step 1. with ```sudo docker build --build-arg USE_CI=false --build-arg TARGET=nvidia_gpu -t orb-slam3-humble-nvidia:22.04 .```
+
 ## 4. Running the container
 
 1. ```cd ORB-SLAM3-ROS2-Docker``` (ignore if you are already in the folder)
 2. ```sudo docker compose run orb_slam3_22_humble```
 3. This should take you inside the container. Once you are inside, run the command ```xeyes``` and a pair of eyes should pop-up. If they do, x11 forwarding has correctly been setup on your computer.
+
+### To run the NVIDIA CUDA version:
+
+Replace step 2. with ```sudo docker compose run orb_slam3_22_nvidia```
 
 ## 5. Building the ORB-SLAM3 Wrapper
 
@@ -48,6 +56,14 @@ Launch the container using steps in (4).
 ```bash
 cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
 cd /root/colcon_ws/ && colcon build --symlink-install && source install/setup.bash
+```
+
+### To build with CUDA:
+
+Launch the container using steps in (4).
+```bash
+cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
+cd /root/colcon_ws/ && rm -rf build && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
 ```
 
 ## Launching ORB-SLAM3

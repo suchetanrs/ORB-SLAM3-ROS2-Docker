@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(orb_slam3_ros2_wrapper)
+project(orb_slam3_ros2_wrapper LANGUAGES CXX)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -45,11 +45,23 @@ find_package(pcl_ros REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(std_srvs REQUIRED)
 
+option(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA "Enable CUDA support if available" OFF)
+
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  include(CheckLanguage)
+  enable_language(CUDA)
+  message(WARNING "CUDA support requested for ORB_SLAM3_ROS2_WRAPPER")
+endif()
+
 include_directories(
   include
   ${ORB_SLAM3_ROOT_DIR}/include
   ${ORB_SLAM3_ROOT_DIR}/include/CameraModels
 )
+
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+endif()
 
 link_directories(
   include
@@ -79,6 +91,9 @@ add_library(orb_slam3_ros2_wrapper_common SHARED
   src/slam_node_base.cpp
 )
 ament_target_dependencies(orb_slam3_ros2_wrapper_common ${dependencies})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  target_compile_definitions(orb_slam3_ros2_wrapper_common PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
 
 
 add_executable(rgbd
@@ -87,6 +102,10 @@ add_executable(rgbd
 )
 ament_target_dependencies(rgbd ${dependencies})
 target_link_libraries(rgbd orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(rgbd PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(rgbd PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
 
 
 add_executable(rgbd_imu
@@ -95,6 +114,10 @@ add_executable(rgbd_imu
 )
 ament_target_dependencies(rgbd_imu ${dependencies})
 target_link_libraries(rgbd_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(rgbd_imu PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(rgbd_imu PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
 
 
 add_executable(mono_imu
@@ -103,6 +126,11 @@ add_executable(mono_imu
 )
 ament_target_dependencies(mono_imu ${dependencies})
 target_link_libraries(mono_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(mono_imu PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(mono_imu PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
+
 
 add_executable(stereo
   src/stereo/stereo-slam-node.cpp
@@ -110,6 +138,11 @@ add_executable(stereo
 )
 ament_target_dependencies(stereo ${dependencies})
 target_link_libraries(stereo orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(stereo PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(stereo PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
+
 
 install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu stereo
   DESTINATION lib/${PROJECT_NAME})
