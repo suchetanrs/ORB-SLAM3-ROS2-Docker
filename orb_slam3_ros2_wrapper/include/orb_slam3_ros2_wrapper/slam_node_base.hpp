@@ -76,6 +76,10 @@ namespace ORB_SLAM3_Wrapper
                                       std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Request> request,
                                       std::shared_ptr<slam_msgs::srv::GetLandmarksInView::Response> response);
 
+        void saveMapSrv(std::shared_ptr<rmw_request_id_t> request_header,
+                        std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                        std::shared_ptr<std_srvs::srv::SetBool::Response> response);
+
     private:
         // ROS Publishers and Subscribers
         rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odomSub_;
@@ -94,6 +98,7 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::Service<slam_msgs::srv::GetLandmarksInView>::SharedPtr getMapPointsService_;
         rclcpp::Service<slam_msgs::srv::GetAllLandmarksInMap>::SharedPtr mapPointsService_;
         rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr resetLocalMapSrv_;
+        rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr saveMapService_;
         // ROS Timers
         rclcpp::TimerBase::SharedPtr mapDataTimer_;
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;

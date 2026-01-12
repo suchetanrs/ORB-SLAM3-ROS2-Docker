@@ -109,6 +109,11 @@ namespace ORB_SLAM3_Wrapper
 
         void resetLocalMapping();
 
+        void saveAtlas()
+        {
+            mSLAM_->SaveAtlas(ORB_SLAM3::System::FileType::BINARY_FILE);
+        }
+
         size_t getNumberOfMaps()
         {
             return orbAtlas_->GetAllMaps().size(); 
