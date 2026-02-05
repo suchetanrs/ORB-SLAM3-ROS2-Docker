@@ -28,14 +28,14 @@ def generate_launch_description():
     orb_slam3_param_file = LaunchConfiguration("orb_slam3_param_file")
     declare_orb_slam3_param_file_cmd = DeclareLaunchArgument(
         name="orb_slam3_param_file",
-        default_value="euroc_mono_imu.yaml", # gazebo_mono_imu.yaml
+        default_value="euroc_mono.yaml", # gazebo_mono.yaml
         description="Path to the ORB-SLAM3 parameter file",
     )
 
     ros_params_file = LaunchConfiguration("ros_params_file")
     declare_ros_params_file_cmd = DeclareLaunchArgument(
         name="ros_params_file",
-        default_value="euroc-mono-imu-ros-params.yaml", # gazebo-mono-imu-ros-params.yaml
+        default_value="euroc-mono-ros-params.yaml", # gazebo-mono-ros-params.yaml
         description="Path to the ROS2 parameters file",
     )
 
@@ -67,7 +67,7 @@ def generate_launch_description():
 
         orb_slam3_node = Node(
             package="orb_slam3_ros2_wrapper",
-            executable="mono_imu",
+            executable="mono",
             output="screen",
             namespace=robot_namespace.perform(context),
             arguments=[vocabulary_file_path, config_file_path],

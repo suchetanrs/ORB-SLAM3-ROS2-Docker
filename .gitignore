@@ -32,3 +32,5 @@ container_root/profilers/**
 **traversability_mapping**
 container_root/ros_env_vars.sh
 container_root/.nv/
+orb_slam3_ros2_wrapper/datasets/**
+!orb_slam3_ros2_wrapper/datasets/PLACE_YOUR_DATASETS_HERE

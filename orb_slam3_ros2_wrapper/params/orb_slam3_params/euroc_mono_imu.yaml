@@ -3,71 +3,57 @@
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
 Camera.type: "PinHole"
 
 # Camera calibration and distortion parameters (OpenCV) 
-# Right Camera calibration and distortion parameters (OpenCV)
-# Camera.fx: 528.433756558705
-# Camera.fy: 528.433756558705
-# Camera.cx: 320.5
-# Camera.cy: 240.5
-Camera.fx: 478.9118347167969
-Camera.fy: 478.9118347167969
-Camera.cx: 330.0350341796875
-Camera.cy: 248.18951416015625
+Camera1.fx: 458.654
+Camera1.fy: 457.296
+Camera1.cx: 367.215
+Camera1.cy: 248.375
 
+Camera1.k1: -0.28340811
+Camera1.k2: 0.07395907
+Camera1.p1: 0.00019359
+Camera1.p2: 1.76187114e-05
 
-# distortion parameters
-Camera.k1: -0.0217606
-Camera.k2: 0.0456226
-Camera.p1: -0.000758527
-Camera.p2: 0.000665947
-Camera.k3: 0.0
-
-Camera.width: 640
+# Camera resolution
+Camera.width: 752
 Camera.height: 480
 
-# Camera frames per second 
-Camera.fps: 30.0
+Camera.newWidth: 600
+Camera.newHeight: 350
 
-# IR projector baseline times fx (aprox.)
-Camera.bf: 37.0
+# Camera frames per second 
+Camera.fps: 20
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
 
-# Close/Far threshold. Baseline times.
-ThDepth: 40.0
-
-# Deptmap values factor 
-DepthMapFactor: 1000.0 # 1.0 for ROS_bag
-
-# Transformation from camera 0 to body-frame (imu)
-Tbc: !!opencv-matrix
+# Transformation from camera to body-frame (imu)
+IMU.T_b_c1: !!opencv-matrix
    rows: 4
    cols: 4
    dt: f
-   data: [-0.9995250378696743, 0.0075019185074052044, -0.02989013031643309, 0.045574835649698026, 
-          0.029615343885863205, -0.03439736061393144, -0.998969345370175, -0.071161801837997044,
-         -0.008522328211654736, -0.9993800792498829, 0.03415885127385616, -0.044681254117144367,
-          0.0, 0.0, 0.0, 1.0]
+   data: [0.0148655429818, -0.999880929698, 0.00414029679422, -0.0216401454975,
+         0.999557249008, 0.0149672133247, 0.025715529948, -0.064676986768,
+        -0.0257744366974, 0.00375618835797, 0.999660727178, 0.00981073058949,
+         0.0, 0.0, 0.0, 1.0]
 
-# Do not insert KFs when recently lost
-InsertKFsWhenLost: 1
-
-# IMU noise (Use those from VINS-mono)
-IMU.NoiseGyro: 1e-2 # 3 # 2.44e-4 #1e-3 # rad/s^0.5
-IMU.NoiseAcc: 1e-1 #2 # 1.47e-3 #1e-2 # m/s^1.5
-IMU.GyroWalk: 1e-6 # rad/s^1.5
-IMU.AccWalk: 1e-4 # m/s^2.5
-IMU.Frequency: 92
+# IMU noise
+IMU.NoiseGyro: 1.7e-4 #1.6968e-04
+IMU.NoiseAcc: 2.0000e-3 #2.0e-3
+IMU.GyroWalk: 1.9393e-05 
+IMU.AccWalk: 3.0000e-03 # 3e-03
+IMU.Frequency: 200.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1250
+ORBextractor.nFeatures: 1000 # 1000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
@@ -86,14 +72,13 @@ ORBextractor.minThFAST: 7
 # Viewer Parameters
 #--------------------------------------------------------------------------------------------
 Viewer.KeyFrameSize: 0.05
-Viewer.KeyFrameLineWidth: 1
+Viewer.KeyFrameLineWidth: 1.0
 Viewer.GraphLineWidth: 0.9
-Viewer.PointSize:2
+Viewer.PointSize: 2.0
 Viewer.CameraSize: 0.08
-Viewer.CameraLineWidth: 3
-Viewer.ViewpointX: 0
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
 Viewer.ViewpointY: -0.7
-Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500
-System.SaveAtlasToFile: ./atlas
+Viewer.ViewpointZ: -3.5 # -1.8
+Viewer.ViewpointF: 500.0
 
