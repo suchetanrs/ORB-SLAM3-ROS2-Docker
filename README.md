@@ -13,7 +13,7 @@ Please use the `Release 1.0.0` version of this repository for the latest stable 
 
 ![ORBSLAM3-GIF](orbslam3.gif)
 
-# Steps to use this wrapper
+# Building ORB_SLAM3
 
 ## 1. Clone this repository
 
@@ -66,7 +66,7 @@ cd /home/orb/ORB_SLAM3/ && sudo chmod +x build.sh && ./build.sh
 cd /root/colcon_ws/ && rm -rf build && colcon build --symlink-install --cmake-args -DORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=ON && source install/setup.bash
 ```
 
-## Launching ORB-SLAM3
+# Launching ORB_SLAM3
 
 This repository supports the following ways to test different configurations. <br>
 
@@ -86,7 +86,7 @@ The default parameters in each of these launch files correspond to the following
 | stereo | ✅ | ❌ |
 | stereo_imu | ✅ | ❌ |
 
-Launch the container using steps in (4).
+Launch the container using steps in (4). <br>
 If you are inside the container, run the following:
 
 1. ```ros2 launch orb_slam3_ros2_wrapper unirobot.launch.py sensor_config:=<replace_with_your_config>```
@@ -98,7 +98,7 @@ If you are inside the container, run the following:
 
 Supported modes are `mono`, `mono_imu`, `stereo`, `stereo_imu`
 
-1. Download the euroc dataset `sudo chmod +x download_euroc.sh && ./download_euroc.sh`
+1. Download the euroc dataset (outside the container) `sudo chmod +x download_euroc.sh && ./download_euroc.sh`
 2. Open a new instance of the container you launched in (4) using `docker exec -it <container_id> bash`
 3. `ros2 bag play colcon_ws/src/orb_slam3_ros2_wrapper/datasets/V1_01_easy`
 
