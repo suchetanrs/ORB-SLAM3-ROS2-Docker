@@ -41,7 +41,11 @@ namespace ORB_SLAM3_Wrapper
     ORBSLAM3Interface::~ORBSLAM3Interface()
     {
         std::cout << "Interface destructor" << endl;
-        mSLAM_->Shutdown();
+        // Only shutdown if not already shut down (e.g., if shutdown was called explicitly)
+        if (mSLAM_ && !mSLAM_->isShutDown())
+        {
+            mSLAM_->Shutdown();
+        }
         mSLAM_.reset();
         mapReferencePoses_.clear();
         allKFs_.clear();

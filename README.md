@@ -123,6 +123,34 @@ To run the package, these steps can be followed:
 3. The bottom-left terminal contains the launch file to start the pointcloud_stitcher node. This should run soon after you launch the SLAM.
 4. If you wish to publish the global pointcloud at any point during the SLAM's operation, simply run the python file in the top-right terminal. You should be able to view the global pointcloud in rviz (you can launch RViz with the correct configuration from the bottom-right terminal).
 
+# Localization only mode
+
+To run this package in localization only mode, first map the environment and save the atlas.
+
+## Map the environment and save the atlas
+
+Navigate to `orb_slam3_ros2_docker/params/orb_slam3_params` and choose the param file corresponding to your desired sensor configuration. <br>
+At the end of the file, append the following
+
+```yaml
+System.SaveAtlasToFile: ./my_atlas
+```
+Once done mapping, to save the atlas, press `ctrl+c` only once. Wait for the program to clean up completely. Saving the map might take some time. 
+
+## Relaunch ORB_SLAM3 with pre-loaded map
+
+Navigate to `orb_slam3_ros2_docker/params/orb_slam3_params` and choose the param file corresponding to your desired sensor configuration. <br>
+At the end of the file, remove the parameter used for saving the atlas and append the following
+
+```yaml
+System.LoadAtlasFromFile: ./my_atlas
+```
+
+You should see the keyframes in the viewer. Select `Localization mode` in the GUI of ORB_SLAM3.<br>
+Then play the bag file. The following should be the result. The blue features represent VIO. The green features are matched with the underlying saved atlas. <br>
+<img src="media/loc_mode.png" alt="Star-history" width="300">
+
+
 ### Potential issues you may face.
 The simulation and the wrapper both have their ```ROS_DOMAIN_ID``` set to 55 so they are meant to work out of the box. However, you may face issues if this environment variable is not set properly. Before you start the wrapper, run ```ros2 topic list``` and make sure the topics `/rgb_camera` and `/depth_camera` are visible inside the ORB-SLAM3 container provided the simulation is running alongside.
 
