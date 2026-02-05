@@ -144,7 +144,31 @@ if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
 endif()
 
 
-install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu stereo
+add_executable(mono
+  src/mono/mono-slam-node.cpp
+  src/mono/mono.cpp
+)
+ament_target_dependencies(mono ${dependencies})
+target_link_libraries(mono orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(mono PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(mono PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
+
+
+add_executable(stereo_imu
+  src/stereo-imu/stereo-imu-slam-node.cpp
+  src/stereo-imu/stereo_imu.cpp
+)
+ament_target_dependencies(stereo_imu ${dependencies})
+target_link_libraries(stereo_imu orb_slam3_ros2_wrapper_common ${PCL_LIBRARIES})
+if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
+  set_target_properties(stereo_imu PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  target_compile_definitions(stereo_imu PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
+endif()
+
+
+install(TARGETS orb_slam3_ros2_wrapper_common rgbd rgbd_imu mono_imu stereo mono stereo_imu
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch params
