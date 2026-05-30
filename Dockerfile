@@ -53,7 +53,7 @@ RUN cd /tmp && git clone https://github.com/opencv/opencv.git && \
 COPY ./container_root/shell_scripts/vscode_install.sh /root/
 RUN cd /root/ && sudo chmod +x * && ./vscode_install.sh && rm -rf vscode_install.sh
 
-RUN apt-get update && apt-get install ros-humble-pcl-ros tmux -y
+RUN apt-get update && apt-get install ros-humble-pcl-ros tmux ros-humble-rviz2 -y
 RUN apt-get install ros-humble-nav2-common x11-apps nano -y
 RUN apt-get install -y gdb gdbserver ros-humble-rmw-cyclonedds-cpp ros-humble-cv-bridge ros-humble-image-transport ros-humble-image-common ros-humble-vision-opencv
 
