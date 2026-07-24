@@ -33,7 +33,6 @@ find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(Pangolin REQUIRED)
-find_package(Sophus REQUIRED)
 find_package(ORB_SLAM3 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
@@ -80,9 +79,27 @@ set(dependencies
   pcl_ros 
   pcl_conversions 
   PCL 
-  nav_msgs 
+  nav_msgs
   std_srvs
 )
+
+find_package(traversability_mapping QUIET)
+if(traversability_mapping_FOUND)
+  find_package(grid_map_core REQUIRED)
+  find_package(grid_map_ros REQUIRED)
+  find_package(grid_map_msgs REQUIRED)
+  add_definitions(-DWITH_TRAVERSABILITY_MAP)
+
+  add_definitions(-DWITH_ROS2_SENSOR_MSGS)
+  include_directories(SYSTEM
+    ${traversability_mapping_INCLUDE_DIRS}
+    ${grid_map_core_INCLUDE_DIRS}
+    ${grid_map_ros_INCLUDE_DIRS}
+    ${grid_map_msgs_INCLUDE_DIRS}
+  )
+  list(APPEND dependencies traversability_mapping grid_map_ros grid_map_msgs)
+  message(STATUS "orb_slam3_ros2_wrapper: building WITH traversability mapping support")
+endif()
 
 add_library(orb_slam3_ros2_wrapper_common SHARED
   src/type_conversion.cpp
@@ -91,6 +108,9 @@ add_library(orb_slam3_ros2_wrapper_common SHARED
   src/slam_node_base.cpp
 )
 ament_target_dependencies(orb_slam3_ros2_wrapper_common ${dependencies})
+if(traversability_mapping_FOUND)
+  target_link_libraries(orb_slam3_ros2_wrapper_common traversabilitySystem)
+endif()
 if(ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA)
   target_compile_definitions(orb_slam3_ros2_wrapper_common PRIVATE ORB_SLAM3_ROS2_WRAPPER_ENABLE_CUDA=1)
 endif()
@@ -184,6 +204,10 @@ if(BUILD_TESTING)
   
   ament_add_gtest(typeconversionTests tests/typeConversionsTests.cpp src/type_conversion.cpp)
   ament_target_dependencies(typeconversionTests rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin tf2_ros tf2_eigen slam_msgs pcl_ros pcl_conversions PCL nav_msgs)
+  if(traversability_mapping_FOUND)
+    ament_target_dependencies(typeconversionTests grid_map_ros grid_map_msgs)
+    target_link_libraries(typeconversionTests traversabilitySystem)
+  endif()
 endif()
 
 ament_package()

@@ -38,6 +38,13 @@
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
 
+#ifdef WITH_TRAVERSABILITY_MAP
+#include <nav_msgs/msg/occupancy_grid.hpp>
+#include <grid_map_msgs/msg/grid_map.hpp>
+#include "orb_slam3_ros2_wrapper/ros_common.hpp"
+#include "traversability_mapping/Parameters.hpp"
+#endif
+
 namespace ORB_SLAM3_Wrapper
 {
 
@@ -80,6 +87,12 @@ namespace ORB_SLAM3_Wrapper
                         std::shared_ptr<std_srvs::srv::SetBool::Request> request,
                         std::shared_ptr<std_srvs::srv::SetBool::Response> response);
 
+#ifdef WITH_TRAVERSABILITY_MAP
+        // Traversability: feed lidar clouds into the buffer and publish the resulting grid.
+        void LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar);
+        void publishTraversabilityData();
+#endif
+
     private:
         // ROS Publishers and Subscribers
         rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odomSub_;
@@ -104,6 +117,15 @@ namespace ORB_SLAM3_Wrapper
         rclcpp::CallbackGroup::SharedPtr mapDataCallbackGroup_;
         rclcpp::CallbackGroup::SharedPtr mapPointsCallbackGroup_;
         rclcpp::CallbackGroup::SharedPtr pointsInViewCallbackGroup_;
+#ifdef WITH_TRAVERSABILITY_MAP
+        // Traversability ROS interface
+        rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr lidarSub_;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr gridmapPub_;
+        rclcpp::Publisher<grid_map_msgs::msg::GridMap>::SharedPtr traversabilityPub_;
+        rclcpp::TimerBase::SharedPtr traversabilityTimer_;
+        rclcpp::CallbackGroup::SharedPtr lidarCallbackGroup_;
+        rclcpp::CallbackGroup::SharedPtr traversabilityTimerCallbackGroup_;
+#endif
         // ROS Params
         std::string robot_base_frame_id_;
         std::string odom_frame_id_;

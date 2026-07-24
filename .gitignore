@@ -29,7 +29,6 @@ container_root/profilers/**
 **perf**
 **.osa**
 **container_root/trav_ws/**
-**traversability_mapping**
 container_root/ros_env_vars.sh
 container_root/.nv/
 orb_slam3_ros2_wrapper/datasets/**

@@ -121,8 +121,38 @@ namespace ORB_SLAM3_Wrapper
         mapDataCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
         mapDataTimer_ = this->create_wall_timer(std::chrono::milliseconds(map_data_publish_frequency_), std::bind(&SlamNodeBase::publishMapData, this), mapDataCallbackGroup_);
 
+        Eigen::Affine3f tf_SlamToLidar = Eigen::Affine3f::Identity();
+        Eigen::Affine3f tf_BaseToSlam = Eigen::Affine3f::Identity();
+#ifdef WITH_TRAVERSABILITY_MAP
+        {
+            // Initialise the traversability parameter singleton before ORB_SLAM3 builds its
+            // in-process traversability::System (whose constructor reads these parameters).
+            std::string traversability_parameter_file_path;
+            this->declare_parameter("traversability_parameter_file_path", rclcpp::ParameterValue(""));
+            this->get_parameter("traversability_parameter_file_path", traversability_parameter_file_path);
+            RCLCPP_INFO_STREAM(this->get_logger(), "Traversability parameter file path: " << traversability_parameter_file_path);
+            traversability_mapping::ParameterHandler::getInstance(traversability_parameter_file_path);
+            // Blocks until the static extrinsics are available on TF.
+            populateTransforms("camera_link", robot_base_frame_id_, "lidar_link", this->get_clock(), this->get_logger(), tfBuffer_, tf_SlamToLidar, tf_BaseToSlam);
+        }
+#endif
+
         interface_ = std::make_shared<ORB_SLAM3_Wrapper::ORBSLAM3Interface>(strVocFile, strSettingsFile,
-                                                                            sensor, bUseViewer, do_loop_closing_, initial_pose, global_frame_, odom_frame_id_, robot_base_frame_id_);
+                                                                            sensor, bUseViewer, do_loop_closing_, initial_pose, global_frame_, odom_frame_id_, robot_base_frame_id_, tf_SlamToLidar, tf_BaseToSlam);
+
+#ifdef WITH_TRAVERSABILITY_MAP
+        {
+            this->declare_parameter("lidar_topic_name", rclcpp::ParameterValue("lidar/points"));
+            lidarCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+            rclcpp::SubscriptionOptions lidarSubOptions;
+            lidarSubOptions.callback_group = lidarCallbackGroup_;
+            lidarSub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(this->get_parameter("lidar_topic_name").as_string(), 1000, std::bind(&SlamNodeBase::LidarCallback, this, std::placeholders::_1), lidarSubOptions);
+            gridmapPub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_traversability_map", 10);
+            traversabilityPub_ = this->create_publisher<grid_map_msgs::msg::GridMap>("RTQuadtree_struct", rclcpp::QoS(1).transient_local());
+            traversabilityTimerCallbackGroup_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+            traversabilityTimer_ = this->create_wall_timer(std::chrono::milliseconds(800), std::bind(&SlamNodeBase::publishTraversabilityData, this), traversabilityTimerCallbackGroup_);
+        }
+#endif
 
         frequency_tracker_count_ = 0;
         frequency_tracker_clock_ = std::chrono::high_resolution_clock::now();
@@ -292,10 +322,31 @@ namespace ORB_SLAM3_Wrapper
     }
 
     void SlamNodeBase::saveMapSrv(std::shared_ptr<rmw_request_id_t> /*request_header*/,
-                                    std::shared_ptr<std_srvs::srv::SetBool::Request> request,
-                                    std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+                                    std::shared_ptr<std_srvs::srv::SetBool::Request> /*request*/,
+                                    std::shared_ptr<std_srvs::srv::SetBool::Response> /*response*/)
     {
         interface_->saveAtlas();
     }
+
+#ifdef WITH_TRAVERSABILITY_MAP
+    void SlamNodeBase::LidarCallback(sensor_msgs::msg::PointCloud2::SharedPtr msgLidar)
+    {
+        interface_->handleLidarPCL(msgLidar);
+    }
+
+    void SlamNodeBase::publishTraversabilityData()
+    {
+        if (!isTracked_)
+            return;
+        auto map = interface_->getTraversabilityData();
+        // Shift the occupancy origin by the initial robot pose to align with the global frame.
+        map.first.info.origin.position.x = map.first.info.origin.position.x + robot_x_;
+        map.first.info.origin.position.y = map.first.info.origin.position.y + robot_y_;
+        map.first.header.frame_id = global_frame_;
+        map.first.header.stamp = this->now();
+        gridmapPub_->publish(map.first);
+        traversabilityPub_->publish(map.second);
+    }
+#endif
 
 } // namespace ORB_SLAM3_Wrapper

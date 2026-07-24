@@ -5,6 +5,10 @@
  */
 #include "orb_slam3_ros2_wrapper/orb_slam3_interface.hpp"
 
+#ifdef WITH_TRAVERSABILITY_MAP
+#include "traversability_mapping/Parameters.hpp"
+#endif
+
 namespace ORB_SLAM3_Wrapper
 {
     using namespace WrapperTypeConversions;
@@ -16,7 +20,9 @@ namespace ORB_SLAM3_Wrapper
                                          geometry_msgs::msg::Pose initialRobotPose,
                                          std::string globalFrame,
                                          std::string odomFrame,
-                                         std::string robotFrame)
+                                         std::string robotFrame,
+                                         Eigen::Affine3f tf_SlamToLidar,
+                                         Eigen::Affine3f tf_BaseToSlam)
         : strVocFile_(strVocFile),
           strSettingsFile_(strSettingsFile),
           sensor_(sensor),
@@ -28,7 +34,18 @@ namespace ORB_SLAM3_Wrapper
           robotFrame_(robotFrame)
     {
         std::cout << "Interface constructor started" << endl;
-        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing);
+#ifdef WITH_TRAVERSABILITY_MAP
+        // The buffering flags default to false in the YAML (standalone traversability nodes
+        // don't need them), but ORB-SLAM3 announces keyframes by timestamp and fetches the
+        // closest buffered cloud, so it requires both to be true. Set them BEFORE constructing
+        // mSLAM_: the traversability::System constructor reads these once and only allocates
+        // its buffers if they are true at that point, so setting them afterwards is a no-op.
+        parameterInstance.setParameter("pointcloud/use_pointcloud_buffer", true);
+        parameterInstance.setParameter("pointcloud/use_ros_buffer", true);
+#endif
+        // useTraversability=true: ORB builds its in-process traversability::System with these
+        // extrinsics (harmless no-op if ORB_SLAM3 was built without WITH_TRAVERSABILITY_MAP).
+        mSLAM_ = std::make_shared<ORB_SLAM3::System>(strVocFile_, strSettingsFile_, sensor_, bUseViewer_, loopClosing, true, tf_SlamToLidar, tf_BaseToSlam);
         orbAtlas_ = mSLAM_->GetAtlas();
         time_profiler_ = TimeProfiler::getInstance();
         std::cout << "Interface constructor complete" << endl;
@@ -508,4 +525,34 @@ namespace ORB_SLAM3_Wrapper
             return false;
         }
     }
+
+#ifdef WITH_TRAVERSABILITY_MAP
+    void ORBSLAM3Interface::handleLidarPCL(sensor_msgs::msg::PointCloud2::SharedPtr pcl2)
+    {
+        auto traversability = mSLAM_->getTraversability();
+        if (traversability)
+            traversability->pushToBuffer(pcl2);
+    }
+
+    std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> ORBSLAM3Interface::getTraversabilityData()
+    {
+        nav_msgs::msg::OccupancyGrid occupancy;
+        grid_map_msgs::msg::GridMap gridMapMsg;
+        auto traversability = mSLAM_->getTraversability();
+        if (!traversability)
+            return std::make_pair(occupancy, gridMapMsg);
+        auto localMap = traversability->getLocalMap();
+        if (localMap != nullptr)
+        {
+            // getGridMap() returns a reference to the live grid; hold the grid mutex while
+            // converting it. Occupancy is derived from the "hazard" layer (range 0..1).
+            std::lock_guard<std::mutex> lock(localMap->getGridMapMutex());
+            auto message = grid_map::GridMapRosConverter::toMessage(localMap->getGridMap());
+            if (message)
+                gridMapMsg = *message;
+            grid_map::GridMapRosConverter::toOccupancyGrid(localMap->getGridMap(), "hazard", 0.0, 1.0, occupancy);
+        }
+        return std::make_pair(occupancy, gridMapMsg);
+    }
+#endif
 }

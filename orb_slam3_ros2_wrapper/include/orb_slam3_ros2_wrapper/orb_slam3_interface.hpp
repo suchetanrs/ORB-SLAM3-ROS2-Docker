@@ -44,6 +44,12 @@
 #include "orb_slam3_ros2_wrapper/type_conversion.hpp"
 #include "orb_slam3_ros2_wrapper/time_profiler.hpp"
 
+#ifdef WITH_TRAVERSABILITY_MAP
+#include <nav_msgs/msg/occupancy_grid.hpp>
+#include <grid_map_msgs/msg/grid_map.hpp>
+#include <grid_map_ros/grid_map_ros.hpp>
+#endif
+
 namespace ORB_SLAM3_Wrapper
 {
     class ORBSLAM3Interface
@@ -57,7 +63,9 @@ namespace ORB_SLAM3_Wrapper
                           geometry_msgs::msg::Pose initialRobotPose,
                           std::string globalFrame,
                           std::string odomFrame,
-                          std::string robotFrame);
+                          std::string robotFrame,
+                          Eigen::Affine3f tf_SlamToLidar = Eigen::Affine3f::Identity(),
+                          Eigen::Affine3f tf_BaseToSlam = Eigen::Affine3f::Identity());
 
         ~ORBSLAM3Interface();
 
@@ -106,6 +114,14 @@ namespace ORB_SLAM3_Wrapper
         ORB_SLAM3::System::eSensor sensor() const { return sensor_; }
 
         bool processTrackedPose(const Sophus::SE3f& Tcw);
+
+#ifdef WITH_TRAVERSABILITY_MAP
+        /// @brief Push a lidar/depth cloud into the traversability point-cloud buffer.
+        void handleLidarPCL(sensor_msgs::msg::PointCloud2::SharedPtr pcl2);
+
+        /// @brief Snapshot the current traversability map as (occupancy grid, grid_map message).
+        std::pair<nav_msgs::msg::OccupancyGrid, grid_map_msgs::msg::GridMap> getTraversabilityData();
+#endif
 
         void resetLocalMapping();
 

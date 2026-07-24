@@ -4,3 +4,6 @@
 [submodule "FastTrack"]
 	path = FastTrack
 	url = https://github.com/suchetanrs/FastTrack
+[submodule "traversability_mapping"]
+	path = traversability_mapping
+	url = https://github.com/suchetanrs/traversability_mapping
