@@ -11,6 +11,7 @@ x-orb-slam3-common: &orb_slam3_common
       - DISPLAY
       - TERM
       - QT_X11_NO_MITSHM=1
+      - vblank_mode=0
     entrypoint: /bin/bash
 
 services:
